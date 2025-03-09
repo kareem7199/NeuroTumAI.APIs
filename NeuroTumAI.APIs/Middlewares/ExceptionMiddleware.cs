@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json;
 using NeuroTumAI.APIs.Errors;
+using NeuroTumAI.Core.Exceptions;
 
 namespace NeuroTumAI.APIs.Middlewares
 {
@@ -23,26 +24,67 @@ namespace NeuroTumAI.APIs.Middlewares
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex.Message); // dev env
-											  //prod env Log in Database | file
-
-				httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-				httpContext.Response.ContentType = "application/json";
-
-				var response = _env.IsDevelopment() ? new ApiExceptionResponse((int)HttpStatusCode.InternalServerError, ex.Message, ex.StackTrace.ToString())
-					:
-					new ApiExceptionResponse((int)HttpStatusCode.InternalServerError);
-
-				var options = new JsonSerializerOptions()
+				if (_env.IsDevelopment())
 				{
-					PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-				};
+					//DevelpopmentMode
+					_logger.LogError(ex, ex.Message);
+				}
+				else
+				{
+					//Production Miode
+					//log exception in database
 
-				var json = JsonSerializer.Serialize(response, options);
-				await httpContext.Response.WriteAsync(json);
+				}
+				await HandleExceptionAsync(httpContext, ex);
 			}
 
 			//Take an action with the response
+		}
+		private async Task HandleExceptionAsync(HttpContext httpContext, Exception ex)
+		{
+			ApiResponse response;
+			switch (ex)
+			{
+				case NotFoundException:
+					httpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
+					httpContext.Response.ContentType = "application/json";
+					response = new ApiResponse(404, ex.Message);
+					await httpContext.Response.WriteAsync(response.ToString());
+					break;
+
+				case ValidationException validationException:
+					httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+					httpContext.Response.ContentType = "application/json";
+					response = new ApiValidationErrorResponse(ex.Message) { Errors = validationException.Errors };
+					await httpContext.Response.WriteAsync(response.ToString());
+					break;
+
+				case BadRequestException:
+					httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+					httpContext.Response.ContentType = "application/json";
+					response = new ApiResponse(400, ex.Message);
+					await httpContext.Response.WriteAsync(response.ToString());
+					break;
+
+				case UnAuthorizedException:
+					httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+					httpContext.Response.ContentType = "application/json";
+					response = new ApiResponse(401, ex.Message);
+					await httpContext.Response.WriteAsync(response.ToString());
+					break;
+
+				default:
+					response = _env.IsDevelopment() ?
+							response = new ApiExceptionResponse((int)HttpStatusCode.InternalServerError, ex.Message, ex.StackTrace.ToString())
+							:
+							response = new ApiExceptionResponse((int)HttpStatusCode.InternalServerError);
+
+					httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+					httpContext.Response.ContentType = "application/json";
+
+					await httpContext.Response.WriteAsync(response.ToString());
+					break;
+			}
 		}
 	}
 }
