@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace NeuroTumAI.Core.Exceptions
 {
-    public class UnAuthorizedException : Exception
-    {
-        public UnAuthorizedException(string message):base(message) { }
-        
-        
-    }
+	public class UnAuthorizedException : Exception
+	{
+		public UnAuthorizedException(string message) : base(message) { }
+
+
+	}
 }

@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
-namespace LinkDev.Talabat.APIs.Controllers.Base
+namespace NeuroTumAI.APIs.Controllers.Base
 {
 	[Route("api/[controller]")]
 	[ApiController]

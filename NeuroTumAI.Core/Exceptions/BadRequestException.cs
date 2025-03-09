@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace NeuroTumAI.Core.Exceptions
 {
-	public class BadRequestException:ApplicationException
+	public class BadRequestException : ApplicationException
 	{
-        public BadRequestException(string message):base(message) { }
-        
-    }
+		public BadRequestException(string message) : base(message) { }
+
+	}
 }
