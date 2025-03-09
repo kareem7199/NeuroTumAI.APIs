@@ -3,8 +3,11 @@
 	public class ApiValidationErrorResponse : ApiResponse
 	{
 		public IEnumerable<string> Errors { get; set; }
+        public ApiValidationErrorResponse(string? Message = null) : base(400, Message)
+        {
 
-		public ApiValidationErrorResponse()
+        }
+        public ApiValidationErrorResponse()
 			: base(400)
 		{
 			Errors = new List<string>();
