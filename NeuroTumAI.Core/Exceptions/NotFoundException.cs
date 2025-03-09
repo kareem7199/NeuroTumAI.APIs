@@ -8,10 +8,9 @@ namespace NeuroTumAI.Core.Exceptions
 {
 	public class NotFoundException : ApplicationException
 	{
-		public NotFoundException(string name, object key) :
-			base($"{name} with Id : {key} is not found")
+		public NotFoundException(string message) :
+			base(message)
 		{
-
 		}
 	}
 }
