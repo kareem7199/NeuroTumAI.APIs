@@ -1,11 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using NeuroTumAI.APIs.Errors;
 using NeuroTumAI.APIs.Middlewares;
 using NeuroTumAI.Core;
+using NeuroTumAI.Core.Services.Contract;
 using NeuroTumAI.Repository;
+using NeuroTumAI.Service.LocalizationService;
+using System.Globalization;
 using System.Text;
 
 namespace NeuroTumAI.APIs.Extensions
@@ -16,8 +20,26 @@ namespace NeuroTumAI.APIs.Extensions
 		{
 
 			services.AddScoped<IUnitOfWork, UnitOfWork>();
+			services.AddScoped<ILocalizationService, LocalizationService>();
 
 			services.AddScoped<ExceptionMiddleware>();
+
+			services.AddLocalization();
+
+			services.Configure<RequestLocalizationOptions>(options =>
+			{
+				var supportedCultures = new[]
+				{
+					new CultureInfo("en"),
+					new CultureInfo("ar")
+				};
+
+				options.DefaultRequestCulture = new RequestCulture("en");
+				options.SupportedCultures = supportedCultures;
+				options.SupportedUICultures = supportedCultures;
+				options.ApplyCurrentCultureToResponseHeaders = true;
+			});
+
 
 			services.Configure<ApiBehaviorOptions>(options =>
 			{

@@ -20,4 +20,13 @@
     <ProjectReference Include="..\NeuroTumAI.Service\NeuroTumAI.Service.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Shared\SharedResources.en.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Shared\SharedResources.ar.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

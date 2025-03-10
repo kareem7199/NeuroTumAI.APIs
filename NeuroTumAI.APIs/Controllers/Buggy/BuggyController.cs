@@ -1,40 +1,48 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NeuroTumAI.APIs.Controllers.Base;
+using NeuroTumAI.APIs.Resources.Shared;
 using NeuroTumAI.Core.Exceptions;
-
+using NeuroTumAI.Core.Services.Contract;
 
 namespace NeuroTumAI.APIs.Buggy
 {
+    public class BuggyController : BaseApiController
+    {
+        private readonly ILocalizationService _localizationService;
 
-	public class BuggyController : BaseApiController
-	{
-		[HttpGet("notfound")] //Get: api/buggy/notfound
-		public IActionResult GetNotFoundRequest()
-		{
-			throw new NotFoundException("Not Found Exception");
+        public BuggyController(ILocalizationService localizationService)
+        {
+            _localizationService = localizationService;
+        }
 
-		}
+        [HttpGet("notfound")] // GET: api/buggy/notfound
+        public IActionResult GetNotFoundRequest()
+        {
+            throw new NotFoundException(_localizationService.GetMessage<SharedResources>("NotFound"));
+        }
 
-		[HttpGet("servererror")] //Get:api/buggy/servererror
-		public IActionResult GetServerError()
-		{
-			throw new Exception("Internal Server Error");//500
-		}
+        [HttpGet("servererror")] // GET: api/buggy/servererror
+        public IActionResult GetServerError()
+        {
+            throw new Exception(_localizationService.GetMessage<SharedResources>("InternalServerError")); // 500
+        }
 
+        [HttpGet("badrequest")] // GET: api/buggy/badrequest
+        public IActionResult GetBadRequest()
+        {
+            throw new BadRequestException(_localizationService.GetMessage<SharedResources>("BadRequest"));
+        }
 
-		[HttpGet("badrequest")] //Get:api/buggy/badrequest
-		public IActionResult GetBadRequest()
-		{
-			throw new BadRequestException("Bad Request Exception");
-		}
-
-		[HttpGet("validationerror")]
-		public IActionResult PostValidationError()
-		{
-			throw new ValidationException("Validation error")
-			{
-				Errors = ["Id is required.", "Id must be at least 1."]
-			};
-		}
-	}
+        [HttpGet("validationerror")]
+        public IActionResult PostValidationError()
+        {
+            throw new ValidationException(_localizationService.GetMessage<SharedResources>("ValidationError"))
+            {
+                Errors = [
+                    _localizationService.GetMessage<SharedResources>("RequiredField"),
+                    _localizationService.GetMessage<SharedResources>("MinLength", 1)
+                ]
+            };
+        }
+    }
 }

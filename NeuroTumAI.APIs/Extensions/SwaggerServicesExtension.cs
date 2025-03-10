@@ -1,4 +1,6 @@
-﻿namespace NeuroTumAI.APIs.Extensions
+﻿using NeuroTumAI.APIs.Swagger;
+
+namespace NeuroTumAI.APIs.Extensions
 {
 	public static class SwaggerServicesExtension
 	{
@@ -6,7 +8,11 @@
 		{
 
 			services.AddEndpointsApiExplorer();
-			services.AddSwaggerGen();
+			services.AddSwaggerGen(options =>
+			{
+				// Add Accept-Language header globally
+				options.OperationFilter<LanguageHeaderOperationFilter>();
+			});
 
 			return services;
 
