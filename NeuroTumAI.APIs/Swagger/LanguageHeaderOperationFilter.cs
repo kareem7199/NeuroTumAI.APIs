@@ -1,5 +1,7 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Microsoft.OpenApi.Any;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Collections.Generic;
 
 namespace NeuroTumAI.APIs.Swagger
 {
@@ -11,8 +13,17 @@ namespace NeuroTumAI.APIs.Swagger
 			{
 				Name = "Accept-Language",
 				In = ParameterLocation.Header,
-				Required = false,
-				Schema = new OpenApiSchema { Type = "string", Default = new Microsoft.OpenApi.Any.OpenApiString("en") }
+				Required = true,
+				Schema = new OpenApiSchema
+				{
+					Type = "string",
+					Default = new OpenApiString("en"),
+					Enum = new List<IOpenApiAny>
+					{
+						new OpenApiString("en"),
+						new OpenApiString("ar")
+					}
+				}
 			});
 		}
 	}
