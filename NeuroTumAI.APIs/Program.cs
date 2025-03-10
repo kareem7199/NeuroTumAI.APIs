@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using NeuroTumAI.APIs.Extensions;
 using NeuroTumAI.APIs.Middlewares;
 using NeuroTumAI.Repository.Data;
@@ -50,6 +51,10 @@ namespace NeuroTumAI.APIs
 			var services = scope.ServiceProvider;
 
 			#region Configure Kestrel Middlwares
+
+			// Get localization options from DI
+			var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
+			app.UseRequestLocalization(localizationOptions);
 
 			app.UseMiddleware<ExceptionMiddleware>();
 
