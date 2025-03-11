@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Globalization;
 using Microsoft.Extensions.Localization;
 using NeuroTumAI.Core.Services.Contract;
 
@@ -15,7 +16,7 @@ namespace NeuroTumAI.Service.LocalizationService
 			_localizerFactory = localizerFactory;
 			_localizerCache = new ConcurrentDictionary<Type, IStringLocalizer>();
 		}
-
+		
 		private IStringLocalizer GetLocalizer<T>()
 		{
 			var resourceType = typeof(T);
@@ -23,6 +24,11 @@ namespace NeuroTumAI.Service.LocalizationService
 			string assemblyName = resourceType.Assembly.GetName().Name;
 
 			return _localizerCache.GetOrAdd(resourceType, _ => _localizerFactory.Create(resourceName, assemblyName));
+		}
+
+		public string GetCurrentLanguage()
+		{
+			return CultureInfo.CurrentUICulture.Name;
 		}
 
 		public string GetMessage<T>(string key)
