@@ -8,6 +8,7 @@ namespace NeuroTumAI.Core.Services.Contract
 {
 	public interface ILocalizationService
 	{
+		string GetCurrentLanguage();
 		string GetMessage<T>(string key);
 		string GetMessage<T>(string key, params object[] args);
 	}
