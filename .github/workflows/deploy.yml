@@ -13,9 +13,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: Find appsettings.json
+        run: find . -name "appsettings.json"
+
       - name: Update appsettings.json
         run: |
-          sed -i 's/"DefaultConnection": "[^"]*"/"DefaultConnection": "${{ secrets.DB_CONNECTION_STRING }}"/' appsettings.json
+          sed -i 's|"DefaultConnection": "[^"]*"|"DefaultConnection": "${{ secrets.DB_CONNECTION_STRING }}"|' NeuroTumAI.APIs/appsettings.json
 
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v3
