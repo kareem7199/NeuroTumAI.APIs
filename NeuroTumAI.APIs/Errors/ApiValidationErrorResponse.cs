@@ -5,7 +5,7 @@ namespace NeuroTumAI.APIs.Errors
 	public class ApiValidationErrorResponse : ApiResponse
 	{
 		public required IEnumerable<string> Errors { get; set; }
-		public ApiValidationErrorResponse(string? Message = null) : base(400, Message)
+		public ApiValidationErrorResponse(string? Message = null) : base(422, Message)
 		{
 
 		}
