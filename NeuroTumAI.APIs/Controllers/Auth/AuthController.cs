@@ -13,18 +13,21 @@ namespace NeuroTumAI.APIs.Controllers.Auth
 		private readonly IMapper _mapper;
 		private readonly IAccountService _accountService;
 
-		public AuthController(IMapper mapper , IAccountService accountService)
-        {
+		public AuthController(IMapper mapper, IAccountService accountService)
+		{
 			_mapper = mapper;
 			_accountService = accountService;
 		}
 
-        [HttpPost("register/patient")]
+		[HttpPost("register/patient")]
 		public async Task<ActionResult<ApplicationUser>> RegisterPatient(PatientRegisterDto model)
 		{
 			var newPatient = await _accountService.RegisterPatientAsync(model);
 
-			return Ok(newPatient);
+			return Ok(new
+			{
+				Email = newPatient.ApplicationUser.Email!
+			});
 		}
 
 		[HttpPost("verifyEmail")]
