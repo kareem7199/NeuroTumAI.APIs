@@ -20,14 +20,11 @@ namespace NeuroTumAI.APIs.Controllers.Auth
 		}
 
 		[HttpPost("register/patient")]
-		public async Task<ActionResult<ApplicationUser>> RegisterPatient(PatientRegisterDto model)
+		public async Task<ActionResult<RegisterResponseDto>> RegisterPatient(PatientRegisterDto model)
 		{
 			var newPatient = await _accountService.RegisterPatientAsync(model);
 
-			return Ok(new
-			{
-				Email = newPatient.ApplicationUser.Email!
-			});
+			return Ok(new RegisterResponseDto() { Email = newPatient.ApplicationUser.Email!});
 		}
 
 		[HttpPost("verifyEmail")]
