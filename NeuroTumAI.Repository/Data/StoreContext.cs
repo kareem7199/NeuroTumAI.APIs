@@ -1,10 +1,12 @@
 ﻿using System.Reflection;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using NeuroTumAI.Core.Entities;
+using NeuroTumAI.Core.Identity;
 
 namespace NeuroTumAI.Repository.Data
 {
-	public class StoreContext : IdentityDbContext
+	public class StoreContext : IdentityDbContext<ApplicationUser>
 	{
 		public StoreContext(DbContextOptions<StoreContext> options)
 		: base(options)
@@ -14,7 +16,11 @@ namespace NeuroTumAI.Repository.Data
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+			base.OnModelCreating(modelBuilder);
 		}
+
+		//public DbSet<Doctor> Doctors { get; set; }
+		public DbSet<Patient> Patients { get; set; }
 
 	}
 }

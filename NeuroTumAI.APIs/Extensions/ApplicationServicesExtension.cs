@@ -1,14 +1,22 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using NeuroTumAI.APIs.Errors;
 using NeuroTumAI.APIs.Middlewares;
 using NeuroTumAI.Core;
+using NeuroTumAI.Core.Identity;
 using NeuroTumAI.Core.Services.Contract;
 using NeuroTumAI.Repository;
-using NeuroTumAI.Service.LocalizationService;
+using NeuroTumAI.Repository.Data;
+using NeuroTumAI.Service.Mappings;
+using NeuroTumAI.Service.Providers.Identity;
+using NeuroTumAI.Service.Services.AccountService;
+using NeuroTumAI.Service.Services.EmailService;
+using NeuroTumAI.Service.Services.LocalizationService;
 using System.Globalization;
 using System.Text;
 
@@ -19,9 +27,12 @@ namespace NeuroTumAI.APIs.Extensions
 		public static IServiceCollection AddApplicationServices(this IServiceCollection services)
 		{
 
+			services.AddAutoMapper(typeof(MappingProfile));
+
 			services.AddScoped<IUnitOfWork, UnitOfWork>();
 			services.AddScoped<ILocalizationService, LocalizationService>();
-
+			services.AddScoped<IAccountService, AccountService>();
+			services.AddTransient<IEmailService, EmailService>();
 			services.AddScoped<ExceptionMiddleware>();
 
 			services.AddLocalization();
@@ -51,44 +62,48 @@ namespace NeuroTumAI.APIs.Extensions
 												   .SelectMany(P => P.Value.Errors)
 												   .Select(E => E.ErrorMessage)
 												   .ToList();
+
 					var response = new ApiValidationErrorResponse() { Errors = errors };
 
-					return new BadRequestObjectResult(response);
+					return new UnprocessableEntityObjectResult(response);
 				};
 			});
 
 			return services;
 		}
 
-		//public static IServiceCollection AddAuthServices(this IServiceCollection services, IConfiguration configuration)
-		//{
+		public static IServiceCollection AddAuthServices(this IServiceCollection services, IConfiguration configuration)
+		{
 
-		//	services.AddIdentity<ApplicationUser, IdentityRole>()
-		//			.AddEntityFrameworkStores<ApplicationIdentityDbContext>();
+			services.AddIdentity<ApplicationUser, IdentityRole>()
+					.AddEntityFrameworkStores<StoreContext>()
+					.AddDefaultTokenProviders()
+					.AddTokenProvider<CustomEmailTokenProvider<ApplicationUser>>("EmailConfirmation");
 
-		//	services.AddAuthentication(options =>
-		//	{
-		//		options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-		//		options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-		//	}).AddJwtBearer(options =>
-		//	{
-		//		options.TokenValidationParameters = new TokenValidationParameters()
-		//		{
-		//			ValidateIssuer = true,
-		//			ValidIssuer = configuration["JWT:ValidIssuer"],
-		//			ValidateAudience = true,
-		//			ValidAudience = configuration["JWT:ValidAudience"],
-		//			ValidateIssuerSigningKey = true,
-		//			IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:AuthKey"] ?? string.Empty)),
-		//			ValidateLifetime = true,
-		//			ClockSkew = TimeSpan.Zero
-		//		};
-		//	});
 
-		//	services.AddScoped(typeof(IAuthService), typeof(AuthService));
+			//services.AddAuthentication(options =>
+			//{
+			//	options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+			//	options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+			//}).AddJwtBearer(options =>
+			//{
+			//	options.TokenValidationParameters = new TokenValidationParameters()
+			//	{
+			//		ValidateIssuer = true,
+			//		ValidIssuer = configuration["JWT:ValidIssuer"],
+			//		ValidateAudience = true,
+			//		ValidAudience = configuration["JWT:ValidAudience"],
+			//		ValidateIssuerSigningKey = true,
+			//		IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:AuthKey"] ?? string.Empty)),
+			//		ValidateLifetime = true,
+			//		ClockSkew = TimeSpan.Zero
+			//	};
+			//});
 
-		//	return services;
+			//services.AddScoped(typeof(IAuthService), typeof(AuthService));
 
-		//}
+			return services;
+
+		}
 	}
 }

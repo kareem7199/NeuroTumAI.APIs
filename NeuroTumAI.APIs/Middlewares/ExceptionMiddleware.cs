@@ -53,7 +53,7 @@ namespace NeuroTumAI.APIs.Middlewares
 					break;
 
 				case ValidationException validationException:
-					httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+					httpContext.Response.StatusCode = (int)HttpStatusCode.UnprocessableEntity;
 					httpContext.Response.ContentType = "application/json";
 					response = new ApiValidationErrorResponse(ex.Message) { Errors = validationException.Errors };
 					await httpContext.Response.WriteAsync(response.ToString());

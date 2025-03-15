@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NeuroTumAI.APIs.Controllers.Base;
-using NeuroTumAI.APIs.Resources.Shared;
 using NeuroTumAI.Core.Exceptions;
 using NeuroTumAI.Core.Services.Contract;
+using NeuroTumAI.Core.Resources.Shared;
 
 namespace NeuroTumAI.APIs.Buggy
 {

@@ -1,0 +1,142 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Security.Principal;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using NeuroTumAI.Core;
+using NeuroTumAI.Core.Dtos.Account;
+using NeuroTumAI.Core.Exceptions;
+using NeuroTumAI.Core.Identity;
+using NeuroTumAI.Core.Resources.Responses;
+using NeuroTumAI.Core.Resources.Shared;
+using NeuroTumAI.Core.Resources.Validation;
+using NeuroTumAI.Core.Services.Contract;
+using NeuroTumAI.Service.Dtos.Account;
+
+namespace NeuroTumAI.Service.Services.AccountService
+{
+	public class AccountService : IAccountService
+	{
+		private readonly IUnitOfWork _unitOfWork;
+		private readonly IEmailService _emailService;
+		private readonly UserManager<ApplicationUser> _userManager;
+		private readonly ILocalizationService _localizationService;
+
+		public AccountService(UserManager<ApplicationUser> userManager, ILocalizationService localizationService, IUnitOfWork unitOfWork, IEmailService emailService)
+		{
+			_userManager = userManager;
+			_localizationService = localizationService;
+			_unitOfWork = unitOfWork;
+			_emailService = emailService;
+		}
+		public async Task<Patient> RegisterPatientAsync(PatientRegisterDto model)
+		{
+			var user = await _userManager.FindByEmailAsync(model.Email);
+			if (user is not null)
+				throw new BadRequestException(_localizationService.GetMessage<ValidationResources>("UniqueEmail"));
+
+			user = await _userManager.FindByNameAsync(model.Username);
+			if (user is not null)
+				throw new BadRequestException(_localizationService.GetMessage<ValidationResources>("UsernameTaken"));
+
+			var newAccount = new ApplicationUser()
+			{
+				FullName = model.FullName,
+				Email = model.Email,
+				UserName = model.Username,
+				Gender = (model.Gender == "Male" ? Gender.Male : Gender.Female),
+				DateOfBirth = model.DateOfBirth
+			};
+
+			var result = await _userManager.CreateAsync(newAccount, model.Password);
+
+			if (!result.Succeeded)
+				throw new ValidationException(_localizationService.GetMessage<SharedResources>("ValidationError"))
+				{
+					Errors = result.Errors.Select((E) => E.Description)
+				};
+
+			await _userManager.AddToRoleAsync(newAccount, "Patient");
+
+			var newPatient = new Patient()
+			{
+				ApplicationUserId = newAccount.Id,
+				Latitude = model.Latitude,
+				Longitude = model.Longitude
+			};
+			var patientRepo = _unitOfWork.Repository<Patient>();
+
+			patientRepo.Add(newPatient);
+
+			await _unitOfWork.CompleteAsync();
+
+			var token = await _userManager.GenerateUserTokenAsync(newAccount, "EmailConfirmation", "EmailConfirmation");
+			await SendVerifyEmailMailAsync(model.Email, token);
+
+			return newPatient;
+
+		}
+
+		public async Task<bool> VerifyEmailAsync(VerifyEmailDto model)
+		{
+			var user = await _userManager.FindByEmailAsync(model.Email);
+			if (user is null)
+				throw new BadRequestException(_localizationService.GetMessage<ResponsesResources>("UserNotFound"));
+
+			var isValid = await _userManager.VerifyUserTokenAsync(user, "EmailConfirmation", "EmailConfirmation", model.Token);
+			if (!isValid)
+				throw new BadRequestException(_localizationService.GetMessage<ResponsesResources>("InvalidOrExpiredToken"));
+
+			user.EmailConfirmed = true;
+			await _userManager.UpdateAsync(user);
+
+			return true;
+
+		}
+
+		private async Task SendVerifyEmailMailAsync(string email, string token)
+		{
+			string subject = "Email Verification Code";
+
+			string body = $@"
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset='UTF-8'>
+        <title>Email Verification</title>
+    </head>
+    <body style='font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;'>
+        <div style='max-width: 600px; margin: 20px auto; background-color: #ffffff; padding: 20px; border-radius: 8px;
+                    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); text-align: center;'>
+            
+            <h2 style='font-size: 24px; font-weight: bold; color: #333;'>Verify Your Email</h2>
+            
+            <p style='font-size: 16px; color: #555; margin-bottom: 20px;'>
+                Use the following OTP to verify your email address. This OTP is valid for 10 minutes.
+            </p>
+
+            <div style='font-size: 32px; font-weight: bold; color: #007bff; margin: 20px 0;'>
+                {token}
+            </div>
+
+            <p style='font-size: 16px; color: #555;'>
+                If you didn't request this, please ignore this email.
+            </p>
+
+            <p style='font-size: 14px; color: #999; margin-top: 20px;'>
+                Thank you
+            </p>
+
+        </div>
+    </body>
+    </html>
+			";
+
+			await _emailService.SendAsync(email, subject, body);
+		}
+	}
+}
