@@ -15,6 +15,7 @@ using NeuroTumAI.Repository.Data;
 using NeuroTumAI.Service.Mappings;
 using NeuroTumAI.Service.Providers.Identity;
 using NeuroTumAI.Service.Services.AccountService;
+using NeuroTumAI.Service.Services.AuthService;
 using NeuroTumAI.Service.Services.EmailService;
 using NeuroTumAI.Service.Services.LocalizationService;
 using System.Globalization;
@@ -32,6 +33,7 @@ namespace NeuroTumAI.APIs.Extensions
 			services.AddScoped<IUnitOfWork, UnitOfWork>();
 			services.AddScoped<ILocalizationService, LocalizationService>();
 			services.AddScoped<IAccountService, AccountService>();
+			services.AddScoped<IAuthService, AuthService>();
 			services.AddTransient<IEmailService, EmailService>();
 			services.AddScoped<ExceptionMiddleware>();
 
