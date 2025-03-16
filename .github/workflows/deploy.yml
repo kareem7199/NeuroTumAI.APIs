@@ -18,7 +18,7 @@ jobs:
 
       - name: Debug appsettings.json Before Update
         run: cat NeuroTumAI.APIs/appsettings.json
-      
+
       - name: Update appsettings.json
         run: |
           sed -i "s|\"DefaultConnection\": \"[^\"]*\"|\"DefaultConnection\": \"${{ secrets.DB_CONNECTION_STRING }}\"|" NeuroTumAI.APIs/appsettings.json
@@ -32,11 +32,16 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Restore Dependencies
-        run: dotnet restore
+      - name: Force Restore Dependencies
+        run: |
+          dotnet nuget locals all --clear
+          dotnet restore --force
 
       - name: Build and Publish
-        run: dotnet publish -c Release -o ./publish
+        run: dotnet publish ./NeuroTumAI.APIs/NeuroTumAI.APIs.csproj -c Release --self-contained false -r linux-x64 -o ./publish
+
+      - name: Verify Deployment Files
+        run: ls -l ./publish | grep Microsoft.IdentityModel.Tokens || echo "⚠️ Microsoft.IdentityModel.Tokens.dll NOT FOUND"
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
