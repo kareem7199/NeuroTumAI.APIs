@@ -16,10 +16,16 @@ jobs:
       - name: Find appsettings.json
         run: find . -name "appsettings.json"
 
+      - name: Debug appsettings.json Before Update
+        run: cat NeuroTumAI.APIs/appsettings.json
+      
       - name: Update appsettings.json
         run: |
           sed -i "s|\"DefaultConnection\": \"[^\"]*\"|\"DefaultConnection\": \"${{ secrets.DB_CONNECTION_STRING }}\"|" NeuroTumAI.APIs/appsettings.json
           sed -i "s|\"ValidIssuer\": \"[^\"]*\"|\"ValidIssuer\": \"${{ secrets.JWT_VALID_ISSUER }}\"|" NeuroTumAI.APIs/appsettings.json
+
+      - name: Debug appsettings.json After Update
+        run: cat NeuroTumAI.APIs/appsettings.json
 
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v3
