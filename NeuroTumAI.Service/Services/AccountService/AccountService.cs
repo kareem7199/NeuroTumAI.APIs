@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using NeuroTumAI.Core;
@@ -15,6 +16,7 @@ using NeuroTumAI.Core.Resources.Responses;
 using NeuroTumAI.Core.Resources.Shared;
 using NeuroTumAI.Core.Resources.Validation;
 using NeuroTumAI.Core.Services.Contract;
+using NeuroTumAI.Core.Specifications.PatientSpecs;
 using NeuroTumAI.Service.Dtos.Account;
 
 namespace NeuroTumAI.Service.Services.AccountService
@@ -23,15 +25,28 @@ namespace NeuroTumAI.Service.Services.AccountService
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IEmailService _emailService;
+		private readonly IAuthService _authService;
+		private readonly IMapper _mapper;
 		private readonly UserManager<ApplicationUser> _userManager;
+		private readonly SignInManager<ApplicationUser> _signInManager;
 		private readonly ILocalizationService _localizationService;
 
-		public AccountService(UserManager<ApplicationUser> userManager, ILocalizationService localizationService, IUnitOfWork unitOfWork, IEmailService emailService)
+		public AccountService(
+			UserManager<ApplicationUser> userManager,
+			SignInManager<ApplicationUser> signInManager,
+			ILocalizationService localizationService,
+			IUnitOfWork unitOfWork,
+			IEmailService emailService,
+			IAuthService authService,
+			IMapper mapper)
 		{
 			_userManager = userManager;
+			_signInManager = signInManager;
 			_localizationService = localizationService;
 			_unitOfWork = unitOfWork;
 			_emailService = emailService;
+			_authService = authService;
+			_mapper = mapper;
 		}
 		public async Task<Patient> RegisterPatientAsync(PatientRegisterDto model)
 		{
@@ -96,6 +111,38 @@ namespace NeuroTumAI.Service.Services.AccountService
 
 			return true;
 
+		}
+
+		public async Task<PatientLoginResponseDto> LoginPatientAsync(LoginDto model)
+		{
+			var user = await _userManager.FindByEmailAsync(model.Email);
+			if (user == null)
+				throw new UnAuthorizedException(_localizationService.GetMessage<ResponsesResources>("InvalidCredentials"));
+
+			var isPatient = await _userManager.IsInRoleAsync(user, "Patient");
+			if (!isPatient)
+				throw new UnAuthorizedException(_localizationService.GetMessage<ResponsesResources>("InvalidCredentials"));
+
+			if (!user.EmailConfirmed)
+				throw new BadRequestException(_localizationService.GetMessage<ResponsesResources>("InvalidCredentials"));
+
+
+			var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
+			if (!result.Succeeded)
+				throw new UnAuthorizedException(_localizationService.GetMessage<ResponsesResources>("InvalidCredentials"));
+
+			var token = await _authService.CreateTokenAsync(user);
+
+			var patientRepo = _unitOfWork.Repository<Patient>();
+			var patientSpec = new PatientSpecifications(user.Id);
+
+			var patient = await patientRepo.GetWithSpecAsync(patientSpec);
+
+			return new PatientLoginResponseDto()
+			{
+				Token = token,
+				User = _mapper.Map<PatientToReturnDto>(patient)
+			};
 		}
 
 		private async Task SendVerifyEmailMailAsync(string email, string token)

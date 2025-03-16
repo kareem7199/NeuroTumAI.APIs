@@ -34,5 +34,13 @@ namespace NeuroTumAI.APIs.Controllers.Auth
 
 			return Ok();
 		}
+
+		[HttpPost("login/patient")]
+		public async Task<ActionResult<RegisterResponseDto>> LoginPatient(LoginDto model)
+		{
+			var patientDto = await _accountService.LoginPatientAsync(model);
+			return Ok(patientDto);
+		}
+
 	}
 }

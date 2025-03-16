@@ -9,5 +9,6 @@ namespace NeuroTumAI.Core.Services.Contract
 	{
 		Task<Patient> RegisterPatientAsync(PatientRegisterDto model);
 		Task<bool> VerifyEmailAsync(VerifyEmailDto model);
+		Task<PatientLoginResponseDto> LoginPatientAsync(LoginDto model);
 	}
 }
