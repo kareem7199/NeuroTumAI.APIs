@@ -30,7 +30,7 @@ jobs:
         run: dotnet restore
 
       - name: Build and Publish
-        run: dotnet publish -c Release -o ./publish --self-contained false
+        run: dotnet publish -c Release -o ./publish
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
