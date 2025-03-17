@@ -52,12 +52,12 @@ namespace NeuroTumAI.APIs.Controllers.Auth
 		[HttpPost("verifyForgetPassword")]
 		public async Task<ActionResult<RegisterResponseDto>> VerifyForgetPassword(VerifyEmailDto model)
 		{
-			await _accountService.VerifyForgetPasswordAsync(model.Email, model.Token);
-			return Ok();
+			var user = await _accountService.VerifyForgetPasswordAsync(model.Email, model.Token);
+			return Ok(new RegisterResponseDto() { Email = user.Email! });
 		}
 
 		[HttpPost("resetPassword")]
-		public async Task<ActionResult<RegisterResponseDto>> ResetPassword(ResetPasswordDto model)
+		public async Task<ActionResult> ResetPassword(ResetPasswordDto model)
 		{
 			await _accountService.ResetPasswordAsync(model);
 			return Ok();

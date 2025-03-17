@@ -171,7 +171,7 @@ namespace NeuroTumAI.Service.Services.AccountService
 			await _userManager.RemoveAuthenticationTokenAsync(user, "PasswordReset", "OTP");
 			await _userManager.SetAuthenticationTokenAsync(user, "PasswordReset", "OTP", otpCode);
 
-			await SendOtpEmailAsync(model.Email, otpCode);
+			SendOtpEmailAsync(model.Email, otpCode);
 
 			return new RegisterResponseDto()
 			{
