@@ -26,6 +26,7 @@ namespace NeuroTumAI.Service.Services.AccountService
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IEmailService _emailService;
 		private readonly IAuthService _authService;
+		private readonly IBlobStorageService _blobStorageService;
 		private readonly IMapper _mapper;
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly SignInManager<ApplicationUser> _signInManager;
@@ -38,6 +39,7 @@ namespace NeuroTumAI.Service.Services.AccountService
 			IUnitOfWork unitOfWork,
 			IEmailService emailService,
 			IAuthService authService,
+			IBlobStorageService blobStorageService,
 			IMapper mapper)
 		{
 			_userManager = userManager;
@@ -46,6 +48,7 @@ namespace NeuroTumAI.Service.Services.AccountService
 			_unitOfWork = unitOfWork;
 			_emailService = emailService;
 			_authService = authService;
+			_blobStorageService = blobStorageService;
 			_mapper = mapper;
 		}
 		public async Task<Patient> RegisterPatientAsync(PatientRegisterDto model)
@@ -58,8 +61,18 @@ namespace NeuroTumAI.Service.Services.AccountService
 			if (user is not null)
 				throw new BadRequestException(_localizationService.GetMessage<ValidationResources>("UsernameTaken"));
 
+			string? profilePicture = null;
+
+			if (model.ProfilePicture is not null)
+			{
+				using var stream = model.ProfilePicture.OpenReadStream();
+				var fileUrl = await _blobStorageService.UploadFileAsync(stream, model.ProfilePicture.FileName, "profilepictures");
+				profilePicture = fileUrl;
+			}
+
 			var newAccount = new ApplicationUser()
 			{
+				ProfilePicture = profilePicture,
 				FullName = model.FullName,
 				Email = model.Email,
 				UserName = model.Username,

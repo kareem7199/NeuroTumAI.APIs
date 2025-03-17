@@ -5,11 +5,14 @@ using System.Linq;
 using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace NeuroTumAI.Service.Dtos.Account
 {
 	public class PatientRegisterDto
 	{
+		public IFormFile? ProfilePicture { get; set; }
+
 		[Required(ErrorMessage = "fullName_required")]
 		[MaxLength(50, ErrorMessage = "fullName_maxLength")]
 		[RegularExpression(@"^[\p{L}]+ [\p{L}]+$", ErrorMessage = "fullName_twoWords")]

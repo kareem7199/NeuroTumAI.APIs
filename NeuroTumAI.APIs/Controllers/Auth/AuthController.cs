@@ -20,7 +20,7 @@ namespace NeuroTumAI.APIs.Controllers.Auth
 		}
 
 		[HttpPost("register/patient")]
-		public async Task<ActionResult<RegisterResponseDto>> RegisterPatient(PatientRegisterDto model)
+		public async Task<ActionResult<RegisterResponseDto>> RegisterPatient([FromForm] PatientRegisterDto model)
 		{
 			var newPatient = await _accountService.RegisterPatientAsync(model);
 
