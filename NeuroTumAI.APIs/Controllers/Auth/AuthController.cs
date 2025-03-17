@@ -24,7 +24,7 @@ namespace NeuroTumAI.APIs.Controllers.Auth
 		{
 			var newPatient = await _accountService.RegisterPatientAsync(model);
 
-			return Ok(new RegisterResponseDto() { Email = newPatient.ApplicationUser.Email!});
+			return Ok(new RegisterResponseDto() { Email = newPatient.ApplicationUser.Email! });
 		}
 
 		[HttpPost("verifyEmail")]
@@ -40,6 +40,27 @@ namespace NeuroTumAI.APIs.Controllers.Auth
 		{
 			var patientDto = await _accountService.LoginPatientAsync(model);
 			return Ok(patientDto);
+		}
+
+		[HttpPost("forgetPassword")]
+		public async Task<ActionResult<RegisterResponseDto>> ForgetPassword(ForgetPasswordDto model)
+		{
+			var dto = await _accountService.ForgetPasswordAsync(model);
+			return Ok(dto);
+		}
+
+		[HttpPost("verifyForgetPassword")]
+		public async Task<ActionResult<RegisterResponseDto>> VerifyForgetPassword(VerifyEmailDto model)
+		{
+			await _accountService.VerifyForgetPasswordAsync(model.Email, model.Token);
+			return Ok();
+		}
+
+		[HttpPost("resetPassword")]
+		public async Task<ActionResult<RegisterResponseDto>> ResetPassword(ResetPasswordDto model)
+		{
+			await _accountService.ResetPasswordAsync(model);
+			return Ok();
 		}
 
 	}

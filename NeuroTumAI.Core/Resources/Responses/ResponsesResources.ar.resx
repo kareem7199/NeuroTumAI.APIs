@@ -120,6 +120,9 @@
   <data name="EmailNotConfirmed" xml:space="preserve">
     <value>لم يتم تأكيد بريدك الإلكتروني. يرجى التحقق منه قبل تسجيل الدخول.</value>
   </data>
+  <data name="FailedToUpdatePassword" xml:space="preserve">
+    <value>فشل تحديث كلمة المرور.</value>
+  </data>
   <data name="InvalidCredentials" xml:space="preserve">
     <value>البريد الإلكتروني أو كلمة المرور غير صحيحة.</value>
   </data>
