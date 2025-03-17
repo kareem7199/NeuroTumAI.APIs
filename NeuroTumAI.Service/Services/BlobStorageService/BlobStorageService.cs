@@ -24,8 +24,10 @@ namespace NeuroTumAI.Service.Services.BlobStorageService
 		{
 			var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
 			await containerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
+			
+			string uniqueFileName = $"{Guid.NewGuid()}_{fileName}";
 
-			var blobClient = containerClient.GetBlobClient(fileName);
+			var blobClient = containerClient.GetBlobClient(uniqueFileName);
 			await blobClient.UploadAsync(fileStream, true);
 
 			return blobClient.Uri.ToString();
