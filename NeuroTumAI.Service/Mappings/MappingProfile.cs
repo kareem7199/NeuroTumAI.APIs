@@ -16,7 +16,8 @@ namespace NeuroTumAI.Service.Mappings
 				.ForMember(D => D.UserName, O => O.MapFrom(S => S.ApplicationUser.UserName))
 				.ForMember(D => D.Email, O => O.MapFrom(S => S.ApplicationUser.Email))
 				.ForMember(D => D.Gender, O => O.MapFrom(S => S.ApplicationUser.Gender))
-				.ForMember(D => D.DateOfBirth, O => O.MapFrom(S => S.ApplicationUser.DateOfBirth));
+				.ForMember(D => D.DateOfBirth, O => O.MapFrom(S => S.ApplicationUser.DateOfBirth))
+				.ForMember(D => D.ProfilePicture, O => O.MapFrom(S => S.ApplicationUser.ProfilePicture));
 		}
 	}
 }
