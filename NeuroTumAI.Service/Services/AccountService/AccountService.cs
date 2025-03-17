@@ -103,7 +103,7 @@ namespace NeuroTumAI.Service.Services.AccountService
 			await _unitOfWork.CompleteAsync();
 
 			var token = await _userManager.GenerateUserTokenAsync(newAccount, "EmailConfirmation", "EmailConfirmation");
-			await SendVerifyEmailMailAsync(model.Email, token);
+			SendVerifyEmailMailAsync(model.Email, token);
 
 			return newPatient;
 
