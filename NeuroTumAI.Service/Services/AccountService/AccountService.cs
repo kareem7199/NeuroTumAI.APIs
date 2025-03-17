@@ -158,6 +158,57 @@ namespace NeuroTumAI.Service.Services.AccountService
 			};
 		}
 
+		public async Task<RegisterResponseDto> ForgetPasswordAsync(ForgetPasswordDto model)
+		{
+			var user = await _userManager.FindByEmailAsync(model.Email);
+			if (user is null)
+				throw new NotFoundException(_localizationService.GetMessage<ResponsesResources>("UserNotFound"));
+			if (!user.EmailConfirmed)
+				throw new NotFoundException(_localizationService.GetMessage<ResponsesResources>("UserNotFound"));
+
+			var otpCode = new Random().Next(100000, 999999).ToString();
+
+			await _userManager.RemoveAuthenticationTokenAsync(user, "PasswordReset", "OTP");
+			await _userManager.SetAuthenticationTokenAsync(user, "PasswordReset", "OTP", otpCode);
+
+			await SendOtpEmailAsync(model.Email, otpCode);
+
+			return new RegisterResponseDto()
+			{
+				Email = model.Email
+			};
+
+		}
+
+		public async Task<ApplicationUser> VerifyForgetPasswordAsync(string email , string otp)
+		{
+			var user = await _userManager.FindByEmailAsync(email);
+			if (user is null)
+				throw new BadRequestException(_localizationService.GetMessage<ResponsesResources>("InvalidOrExpiredToken"));
+
+			var storedOtp = await _userManager.GetAuthenticationTokenAsync(user, "PasswordReset", "OTP");
+
+			if (storedOtp != otp)
+				throw new BadRequestException(_localizationService.GetMessage<ResponsesResources>("InvalidOrExpiredToken"));
+
+			return user;
+		}
+
+		public async Task ResetPasswordAsync(ResetPasswordDto model)
+		{
+			var user = await VerifyForgetPasswordAsync(model.Email, model.Token);
+
+			var resetResult = await _userManager.RemovePasswordAsync(user);
+			if (!resetResult.Succeeded)
+				throw new BadRequestException(_localizationService.GetMessage<ResponsesResources>("FailedToUpdatePassword"));
+
+			resetResult = await _userManager.AddPasswordAsync(user, model.Password);
+			if (!resetResult.Succeeded)
+				throw new BadRequestException(_localizationService.GetMessage<ResponsesResources>("FailedToUpdatePassword"));
+
+			await _userManager.RemoveAuthenticationTokenAsync(user, "PasswordReset", "OTP");
+		}
+
 		private async Task SendVerifyEmailMailAsync(string email, string token)
 		{
 			string subject = "Email Verification Code";
@@ -195,6 +246,16 @@ namespace NeuroTumAI.Service.Services.AccountService
     </body>
     </html>
 			";
+
+			await _emailService.SendAsync(email, subject, body);
+		}
+
+		private async Task SendOtpEmailAsync(string email, string otp)
+		{
+			string subject = "Your OTP Code";
+
+			var body = $"Your OTP code for password reset is: <b>{otp}</b>. It is valid for 5 minutes.";
+
 
 			await _emailService.SendAsync(email, subject, body);
 		}
