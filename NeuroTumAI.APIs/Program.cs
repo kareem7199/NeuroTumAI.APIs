@@ -6,6 +6,7 @@ using NeuroTumAI.APIs.Extensions;
 using NeuroTumAI.APIs.Middlewares;
 using NeuroTumAI.Core.Resources.Validation;
 using NeuroTumAI.Repository.Data;
+using NeuroTumAI.Service.Hubs;
 using Newtonsoft.Json;
 
 namespace NeuroTumAI.APIs
@@ -62,8 +63,7 @@ namespace NeuroTumAI.APIs
 
 			var loggerFactory = services.GetRequiredService<ILoggerFactory>();
 
-			try
-			{
+			try			{
 				await _dbContext.Database.MigrateAsync();
 
 				var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
@@ -103,6 +103,7 @@ namespace NeuroTumAI.APIs
 
 			#endregion
 
+			app.MapHub<PostHub>("/posthub");
 			app.Run();
 		}
 	}
