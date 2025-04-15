@@ -129,6 +129,9 @@
   <data name="InvalidOrExpiredToken" xml:space="preserve">
     <value>رمز غير صالح أو منتهي الصلاحية.</value>
   </data>
+  <data name="PostNotFound" xml:space="preserve">
+    <value>لم يتم العثور على المنشور.</value>
+  </data>
   <data name="UserNotFound" xml:space="preserve">
     <value>المستخدم غير موجود.</value>
   </data>
