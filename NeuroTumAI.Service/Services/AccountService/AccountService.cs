@@ -18,6 +18,7 @@ using NeuroTumAI.Core.Resources.Responses;
 using NeuroTumAI.Core.Resources.Shared;
 using NeuroTumAI.Core.Resources.Validation;
 using NeuroTumAI.Core.Services.Contract;
+using NeuroTumAI.Core.Specifications.DoctorSpecs;
 using NeuroTumAI.Core.Specifications.PatientSpecs;
 using NeuroTumAI.Service.Dtos.Account;
 
@@ -204,14 +205,10 @@ namespace NeuroTumAI.Service.Services.AccountService
 
 		}
 
-		public async Task<PatientLoginResponseDto> LoginPatientAsync(LoginDto model)
+		public async Task<LoginResponseDto> LoginAsync(LoginDto model)
 		{
 			var user = await _userManager.FindByEmailAsync(model.Email);
 			if (user == null)
-				throw new UnAuthorizedException(_localizationService.GetMessage<ResponsesResources>("InvalidCredentials"));
-
-			var isPatient = await _userManager.IsInRoleAsync(user, "Patient");
-			if (!isPatient)
 				throw new UnAuthorizedException(_localizationService.GetMessage<ResponsesResources>("InvalidCredentials"));
 
 			if (!user.EmailConfirmed)
@@ -224,16 +221,37 @@ namespace NeuroTumAI.Service.Services.AccountService
 
 			var token = await _authService.CreateTokenAsync(user);
 
-			var patientRepo = _unitOfWork.Repository<Patient>();
-			var patientSpec = new PatientSpecifications(user.Id);
+			var isPatient = await _userManager.IsInRoleAsync(user, "Patient");
 
-			var patient = await patientRepo.GetWithSpecAsync(patientSpec);
-
-			return new PatientLoginResponseDto()
+			if (isPatient)
 			{
-				Token = token,
-				User = _mapper.Map<PatientToReturnDto>(patient)
-			};
+				var patientRepo = _unitOfWork.Repository<Patient>();
+				var patientSpec = new PatientSpecifications(user.Id);
+
+				var patient = await patientRepo.GetWithSpecAsync(patientSpec);
+
+				return new LoginResponseDto()
+				{
+					Token = token,
+					User = _mapper.Map<PatientDto>(patient)
+				};
+			}
+			else
+			{
+				var doctorRepo = _unitOfWork.Repository<Doctor>();
+				var doctorSpec = new DoctorSpecifications(user.Id);
+
+				var doctor = await doctorRepo.GetWithSpecAsync(doctorSpec);
+
+				if (doctor is null)
+					throw new BadRequestException(_localizationService.GetMessage<ResponsesResources>("AccountNotApproved"));
+
+				return new LoginResponseDto()
+				{
+					Token = token,
+					User = _mapper.Map<UserDto>(doctor)
+				};
+			}
 		}
 
 		public async Task<RegisterResponseDto> ForgetPasswordAsync(ForgetPasswordDto model)
@@ -258,7 +276,7 @@ namespace NeuroTumAI.Service.Services.AccountService
 
 		}
 
-		public async Task<ApplicationUser> VerifyForgetPasswordAsync(string email , string otp)
+		public async Task<ApplicationUser> VerifyForgetPasswordAsync(string email, string otp)
 		{
 			var user = await _userManager.FindByEmailAsync(email);
 			if (user is null)
