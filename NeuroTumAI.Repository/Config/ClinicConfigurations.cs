@@ -5,18 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using NeuroTumAI.Core.Identity;
+using NeuroTumAI.Core.Entities;
 
 namespace NeuroTumAI.Repository.Config
 {
-	internal class PatientConfigurations : IEntityTypeConfiguration<Patient>
+	internal class ClinicConfigurations : IEntityTypeConfiguration<Clinic>
 	{
-		public void Configure(EntityTypeBuilder<Patient> builder)
+		public void Configure(EntityTypeBuilder<Clinic> builder)
 		{
-			builder.Property(D => D.Latitude)
+			builder.Property(C => C.Latitude)
 				   .HasColumnType("decimal(9,6)");
 
-			builder.Property(D => D.Longitude)
+			builder.Property(C => C.Longitude)
 				   .HasColumnType("decimal(9,6)");
 		}
 	}
