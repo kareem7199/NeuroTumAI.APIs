@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AddressRequired" xml:space="preserve">
+    <value>العنوان مطلوب.</value>
+  </data>
   <data name="ContentLength" xml:space="preserve">
     <value>يجب أن يكون المحتوى بين 10 و 5000 حرف.</value>
   </data>
@@ -153,6 +156,15 @@
   <data name="latitude_range" xml:space="preserve">
     <value>يجب أن يكون خط العرض بين -90 و 90.</value>
   </data>
+  <data name="LicenseDocumentBackRequired" xml:space="preserve">
+    <value>يجب رفع صورة خلفية لمستند التصريح.</value>
+  </data>
+  <data name="LicenseDocumentFrontRequired" xml:space="preserve">
+    <value>يجب رفع صورة أمامية لمستند التصريح.</value>
+  </data>
+  <data name="LicenseDocumentRequired" xml:space="preserve">
+    <value>يجب رفع صورة لمستند التصريح.</value>
+  </data>
   <data name="longitude_range" xml:space="preserve">
     <value>يجب أن يكون خط الطول بين -180 و 180.</value>
   </data>
@@ -164,6 +176,12 @@
   </data>
   <data name="password_required" xml:space="preserve">
     <value>كلمة المرور مطلوبة.</value>
+  </data>
+  <data name="PhoneNumberRequired" xml:space="preserve">
+    <value>رقم الهاتف مطلوب.</value>
+  </data>
+  <data name="ProfilePictureRequired" xml:space="preserve">
+    <value>الصورة الشخصية مطلوبة.</value>
   </data>
   <data name="TitleLength" xml:space="preserve">
     <value>يجب أن يكون العنوان بين 3 و 100 حرف.</value>

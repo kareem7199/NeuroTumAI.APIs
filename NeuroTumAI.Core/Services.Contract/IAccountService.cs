@@ -8,6 +8,7 @@ namespace NeuroTumAI.Core.Services.Contract
 	public interface IAccountService
 	{
 		Task<Patient> RegisterPatientAsync(PatientRegisterDto model);
+		Task<Doctor> RegisterDoctorAsync(RegisterDoctorWithClinicDto model);
 		Task<bool> VerifyEmailAsync(VerifyEmailDto model);
 		Task<PatientLoginResponseDto> LoginPatientAsync(LoginDto model);
 		Task<RegisterResponseDto> ForgetPasswordAsync(ForgetPasswordDto model);

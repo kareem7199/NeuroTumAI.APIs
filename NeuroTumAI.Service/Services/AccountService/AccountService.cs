@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Security.Principal;
 using System.Text;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using NeuroTumAI.Core;
 using NeuroTumAI.Core.Dtos.Account;
+using NeuroTumAI.Core.Entities;
 using NeuroTumAI.Core.Exceptions;
 using NeuroTumAI.Core.Identity;
 using NeuroTumAI.Core.Resources.Responses;
@@ -107,6 +109,82 @@ namespace NeuroTumAI.Service.Services.AccountService
 
 			return newPatient;
 
+		}
+
+		public async Task<Doctor> RegisterDoctorAsync(RegisterDoctorWithClinicDto model)
+		{
+			var doctorModel = model.Doctor;
+			var clinicModel = model.Clinic;
+
+			var user = await _userManager.FindByEmailAsync(doctorModel.Email);
+			if (user is not null)
+				throw new BadRequestException(_localizationService.GetMessage<ValidationResources>("UniqueEmail"));
+
+			user = await _userManager.FindByNameAsync(doctorModel.Username);
+			if (user is not null)
+				throw new BadRequestException(_localizationService.GetMessage<ValidationResources>("UsernameTaken"));
+
+			using var profilePictureStream = doctorModel.ProfilePicture.OpenReadStream();
+			var profilePicture = await _blobStorageService.UploadFileAsync(profilePictureStream, doctorModel.ProfilePicture.FileName, "profilepictures");
+
+			using var licenseDocumentFrontStream = doctorModel.LicenseDocumentFront.OpenReadStream();
+			var licenseDocumentFront = await _blobStorageService.UploadFileAsync(licenseDocumentFrontStream, doctorModel.LicenseDocumentFront.FileName, "doctor-licenses");
+
+
+			using var licenseDocumentBackStream = doctorModel.LicenseDocumentBack.OpenReadStream();
+			var licenseDocumentBack = await _blobStorageService.UploadFileAsync(licenseDocumentBackStream, doctorModel.LicenseDocumentBack.FileName, "doctor-licenses");
+
+			using var clinicLicenseDocumentStream = clinicModel.LicenseDocument.OpenReadStream();
+			var clinicLicenseDocument = await _blobStorageService.UploadFileAsync(clinicLicenseDocumentStream, clinicModel.LicenseDocument.FileName, "clinic-licenses");
+
+			var newAccount = new ApplicationUser()
+			{
+				ProfilePicture = profilePicture,
+				FullName = doctorModel.FullName,
+				Email = doctorModel.Email,
+				UserName = doctorModel.Username,
+				Gender = (doctorModel.Gender == "Male" ? Gender.Male : Gender.Female),
+				DateOfBirth = doctorModel.DateOfBirth
+			};
+
+			var result = await _userManager.CreateAsync(newAccount, doctorModel.Password);
+
+			if (!result.Succeeded)
+				throw new ValidationException(_localizationService.GetMessage<SharedResources>("ValidationError"))
+				{
+					Errors = result.Errors.Select((E) => E.Description)
+				};
+
+			await _userManager.AddToRoleAsync(newAccount, "Doctor");
+
+			var newDoctor = new Doctor()
+			{
+				ApplicationUserId = newAccount.Id,
+				LicenseDocumentBack = licenseDocumentBack,
+				LicenseDocumentFront = licenseDocumentFront,
+			};
+
+			var newClinic = new Clinic()
+			{
+				Address = clinicModel.Address,
+				Latitude = clinicModel.Latitude,
+				Longitude = clinicModel.Longitude,
+				PhoneNumber = clinicModel.PhoneNumber,
+				LicenseDocument = clinicLicenseDocument
+			};
+
+			newDoctor.Clinics.Add(newClinic);
+
+			var doctorRepo = _unitOfWork.Repository<Doctor>();
+
+			doctorRepo.Add(newDoctor);
+
+			await _unitOfWork.CompleteAsync();
+
+			var token = await _userManager.GenerateUserTokenAsync(newAccount, "EmailConfirmation", "EmailConfirmation");
+			SendVerifyEmailMailAsync(doctorModel.Email, token);
+
+			return newDoctor;
 		}
 
 		public async Task<bool> VerifyEmailAsync(VerifyEmailDto model)
