@@ -44,10 +44,10 @@ namespace NeuroTumAI.APIs.Controllers.Auth
 		}
 
 		[HttpPost("login")]
-		public async Task<ActionResult<PatientLoginResponseDto>> LoginPatient(LoginDto model)
+		public async Task<ActionResult<LoginResponseDto>> Login(LoginDto model)
 		{
-			var patientDto = await _accountService.LoginPatientAsync(model);
-			return Ok(patientDto);
+			var userDto = await _accountService.LoginAsync(model);
+			return Ok(userDto);
 		}
 
 		[HttpPost("forgetPassword")]
