@@ -17,7 +17,8 @@ namespace NeuroTumAI.Service.Mappings
 				.ForMember(D => D.Email, O => O.MapFrom(S => S.ApplicationUser.Email))
 				.ForMember(D => D.Gender, O => O.MapFrom(S => S.ApplicationUser.Gender))
 				.ForMember(D => D.DateOfBirth, O => O.MapFrom(S => S.ApplicationUser.DateOfBirth))
-				.ForMember(D => D.ProfilePicture, O => O.MapFrom(S => S.ApplicationUser.ProfilePicture));
+				.ForMember(D => D.ProfilePicture, O => O.MapFrom(S => S.ApplicationUser.ProfilePicture))
+				.ForMember(D => D.Role, O => O.MapFrom(S => "Patient"));
 
 			CreateMap<Doctor, UserDto>()
 				.ForMember(D => D.Id, O => O.MapFrom(S => S.ApplicationUser.Id))
@@ -26,7 +27,8 @@ namespace NeuroTumAI.Service.Mappings
 				.ForMember(D => D.Email, O => O.MapFrom(S => S.ApplicationUser.Email))
 				.ForMember(D => D.Gender, O => O.MapFrom(S => S.ApplicationUser.Gender))
 				.ForMember(D => D.DateOfBirth, O => O.MapFrom(S => S.ApplicationUser.DateOfBirth))
-				.ForMember(D => D.ProfilePicture, O => O.MapFrom(S => S.ApplicationUser.ProfilePicture));
+				.ForMember(D => D.ProfilePicture, O => O.MapFrom(S => S.ApplicationUser.ProfilePicture))
+				.ForMember(D => D.Role, O => O.MapFrom(S => "Doctor"));
 		}
 	}
 }
