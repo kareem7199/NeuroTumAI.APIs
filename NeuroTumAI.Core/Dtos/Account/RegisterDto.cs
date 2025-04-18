@@ -36,11 +36,5 @@ namespace NeuroTumAI.Core.Dtos.Account
 		[RegularExpression("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-]).{6,}$",
 			ErrorMessage = "password_complexity")]
 		public string Password { get; set; } = string.Empty;
-
-		[Range(-90, 90, ErrorMessage = "latitude_range")]
-		public decimal Latitude { get; set; }
-
-		[Range(-180, 180, ErrorMessage = "longitude_range")]
-		public decimal Longitude { get; set; }
 	}
 }
