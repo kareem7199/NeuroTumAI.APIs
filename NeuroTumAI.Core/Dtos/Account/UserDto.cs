@@ -15,7 +15,8 @@ namespace NeuroTumAI.Core.Dtos.Account
         public string Email { get; set; }
 		public DateTime DateOfBirth { get; set; }
 		public string Gender { get; set; }
-		public int Age => CalculateAge(DateOfBirth);
+		public string Role { get; set; }
+        public int Age => CalculateAge(DateOfBirth);
 		private int CalculateAge(DateTime dateOfBirth)
 		{
 			var today = DateTime.Today;
