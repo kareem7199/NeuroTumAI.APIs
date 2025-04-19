@@ -21,6 +21,7 @@ using NeuroTumAI.Core.Services.Contract;
 using NeuroTumAI.Core.Specifications.DoctorSpecs;
 using NeuroTumAI.Core.Specifications.PatientSpecs;
 using NeuroTumAI.Service.Dtos.Account;
+using Newtonsoft.Json.Linq;
 
 namespace NeuroTumAI.Service.Services.AccountService
 {
@@ -354,6 +355,35 @@ namespace NeuroTumAI.Service.Services.AccountService
 
 
 			await _emailService.SendAsync(email, subject, body);
+		}
+
+		public async Task<UserDto> GetUserAsync(string userId)
+		{
+			var user = await _userManager.FindByIdAsync(userId);
+			if (user is null)
+				throw new UnAuthorizedException("iosdaxhiojfiodsjj");
+				
+
+			var isPatient = await _userManager.IsInRoleAsync(user, "Patient");
+
+			if (isPatient)
+			{
+				var patientRepo = _unitOfWork.Repository<Patient>();
+				var patientSpec = new PatientSpecifications(user.Id);
+
+				var patient = await patientRepo.GetWithSpecAsync(patientSpec);
+
+				return _mapper.Map<PatientDto>(patient);
+			}
+			else
+			{
+				var doctorRepo = _unitOfWork.Repository<Doctor>();
+				var doctorSpec = new DoctorSpecifications(user.Id);
+
+				var doctor = await doctorRepo.GetWithSpecAsync(doctorSpec);
+
+				return _mapper.Map<UserDto>(doctor);
+			}
 		}
 	}
 }
