@@ -194,6 +194,33 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.ToTable("Clinic");
                 });
 
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.Clinic_Aggregate.Slot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClinicId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClinicId");
+
+                    b.ToTable("Slot");
+                });
+
             modelBuilder.Entity("NeuroTumAI.Core.Entities.Post_Aggregate.Comment", b =>
                 {
                     b.Property<int>("Id")
@@ -489,6 +516,17 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.Navigation("Doctor");
                 });
 
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.Clinic_Aggregate.Slot", b =>
+                {
+                    b.HasOne("NeuroTumAI.Core.Entities.Clinic", "Clinic")
+                        .WithMany("Slots")
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Clinic");
+                });
+
             modelBuilder.Entity("NeuroTumAI.Core.Entities.Post_Aggregate.Comment", b =>
                 {
                     b.HasOne("NeuroTumAI.Core.Identity.ApplicationUser", "ApplicationUser")
@@ -564,6 +602,11 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.Clinic", b =>
+                {
+                    b.Navigation("Slots");
                 });
 
             modelBuilder.Entity("NeuroTumAI.Core.Entities.Post_Aggregate.Comment", b =>

@@ -311,6 +311,28 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         principalColumn: "Id");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Slot",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DayOfWeek = table.Column<int>(type: "int", nullable: false),
+                    StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    IsAvailable = table.Column<bool>(type: "bit", nullable: false),
+                    ClinicId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Slot", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Slot_Clinic_ClinicId",
+                        column: x => x.ClinicId,
+                        principalTable: "Clinic",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -394,6 +416,11 @@ namespace NeuroTumAI.Repository.Data.Migrations
                 name: "IX_Posts_ApplicationUserId",
                 table: "Posts",
                 column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Slot_ClinicId",
+                table: "Slot",
+                column: "ClinicId");
         }
 
         /// <inheritdoc />
@@ -415,9 +442,6 @@ namespace NeuroTumAI.Repository.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Clinic");
-
-            migrationBuilder.DropTable(
                 name: "Comment");
 
             migrationBuilder.DropTable(
@@ -427,13 +451,19 @@ namespace NeuroTumAI.Repository.Data.Migrations
                 name: "Patients");
 
             migrationBuilder.DropTable(
+                name: "Slot");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Doctor");
+                name: "Posts");
 
             migrationBuilder.DropTable(
-                name: "Posts");
+                name: "Clinic");
+
+            migrationBuilder.DropTable(
+                name: "Doctor");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

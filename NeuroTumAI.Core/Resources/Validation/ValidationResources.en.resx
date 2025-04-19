@@ -120,11 +120,17 @@
   <data name="AddressRequired" xml:space="preserve">
     <value>Address is required.</value>
   </data>
+  <data name="ClinicIdRequired" xml:space="preserve">
+    <value>The clinic ID is required.</value>
+  </data>
   <data name="ContentLength" xml:space="preserve">
     <value>Content must be between 10 and 5000 characters.</value>
   </data>
   <data name="ContentRequired" xml:space="preserve">
     <value>Content is required.</value>
+  </data>
+  <data name="DayOfWeekRequired" xml:space="preserve">
+    <value>The day of the week is required.</value>
   </data>
   <data name="dob_invalid" xml:space="preserve">
     <value>Invalid date format.</value>
@@ -182,6 +188,12 @@
   </data>
   <data name="ProfilePictureRequired" xml:space="preserve">
     <value>Profile Picture is required.</value>
+  </data>
+  <data name="StartTimeRange" xml:space="preserve">
+    <value>The start time must be between 00:00 and 23:59.</value>
+  </data>
+  <data name="StartTimeRequired" xml:space="preserve">
+    <value>The start time is required.</value>
   </data>
   <data name="TitleLength" xml:space="preserve">
     <value>Title must be between 3 and 100 characters.</value>
