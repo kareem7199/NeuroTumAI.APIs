@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using NeuroTumAI.Core.Entities.Clinic_Aggregate;
 using NeuroTumAI.Core.Identity;
 
 namespace NeuroTumAI.Core.Entities
@@ -17,7 +18,8 @@ namespace NeuroTumAI.Core.Entities
 		public decimal Latitude { get; set; }
 		public decimal Longitude { get; set; }
         public bool IsApproved { get; set; } = false;
-        public int DoctorId { get; set; }
+		public ICollection<Slot> Slots { get; set; } = new HashSet<Slot>();
+ 		public int DoctorId { get; set; }
         public Doctor Doctor { get; set; }
     }
 }

@@ -120,6 +120,9 @@
   <data name="AccountNotApproved" xml:space="preserve">
     <value>لم يتم الموافقة على الحساب بعد</value>
   </data>
+  <data name="ClinicNotFound" xml:space="preserve">
+    <value>العيادة غير موجودة.</value>
+  </data>
   <data name="EmailNotConfirmed" xml:space="preserve">
     <value>لم يتم تأكيد بريدك الإلكتروني. يرجى التحقق منه قبل تسجيل الدخول.</value>
   </data>
@@ -134,6 +137,9 @@
   </data>
   <data name="PostNotFound" xml:space="preserve">
     <value>لم يتم العثور على المنشور.</value>
+  </data>
+  <data name="SlotAlreadyExists" xml:space="preserve">
+    <value>يوجد موعد متاح بالفعل في اليوم والوقت المحددين.</value>
   </data>
   <data name="UserNotFound" xml:space="preserve">
     <value>المستخدم غير موجود.</value>
