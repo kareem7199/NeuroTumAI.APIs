@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NeuroTumAI.APIs.Controllers.Base;
 using NeuroTumAI.Core.Dtos.Clinic;
+using NeuroTumAI.Core.Entities.Clinic_Aggregate;
 using NeuroTumAI.Core.Services.Contract;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace NeuroTumAI.APIs.Controllers.Clinic
 {
@@ -13,7 +15,7 @@ namespace NeuroTumAI.APIs.Controllers.Clinic
 		private readonly IClinicService _clinicService;
 		private readonly IMapper _mapper;
 
-		public ClinicController(IClinicService clinicService , IMapper mapper)
+		public ClinicController(IClinicService clinicService, IMapper mapper)
 		{
 			_clinicService = clinicService;
 			_mapper = mapper;
@@ -21,7 +23,7 @@ namespace NeuroTumAI.APIs.Controllers.Clinic
 
 		[Authorize(Roles = "Doctor", Policy = "ActiveUserOnly")]
 		[HttpGet("doctor")]
-		public async Task<ActionResult<IReadOnlyList<ClinicToReturnDto>>> GetDoctorClinics()
+		public async Task<ActionResult<IReadOnlyList<SlotToReturnDto>>> GetDoctorClinics()
 		{
 			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -29,6 +31,18 @@ namespace NeuroTumAI.APIs.Controllers.Clinic
 
 			return Ok(_mapper.Map<IReadOnlyList<ClinicToReturnDto>>(clinics));
 		}
+
+		[Authorize(Roles = "Doctor", Policy = "ActiveUserOnly")]
+		[HttpGet("doctor/{clinicId}/slots")]
+		public async Task<ActionResult<IReadOnlyList<Slot>>> GetClinicSlots(int clinicId ,[FromQuery] DayOfWeek day)
+		{
+			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+			var slots = await _clinicService.GetClinicSlots(userId, clinicId , day);
+
+			return Ok(_mapper.Map<IReadOnlyList<SlotToReturnDto>>(slots));
+		}
+
 
 		[Authorize(Roles = "Doctor", Policy = "ActiveUserOnly")]
 		[HttpPost]
@@ -43,16 +57,14 @@ namespace NeuroTumAI.APIs.Controllers.Clinic
 
 		[Authorize(Roles = "Doctor", Policy = "ActiveUserOnly")]
 		[HttpPost("slot")]
-		public async Task<ActionResult> AddSlot([FromBody] AddSlotDto model)
+		public async Task<ActionResult<SlotToReturnDto>> AddSlot([FromBody] AddSlotDto model)
 		{
 			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
 			var slot = await _clinicService.AddSlot(model, userId);
 
-			return Ok(new
-			{
-				Id = slot.Id
-			});
+			return Ok(_mapper.Map<SlotToReturnDto>(slot));
+
 		}
 	}
 }

@@ -12,6 +12,7 @@ namespace NeuroTumAI.Core.Services.Contract
 	public interface IClinicService
 	{
 		Task<IReadOnlyList<Clinic>> GetDoctorClinicAsync(string userId);
+		Task<IReadOnlyList<Slot>> GetClinicSlots(string userId, int clinicId, DayOfWeek day);
 		Task<Clinic> AddClinic(BaseAddClinicDto model, string userId);
 		Task<Slot> AddSlot(AddSlotDto slot, string userId);
 	}

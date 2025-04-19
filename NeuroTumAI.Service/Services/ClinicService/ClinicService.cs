@@ -89,6 +89,25 @@ namespace NeuroTumAI.Service.Services.ClinicService
 			return newSlot;
 		}
 
+		public async Task<IReadOnlyList<Slot>> GetClinicSlots(string userId, int clinicId, DayOfWeek day)
+		{
+			var doctorRepo = _unitOfWork.Repository<Doctor>();
+			var doctorSpec = new DoctorSpecifications(userId);
+			var doctor = await doctorRepo.GetWithSpecAsync(doctorSpec);
+
+			var clinicRepo = _unitOfWork.Repository<Clinic>();
+			var clinic = await clinicRepo.GetAsync(clinicId);
+
+			if (clinic is null || clinic.DoctorId != doctor.Id)
+				throw new NotFoundException(_localizationService.GetMessage<ResponsesResources>("ClinicNotFound"));
+
+			var slotaRepo = _unitOfWork.Repository<Slot>();
+			var slotSpecs = new SlotSpecifications(day, clinicId);
+			var slots = await slotaRepo.GetAllWithSpecAsync(slotSpecs);
+
+			return slots;
+		}
+
 		public async Task<IReadOnlyList<Clinic>> GetDoctorClinicAsync(string userId)
 		{
 			var doctorRepo = _unitOfWork.Repository<Doctor>();

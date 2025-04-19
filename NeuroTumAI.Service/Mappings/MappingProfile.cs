@@ -35,6 +35,7 @@ namespace NeuroTumAI.Service.Mappings
 
 			CreateMap<AddSlotDto, Slot>();
 			CreateMap<Clinic, ClinicToReturnDto>();
+			CreateMap<Slot, SlotToReturnDto>() ;
 		}
 	}
 }
