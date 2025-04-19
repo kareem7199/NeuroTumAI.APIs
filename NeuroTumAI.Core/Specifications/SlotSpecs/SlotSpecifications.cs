@@ -12,7 +12,12 @@ namespace NeuroTumAI.Core.Specifications.SlotSpecs
         public SlotSpecifications(DayOfWeek day , TimeOnly time , int clinicId)
             :base(S => S.ClinicId == clinicId && S.DayOfWeek == day && S.StartTime == time)
         {
-            
         }
+
+        public SlotSpecifications(DayOfWeek day, int clinicId)
+            :base(S => S.DayOfWeek == day && S.ClinicId == clinicId)
+        {
+			AddOrderBy(S => S.StartTime);
+		}
     }
 }
