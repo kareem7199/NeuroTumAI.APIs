@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -8,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using NeuroTumAI.APIs.Errors;
 using NeuroTumAI.APIs.Middlewares;
 using NeuroTumAI.Core;
+using NeuroTumAI.Core.Authorization;
 using NeuroTumAI.Core.Identity;
 using NeuroTumAI.Core.Services.Contract;
 using NeuroTumAI.Repository;
@@ -124,6 +126,13 @@ namespace NeuroTumAI.APIs.Extensions
 				};
 			});
 
+			services.AddAuthorization(options =>
+			{
+				options.AddPolicy("ActiveUserOnly", policy =>
+					policy.Requirements.Add(new ActiveUserRequirement()));
+			});
+
+			services.AddScoped<IAuthorizationHandler, ActiveUserHandler>();
 			//services.AddScoped(typeof(IAuthService), typeof(AuthService));
 
 			return services;
