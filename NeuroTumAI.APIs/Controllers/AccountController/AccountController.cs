@@ -19,7 +19,7 @@ namespace NeuroTumAI.APIs.Controllers.AccountController
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<UserDto>> Login()
+		public async Task<ActionResult<UserDto>> GetUserData()
 		{
 			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
