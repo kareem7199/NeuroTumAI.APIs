@@ -12,6 +12,7 @@ using NeuroTumAI.Core.Exceptions;
 using NeuroTumAI.Core.Identity;
 using NeuroTumAI.Core.Resources.Responses;
 using NeuroTumAI.Core.Services.Contract;
+using NeuroTumAI.Core.Specifications.ClinicSpecs;
 using NeuroTumAI.Core.Specifications.DoctorSpecs;
 using NeuroTumAI.Core.Specifications.SlotSpecs;
 using NeuroTumAI.Service.Services.BlobStorageService;
@@ -86,6 +87,21 @@ namespace NeuroTumAI.Service.Services.ClinicService
 			await _unitOfWork.CompleteAsync();
 
 			return newSlot;
+		}
+
+		public async Task<IReadOnlyList<Clinic>> GetDoctorClinicAsync(string userId)
+		{
+			var doctorRepo = _unitOfWork.Repository<Doctor>();
+			var doctorSpec = new DoctorSpecifications(userId);
+			var doctor = await doctorRepo.GetWithSpecAsync(doctorSpec);
+
+			var clinicRepo = _unitOfWork.Repository<Clinic>();
+			var clinicSpecs = new ClinicSpecifications(doctor.Id);
+
+			var clinics = await clinicRepo.GetAllWithSpecAsync(clinicSpecs);
+
+			return clinics;
+
 		}
 	}
 }

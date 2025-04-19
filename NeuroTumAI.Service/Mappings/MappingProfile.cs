@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using NeuroTumAI.Core.Dtos.Account;
 using NeuroTumAI.Core.Dtos.Clinic;
+using NeuroTumAI.Core.Entities;
 using NeuroTumAI.Core.Entities.Clinic_Aggregate;
 using NeuroTumAI.Core.Identity;
 using NeuroTumAI.Service.Dtos.Account;
@@ -33,6 +34,7 @@ namespace NeuroTumAI.Service.Mappings
 				.ForMember(D => D.Role, O => O.MapFrom(S => "Doctor"));
 
 			CreateMap<AddSlotDto, Slot>();
+			CreateMap<Clinic, ClinicToReturnDto>();
 		}
 	}
 }
