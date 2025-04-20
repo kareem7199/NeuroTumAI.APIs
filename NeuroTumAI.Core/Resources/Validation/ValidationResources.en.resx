@@ -129,6 +129,9 @@
   <data name="ContentRequired" xml:space="preserve">
     <value>Content is required.</value>
   </data>
+  <data name="DateRequired" xml:space="preserve">
+    <value>Date is required.</value>
+  </data>
   <data name="DayOfWeekRequired" xml:space="preserve">
     <value>The day of the week is required.</value>
   </data>
@@ -188,6 +191,9 @@
   </data>
   <data name="ProfilePictureRequired" xml:space="preserve">
     <value>Profile Picture is required.</value>
+  </data>
+  <data name="SlotIdRequired" xml:space="preserve">
+    <value>Slot is required.</value>
   </data>
   <data name="StartTimeRange" xml:space="preserve">
     <value>The start time must be between 00:00 and 23:59.</value>

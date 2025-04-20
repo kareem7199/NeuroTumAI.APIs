@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using NeuroTumAI.Core.Dtos.Account;
+using NeuroTumAI.Core.Dtos.Appointments;
 using NeuroTumAI.Core.Dtos.Clinic;
 using NeuroTumAI.Core.Entities;
+using NeuroTumAI.Core.Entities.Appointment;
 using NeuroTumAI.Core.Entities.Clinic_Aggregate;
 using NeuroTumAI.Core.Identity;
 using NeuroTumAI.Service.Dtos.Account;
@@ -35,7 +37,8 @@ namespace NeuroTumAI.Service.Mappings
 
 			CreateMap<AddSlotDto, Slot>();
 			CreateMap<Clinic, ClinicToReturnDto>();
-			CreateMap<Slot, SlotToReturnDto>() ;
+			CreateMap<Slot, SlotToReturnDto>();
+			CreateMap<Appointment, AppointmentToReturnDto>();
 		}
 	}
 }
