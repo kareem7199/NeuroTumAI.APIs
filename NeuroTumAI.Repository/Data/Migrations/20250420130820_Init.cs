@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using NetTopologySuite.Geometries;
 
 #nullable disable
 
@@ -236,8 +237,7 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LicenseDocument = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Latitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
-                    Longitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
+                    Location = table.Column<Point>(type: "geography", nullable: false),
                     IsApproved = table.Column<bool>(type: "bit", nullable: false),
                     DoctorId = table.Column<int>(type: "int", nullable: false)
                 },

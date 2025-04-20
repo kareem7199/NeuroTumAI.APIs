@@ -166,11 +166,11 @@ namespace NeuroTumAI.Service.Services.AccountService
 				LicenseDocumentFront = licenseDocumentFront,
 			};
 
+			var location = new NetTopologySuite.Geometries.Point(clinicModel.Longitude, clinicModel.Latitude) { SRID = 4326 };
 			var newClinic = new Clinic()
 			{
 				Address = clinicModel.Address,
-				Latitude = clinicModel.Latitude,
-				Longitude = clinicModel.Longitude,
+				Location = location,
 				PhoneNumber = clinicModel.PhoneNumber,
 				LicenseDocument = clinicLicenseDocument
 			};
@@ -362,7 +362,7 @@ namespace NeuroTumAI.Service.Services.AccountService
 			var user = await _userManager.FindByIdAsync(userId);
 			if (user is null)
 				throw new UnAuthorizedException("iosdaxhiojfiodsjj");
-				
+
 
 			var isPatient = await _userManager.IsInRoleAsync(user, "Patient");
 

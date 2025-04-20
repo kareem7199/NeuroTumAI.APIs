@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using NeuroTumAI.Core;
 using NeuroTumAI.Core.Dtos.Clinic;
 using NeuroTumAI.Core.Entities;
@@ -28,7 +29,7 @@ namespace NeuroTumAI.Service.Services.ClinicService
 			_blobStorageService = blobStorageService;
 		}
 
-		public async Task<Clinic> AddClinic(BaseAddClinicDto model, string userId)
+		public async Task<Clinic> AddClinicAsync(BaseAddClinicDto model, string userId)
 		{
 			var doctorRepo = _unitOfWork.Repository<Doctor>();
 			var doctorSpec = new DoctorSpecifications(userId);
@@ -37,11 +38,12 @@ namespace NeuroTumAI.Service.Services.ClinicService
 			using var clinicLicenseDocumentStream = model.LicenseDocument.OpenReadStream();
 			var clinicLicenseDocument = await _blobStorageService.UploadFileAsync(clinicLicenseDocumentStream, model.LicenseDocument.FileName, "clinic-licenses");
 
+			var location = new NetTopologySuite.Geometries.Point(model.Longitude, model.Latitude) { SRID = 4326 };
+
 			var newClinic = new Clinic()
 			{
 				Address = model.Address,
-				Latitude = model.Latitude,
-				Longitude = model.Longitude,
+				Location = location,
 				PhoneNumber = model.PhoneNumber,
 				DoctorId = doctor.Id,
 				LicenseDocument = clinicLicenseDocument
@@ -55,7 +57,7 @@ namespace NeuroTumAI.Service.Services.ClinicService
 			return newClinic;
 		}
 
-		public async Task<Slot> AddSlot(AddSlotDto slot, string userId)
+		public async Task<Slot> AddSlotAsync(AddSlotDto slot, string userId)
 		{
 			var doctorRepo = _unitOfWork.Repository<Doctor>();
 			var doctorSpec = new DoctorSpecifications(userId);
@@ -83,7 +85,16 @@ namespace NeuroTumAI.Service.Services.ClinicService
 			return newSlot;
 		}
 
-		public async Task<IReadOnlyList<Slot>> GetClinicSlots(string userId, int clinicId, DayOfWeek day)
+		public async Task<IReadOnlyList<Clinic>> GetClinicsAsync(ClinicSpecParams model)
+		{
+			var clinicRepo = _unitOfWork.Repository<Clinic>();
+			var clinicSpec = new NearbyClinicsSpecifications(model);
+			var clinics = await clinicRepo.GetAllWithSpecAsync(clinicSpec);
+
+			return clinics;
+		}
+
+		public async Task<IReadOnlyList<Slot>> GetClinicSlotsAsync(string userId, int clinicId, DayOfWeek day)
 		{
 			var doctorRepo = _unitOfWork.Repository<Doctor>();
 			var doctorSpec = new DoctorSpecifications(userId);
@@ -100,6 +111,16 @@ namespace NeuroTumAI.Service.Services.ClinicService
 			var slots = await slotaRepo.GetAllWithSpecAsync(slotSpecs);
 
 			return slots;
+		}
+
+		public async Task<int> GetCountAsync(ClinicSpecParams specParams)
+		{
+			var clinicRepo = _unitOfWork.Repository<Clinic>();
+			var clinicSpec = new NearbyClinicsForCountSpecifications(specParams);
+
+			var count = await clinicRepo.GetCountAsync(clinicSpec);
+
+			return count;
 		}
 
 		public async Task<IReadOnlyList<Clinic>> GetDoctorClinicAsync(string userId)
