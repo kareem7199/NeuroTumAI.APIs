@@ -86,19 +86,19 @@ namespace NeuroTumAI.Repository.Data
 					EmailConfirmed = true
 				};
 				await userManager.CreateAsync(newAccount, "Pa$$w0rd");
-				await userManager.AddToRoleAsync(newAccount, "Patient");
+				await userManager.AddToRoleAsync(newAccount, "Doctor");
 				var newDoctor = new Doctor()
 				{
 					ApplicationUserId = newAccount.Id,
 					LicenseDocumentBack = "",
 					LicenseDocumentFront = "",
+					IsApproved = true
 				};
-
+				var location = new NetTopologySuite.Geometries.Point(31.2357, 30.0444) { SRID = 4326 };
 				var newClinic = new Clinic()
 				{
 					Address = "123 Health Street, Cairo, Egypt",
-					Latitude = 30.0444M,
-					Longitude = 31.2357M,
+					Location = location,
 					PhoneNumber = "+20 100 123 4567",
 					LicenseDocument = "dummy-license.pdf",
 					IsApproved = true

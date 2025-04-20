@@ -20,9 +20,9 @@ namespace NeuroTumAI.Core.Dtos.Clinic
 		public IFormFile LicenseDocument { get; set; }
 
 		[Range(-90, 90, ErrorMessage = "latitude_range")]
-		public decimal Latitude { get; set; }
+		public double Latitude { get; set; }
 
 		[Range(-180, 180, ErrorMessage = "longitude_range")]
-		public decimal Longitude { get; set; }
+		public double Longitude { get; set; }
 	}
 }

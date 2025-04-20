@@ -6,14 +6,17 @@ using System.Threading.Tasks;
 using NeuroTumAI.Core.Dtos.Clinic;
 using NeuroTumAI.Core.Entities;
 using NeuroTumAI.Core.Entities.Clinic_Aggregate;
+using NeuroTumAI.Core.Specifications.ClinicSpecs;
 
 namespace NeuroTumAI.Core.Services.Contract
 {
 	public interface IClinicService
 	{
 		Task<IReadOnlyList<Clinic>> GetDoctorClinicAsync(string userId);
-		Task<IReadOnlyList<Slot>> GetClinicSlots(string userId, int clinicId, DayOfWeek day);
-		Task<Clinic> AddClinic(BaseAddClinicDto model, string userId);
-		Task<Slot> AddSlot(AddSlotDto slot, string userId);
+		Task<IReadOnlyList<Clinic>> GetClinicsAsync(ClinicSpecParams specParams);
+		Task<int> GetCountAsync(ClinicSpecParams specParams);
+		Task<IReadOnlyList<Slot>> GetClinicSlotsAsync(string userId, int clinicId, DayOfWeek day);
+		Task<Clinic> AddClinicAsync(BaseAddClinicDto model, string userId);
+		Task<Slot> AddSlotAsync(AddSlotDto slot, string userId);
 	}
 }

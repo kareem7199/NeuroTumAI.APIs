@@ -14,8 +14,6 @@ namespace NeuroTumAI.Core.Dtos.Clinic
         public string Address { get; set; }
 		public string PhoneNumber { get; set; }
 		public string LicenseDocument { get; set; }
-		public decimal Latitude { get; set; }
-		public decimal Longitude { get; set; }
 		public bool IsApproved { get; set; } = false;
 	}
 }

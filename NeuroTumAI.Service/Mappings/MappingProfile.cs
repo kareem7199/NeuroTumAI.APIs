@@ -35,6 +35,10 @@ namespace NeuroTumAI.Service.Mappings
 				.ForMember(D => D.ProfilePicture, O => O.MapFrom(S => S.ApplicationUser.ProfilePicture))
 				.ForMember(D => D.Role, O => O.MapFrom(S => "Doctor"));
 
+			CreateMap<Clinic, ClinicWithDoctorDataDto>()
+				.ForMember(D => D.DoctorProfilePicture, O => O.MapFrom(S => S.Doctor.ApplicationUser.ProfilePicture))
+				.ForMember(D => D.DoctorFullName, O => O.MapFrom(S => S.Doctor.ApplicationUser.FullName));
+
 			CreateMap<AddSlotDto, Slot>();
 			CreateMap<Clinic, ClinicToReturnDto>();
 			CreateMap<Slot, SlotToReturnDto>();

@@ -3,10 +3,12 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NeuroTumAI.APIs.Controllers.Base;
+using NeuroTumAI.Core.Dtos;
 using NeuroTumAI.Core.Dtos.Clinic;
 using NeuroTumAI.Core.Entities.Clinic_Aggregate;
 using NeuroTumAI.Core.Services.Contract;
-using static System.Reflection.Metadata.BlobBuilder;
+using NeuroTumAI.Core.Specifications.ClinicSpecs;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NeuroTumAI.APIs.Controllers.Clinic
 {
@@ -21,9 +23,21 @@ namespace NeuroTumAI.APIs.Controllers.Clinic
 			_mapper = mapper;
 		}
 
+		[Authorize(Roles = "Patient")]
+		[HttpGet]
+		public async Task<ActionResult<PaginationDto<ClinicWithDoctorDataDto>>> GetClinics([FromQuery] ClinicSpecParams specParams)
+		{
+			var clinics = await _clinicService.GetClinicsAsync(specParams);
+			var count = await _clinicService.GetCountAsync(specParams);
+
+			var data = _mapper.Map<IReadOnlyList<ClinicWithDoctorDataDto>>(clinics);
+
+			return Ok(new PaginationDto<ClinicWithDoctorDataDto>(specParams.PageIndex, specParams.PageSize, count, data));
+		}
+
 		[Authorize(Roles = "Doctor", Policy = "ActiveUserOnly")]
 		[HttpGet("doctor")]
-		public async Task<ActionResult<IReadOnlyList<SlotToReturnDto>>> GetDoctorClinics()
+		public async Task<ActionResult<IReadOnlyList<ClinicToReturnDto>>> GetDoctorClinics()
 		{
 			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -34,11 +48,11 @@ namespace NeuroTumAI.APIs.Controllers.Clinic
 
 		[Authorize(Roles = "Doctor", Policy = "ActiveUserOnly")]
 		[HttpGet("doctor/{clinicId}/slots")]
-		public async Task<ActionResult<IReadOnlyList<Slot>>> GetClinicSlots(int clinicId ,[FromQuery] DayOfWeek day)
+		public async Task<ActionResult<IReadOnlyList<Slot>>> GetDoctorClinicSlots(int clinicId, [FromQuery] DayOfWeek day)
 		{
 			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-			var slots = await _clinicService.GetClinicSlots(userId, clinicId , day);
+			var slots = await _clinicService.GetClinicSlotsAsync(userId, clinicId, day);
 
 			return Ok(_mapper.Map<IReadOnlyList<SlotToReturnDto>>(slots));
 		}
@@ -50,7 +64,7 @@ namespace NeuroTumAI.APIs.Controllers.Clinic
 		{
 			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-			var clinic = await _clinicService.AddClinic(model, userId);
+			var clinic = await _clinicService.AddClinicAsync(model, userId);
 
 			return Ok(_mapper.Map<ClinicToReturnDto>(clinic));
 		}
@@ -61,7 +75,7 @@ namespace NeuroTumAI.APIs.Controllers.Clinic
 		{
 			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-			var slot = await _clinicService.AddSlot(model, userId);
+			var slot = await _clinicService.AddSlotAsync(model, userId);
 
 			return Ok(_mapper.Map<SlotToReturnDto>(slot));
 
