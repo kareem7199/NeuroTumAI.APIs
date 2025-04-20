@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NeuroTumAI.APIs.Extensions;
 using NeuroTumAI.APIs.Middlewares;
+using NeuroTumAI.Core.Identity;
 using NeuroTumAI.Core.Resources.Validation;
 using NeuroTumAI.Repository.Data;
 using NeuroTumAI.Service.Hubs;
@@ -63,12 +64,14 @@ namespace NeuroTumAI.APIs
 
 			var loggerFactory = services.GetRequiredService<ILoggerFactory>();
 
-			try			{
+			try
+			{
 				await _dbContext.Database.MigrateAsync();
 
 				var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+				var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
 
-				await StoreContextSeed.SeedAsync(_dbContext, roleManager);
+				await StoreContextSeed.SeedAsync(_dbContext, roleManager, userManager);
 
 			}
 			catch (Exception ex)
