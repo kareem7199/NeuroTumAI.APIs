@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using NeuroTumAI.Core;
 using NeuroTumAI.Core.Dtos.Clinic;
 using NeuroTumAI.Core.Entities;
@@ -15,7 +10,6 @@ using NeuroTumAI.Core.Services.Contract;
 using NeuroTumAI.Core.Specifications.ClinicSpecs;
 using NeuroTumAI.Core.Specifications.DoctorSpecs;
 using NeuroTumAI.Core.Specifications.SlotSpecs;
-using NeuroTumAI.Service.Services.BlobStorageService;
 
 namespace NeuroTumAI.Service.Services.ClinicService
 {
@@ -120,7 +114,6 @@ namespace NeuroTumAI.Service.Services.ClinicService
 			var clinics = await clinicRepo.GetAllWithSpecAsync(clinicSpecs);
 
 			return clinics;
-
 		}
 	}
 }

@@ -129,6 +129,9 @@
   <data name="ContentRequired" xml:space="preserve">
     <value>المحتوى مطلوب.</value>
   </data>
+  <data name="DateRequired" xml:space="preserve">
+    <value>مطلوب اختيار التاريخ.</value>
+  </data>
   <data name="DayOfWeekRequired" xml:space="preserve">
     <value>يجب تحديد يوم الأسبوع.</value>
   </data>
@@ -188,6 +191,9 @@
   </data>
   <data name="ProfilePictureRequired" xml:space="preserve">
     <value>الصورة الشخصية مطلوبة.</value>
+  </data>
+  <data name="SlotIdRequired" xml:space="preserve">
+    <value>مطلوب اختيار الموعد.</value>
   </data>
   <data name="StartTimeRange" xml:space="preserve">
     <value>يجب أن يكون الوقت الابتدائي بين 00:00 و 23:59.</value>

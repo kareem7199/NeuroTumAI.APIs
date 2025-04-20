@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using NeuroTumAI.Core.Entities.Appointment;
+
+namespace NeuroTumAI.Core.Specifications.AppointmentSpecs
+{
+	public class AppointmentSpecifications : BaseSpecifications<Appointment>
+	{
+		public AppointmentSpecifications(TimeOnly time, DateOnly date, int clinicId)
+			: base(A => A.StartTime == time && A.Date == date && A.Status != AppointmentStatus.Cancelled && A.ClinicId == clinicId)
+		{
+
+		}
+	}
+}

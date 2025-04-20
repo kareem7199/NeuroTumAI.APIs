@@ -312,6 +312,35 @@ namespace NeuroTumAI.Repository.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Appointment",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Date = table.Column<DateOnly>(type: "date", nullable: false),
+                    StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ClinicId = table.Column<int>(type: "int", nullable: false),
+                    PatientId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Appointment", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Appointment_Clinic_ClinicId",
+                        column: x => x.ClinicId,
+                        principalTable: "Clinic",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Appointment_Patients_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Patients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Slot",
                 columns: table => new
                 {
@@ -332,6 +361,16 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Appointment_ClinicId",
+                table: "Appointment",
+                column: "ClinicId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Appointment_PatientId",
+                table: "Appointment",
+                column: "PatientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -427,6 +466,9 @@ namespace NeuroTumAI.Repository.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Appointment");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -448,10 +490,10 @@ namespace NeuroTumAI.Repository.Data.Migrations
                 name: "Like");
 
             migrationBuilder.DropTable(
-                name: "Patients");
+                name: "Slot");
 
             migrationBuilder.DropTable(
-                name: "Slot");
+                name: "Patients");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

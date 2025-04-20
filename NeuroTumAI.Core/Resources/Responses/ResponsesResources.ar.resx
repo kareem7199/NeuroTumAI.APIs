@@ -120,6 +120,9 @@
   <data name="AccountNotApproved" xml:space="preserve">
     <value>لم يتم الموافقة على الحساب بعد</value>
   </data>
+  <data name="AppointmentExists" xml:space="preserve">
+    <value>يوجد حجز مسبق لهذا الوقت.</value>
+  </data>
   <data name="ClinicNotFound" xml:space="preserve">
     <value>العيادة غير موجودة.</value>
   </data>
@@ -132,6 +135,9 @@
   <data name="InvalidCredentials" xml:space="preserve">
     <value>البريد الإلكتروني أو كلمة المرور غير صحيحة.</value>
   </data>
+  <data name="InvalidDate" xml:space="preserve">
+    <value>التاريخ المدخل غير صالح.</value>
+  </data>
   <data name="InvalidOrExpiredToken" xml:space="preserve">
     <value>رمز غير صالح أو منتهي الصلاحية.</value>
   </data>
@@ -140,6 +146,9 @@
   </data>
   <data name="SlotAlreadyExists" xml:space="preserve">
     <value>يوجد موعد متاح بالفعل في اليوم والوقت المحددين.</value>
+  </data>
+  <data name="SlotNotFound" xml:space="preserve">
+    <value>لم يتم العثور على الوقت المحدد</value>
   </data>
   <data name="UserNotFound" xml:space="preserve">
     <value>المستخدم غير موجود.</value>

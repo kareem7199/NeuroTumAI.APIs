@@ -120,6 +120,9 @@
   <data name="AccountNotApproved" xml:space="preserve">
     <value>The account is not approved yet.</value>
   </data>
+  <data name="AppointmentExists" xml:space="preserve">
+    <value>An appointment already exists for this slot.</value>
+  </data>
   <data name="ClinicNotFound" xml:space="preserve">
     <value>Clinic is not found.</value>
   </data>
@@ -132,6 +135,9 @@
   <data name="InvalidCredentials" xml:space="preserve">
     <value>Invalid email or password.</value>
   </data>
+  <data name="InvalidDate" xml:space="preserve">
+    <value>The provided date is not valid.</value>
+  </data>
   <data name="InvalidOrExpiredToken" xml:space="preserve">
     <value>Invalid or expired token.</value>
   </data>
@@ -140,6 +146,9 @@
   </data>
   <data name="SlotAlreadyExists" xml:space="preserve">
     <value>A slot already exists for the specified day and time.</value>
+  </data>
+  <data name="SlotNotFound" xml:space="preserve">
+    <value>The selected slot could not be found.</value>
   </data>
   <data name="UserNotFound" xml:space="preserve">
     <value>User not found.</value>
