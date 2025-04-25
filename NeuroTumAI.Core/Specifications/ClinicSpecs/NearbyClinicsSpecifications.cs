@@ -19,6 +19,7 @@ namespace NeuroTumAI.Core.Specifications.ClinicSpecs
 			AddOrderBy(C => C.Location.Distance(userLocation));
 			Includes.Add(C => C.Doctor);
 			Includes.Add(c => c.Doctor.ApplicationUser);
+			Includes.Add(C => C.Doctor.Reviews);
 			ApplyPagination((specParams.PageIndex - 1) * specParams.PageSize, specParams.PageSize);
 		}
 	}

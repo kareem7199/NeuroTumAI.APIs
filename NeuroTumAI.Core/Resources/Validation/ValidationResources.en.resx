@@ -123,6 +123,18 @@
   <data name="ClinicIdRequired" xml:space="preserve">
     <value>The clinic ID is required.</value>
   </data>
+  <data name="CommentLength" xml:space="preserve">
+    <value>Comment can't exceed 1000 characters.</value>
+  </data>
+  <data name="CommentLength1" xml:space="preserve">
+    <value>Comment can't exceed 1000 characters.</value>
+  </data>
+  <data name="CommentRequired" xml:space="preserve">
+    <value>Comment is required.</value>
+  </data>
+  <data name="CommentRequired1" xml:space="preserve">
+    <value>Comment is required.</value>
+  </data>
   <data name="ContentLength" xml:space="preserve">
     <value>Content must be between 10 and 5000 characters.</value>
   </data>
@@ -140,6 +152,12 @@
   </data>
   <data name="dob_required" xml:space="preserve">
     <value>Date of birth is required.</value>
+  </data>
+  <data name="DoctorIdRequired" xml:space="preserve">
+    <value>Doctor ID is required.</value>
+  </data>
+  <data name="DoctorIdRequired1" xml:space="preserve">
+    <value>Doctor ID is required.</value>
   </data>
   <data name="email_invalid" xml:space="preserve">
     <value>Invalid email format.</value>
@@ -194,6 +212,18 @@
   </data>
   <data name="SlotIdRequired" xml:space="preserve">
     <value>Slot is required.</value>
+  </data>
+  <data name="StarsRange" xml:space="preserve">
+    <value>Stars must be between 1 and 5.</value>
+  </data>
+  <data name="StarsRange1" xml:space="preserve">
+    <value>Stars must be between 1 and 5.</value>
+  </data>
+  <data name="StarsRequired" xml:space="preserve">
+    <value>Stars are required.</value>
+  </data>
+  <data name="StarsRequired1" xml:space="preserve">
+    <value>Stars are required.</value>
   </data>
   <data name="StartTimeRange" xml:space="preserve">
     <value>The start time must be between 00:00 and 23:59.</value>

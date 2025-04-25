@@ -5,10 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using NeuroTumAI.APIs.Controllers.Base;
 using NeuroTumAI.Core.Dtos;
 using NeuroTumAI.Core.Dtos.Clinic;
-using NeuroTumAI.Core.Entities.Clinic_Aggregate;
 using NeuroTumAI.Core.Services.Contract;
 using NeuroTumAI.Core.Specifications.ClinicSpecs;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NeuroTumAI.APIs.Controllers.Clinic
 {
@@ -48,7 +46,7 @@ namespace NeuroTumAI.APIs.Controllers.Clinic
 
 		[Authorize(Roles = "Doctor", Policy = "ActiveUserOnly")]
 		[HttpGet("doctor/{clinicId}/slots")]
-		public async Task<ActionResult<IReadOnlyList<Slot>>> GetDoctorClinicSlots(int clinicId, [FromQuery] DayOfWeek day)
+		public async Task<ActionResult<IReadOnlyList<SlotToReturnDto>>> GetDoctorClinicSlots(int clinicId, [FromQuery] DayOfWeek day)
 		{
 			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 

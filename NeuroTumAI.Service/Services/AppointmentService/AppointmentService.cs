@@ -63,6 +63,7 @@ namespace NeuroTumAI.Service.Services.AppointmentService
 			var newAppointment = new Appointment()
 			{
 				Date = model.Date,
+				DoctorId = clinic.DoctorId,
 				PatientId = patient.Id,
 				StartTime = slot.StartTime,
 				ClinicId = slot.ClinicId,

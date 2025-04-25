@@ -28,6 +28,12 @@ namespace NeuroTumAI.Repository.Config
 			builder.HasOne(a => a.Patient)
 			.WithMany()
 			.HasForeignKey(a => a.PatientId)
+			.OnDelete(DeleteBehavior.Restrict);
+
+
+			builder.HasOne(a => a.Doctor)
+			.WithMany()
+			.HasForeignKey(a => a.DoctorId)
 			.OnDelete(DeleteBehavior.Cascade);
 		}
 	}

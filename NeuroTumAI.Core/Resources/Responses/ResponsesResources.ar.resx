@@ -123,6 +123,9 @@
   <data name="AppointmentExists" xml:space="preserve">
     <value>يوجد حجز مسبق لهذا الوقت.</value>
   </data>
+  <data name="AppointmentNotFound" xml:space="preserve">
+    <value>لا يوجد موعد.</value>
+  </data>
   <data name="ClinicNotFound" xml:space="preserve">
     <value>العيادة غير موجودة.</value>
   </data>

@@ -123,6 +123,9 @@
   <data name="AppointmentExists" xml:space="preserve">
     <value>An appointment already exists for this slot.</value>
   </data>
+  <data name="AppointmentNotFound" xml:space="preserve">
+    <value>No appointment was found.</value>
+  </data>
   <data name="ClinicNotFound" xml:space="preserve">
     <value>Clinic is not found.</value>
   </data>

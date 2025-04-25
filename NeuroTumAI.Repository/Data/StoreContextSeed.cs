@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using NeuroTumAI.Core.Entities;
+using NeuroTumAI.Core.Entities.Appointment;
 using NeuroTumAI.Core.Entities.Clinic_Aggregate;
 using NeuroTumAI.Core.Identity;
 
@@ -15,6 +16,7 @@ namespace NeuroTumAI.Repository.Data
 	public static class StoreContextSeed
 	{
 		private static string[] roles = { "Patient", "Doctor" };
+		private static string[] reviews = { "Pretty sure he got his degree from YouTube tutorials.", "he tried… i think. but so does my cat when it walks on the keyboard.", "Not bad, not great. Like microwave food – gets the job done, barely.", "Pretty decent! He knew what he was doing… most of the time.", "Best doctor ever." };
 		private static string[] times =
 		{
 			"09:00:00",
@@ -35,6 +37,8 @@ namespace NeuroTumAI.Repository.Data
 			await SeedPatientsAsync(userManager, _dbContext);
 			await SeedDoctorsAsync(userManager, _dbContext);
 			await _dbContext.SaveChangesAsync();
+			await SeedAppointmentsWithReviewsAsync(_dbContext);
+			await _dbContext.SaveChangesAsync();
 		}
 		private static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
 		{
@@ -48,7 +52,7 @@ namespace NeuroTumAI.Repository.Data
 		}
 		private static async Task SeedPatientsAsync(UserManager<ApplicationUser> userManager, StoreContext _dbContext)
 		{
-			for (int i = 0; i < 5; i++)
+			for (int i = 0; i < 10; i++)
 			{
 				var newAccount = new ApplicationUser()
 				{
@@ -70,7 +74,6 @@ namespace NeuroTumAI.Repository.Data
 				await _dbContext.AddAsync(newPatient);
 			}
 		}
-
 		private static async Task SeedDoctorsAsync(UserManager<ApplicationUser> userManager, StoreContext _dbContext)
 		{
 			for (int i = 0; i < 5; i++)
@@ -119,6 +122,37 @@ namespace NeuroTumAI.Repository.Data
 
 				newDoctor.Clinics.Add(newClinic);
 				await _dbContext.AddAsync(newDoctor);
+			}
+		}
+		private static async Task SeedAppointmentsWithReviewsAsync(StoreContext _dbContext)
+		{
+			for (int patientId = 1; patientId <= 10; patientId++)
+			{
+				for (int doctorId = 1; doctorId <= 5; doctorId++)
+				{
+					var newAppointment = new Appointment()
+					{
+						DoctorId = doctorId,
+						PatientId = patientId,
+						ClinicId = doctorId,
+						Date = DateOnly.Parse("2025-04-25"),
+						StartTime = TimeOnly.Parse(times[patientId - 1]),
+						Status = AppointmentStatus.Completed
+					};
+					await _dbContext.AddAsync(newAppointment);
+
+					int stars = Random.Shared.Next(1, 6);
+					var newReview = new Review()
+					{
+						DoctorId = doctorId,
+						PatientId = patientId,
+						Stars = stars,
+						Comment = reviews[stars - 1]
+					};
+
+					await _dbContext.AddAsync(newReview);
+				}
+
 			}
 		}
 	}

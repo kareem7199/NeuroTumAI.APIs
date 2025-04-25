@@ -170,6 +170,9 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
                     b.Property<int>("PatientId")
                         .HasColumnType("int");
 
@@ -184,9 +187,44 @@ namespace NeuroTumAI.Repository.Data.Migrations
 
                     b.HasIndex("ClinicId");
 
+                    b.HasIndex("DoctorId");
+
                     b.HasIndex("PatientId");
 
                     b.ToTable("Appointment");
+                });
+
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.Appointment.Review", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Stars")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("NeuroTumAI.Core.Entities.Clinic", b =>
@@ -545,13 +583,40 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("NeuroTumAI.Core.Identity.Patient", "Patient")
+                    b.HasOne("NeuroTumAI.Core.Identity.Doctor", "Doctor")
                         .WithMany()
-                        .HasForeignKey("PatientId")
+                        .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("NeuroTumAI.Core.Identity.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Clinic");
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.Appointment.Review", b =>
+                {
+                    b.HasOne("NeuroTumAI.Core.Identity.Doctor", "Doctor")
+                        .WithMany("Reviews")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NeuroTumAI.Core.Identity.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
 
                     b.Navigation("Patient");
                 });
@@ -675,6 +740,8 @@ namespace NeuroTumAI.Repository.Data.Migrations
             modelBuilder.Entity("NeuroTumAI.Core.Identity.Doctor", b =>
                 {
                     b.Navigation("Clinics");
+
+                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

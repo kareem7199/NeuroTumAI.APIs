@@ -85,6 +85,12 @@ namespace NeuroTumAI.Service.Services.ClinicService
 			return newSlot;
 		}
 
+		public async Task<Clinic?> GetClinicByIdAsync(int clinicId)
+		{
+			var clinicRepo = _unitOfWork.Repository<Clinic>();
+			return await clinicRepo.GetAsync(clinicId);
+		}
+
 		public async Task<IReadOnlyList<Clinic>> GetClinicsAsync(ClinicSpecParams model)
 		{
 			var clinicRepo = _unitOfWork.Repository<Clinic>();
