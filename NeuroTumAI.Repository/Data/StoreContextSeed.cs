@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using NeuroTumAI.Core.Entities;
 using NeuroTumAI.Core.Entities.Appointment;
 using NeuroTumAI.Core.Entities.Clinic_Aggregate;
@@ -16,7 +9,7 @@ namespace NeuroTumAI.Repository.Data
 	public static class StoreContextSeed
 	{
 		private static string[] roles = { "Patient", "Doctor" };
-		private static string[] reviews = { "Pretty sure he got his degree from YouTube tutorials.", "he tried… i think. but so does my cat when it walks on the keyboard.", "Not bad, not great. Like microwave food – gets the job done, barely.", "Pretty decent! He knew what he was doing… most of the time.", "Best doctor ever." };
+		private static string[] reviews = { "Pretty sure he got his degree from YouTube tutorials.", "At least he didn’t kill me... small wins, I guess.", "Not bad, not great. Like microwave food – gets the job done, barely.", "Pretty decent! He knew what he was doing… most of the time.", "Best doctor ever." };
 		private static string[] times =
 		{
 			"09:00:00",

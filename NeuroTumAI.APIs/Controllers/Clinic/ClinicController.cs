@@ -78,5 +78,15 @@ namespace NeuroTumAI.APIs.Controllers.Clinic
 			return Ok(_mapper.Map<SlotToReturnDto>(slot));
 
 		}
+
+		[Authorize(Roles = "Patient")]
+		[HttpGet("availableSlots/{clinicId}")]
+		public async Task<ActionResult<IReadOnlyList<SlotToReturnDto>>> GetClinicAvailableSlots([FromQuery] GetAvailableSlotsDto model, int clinicId)
+		{
+			var slots = await _clinicService.GetClinicAvailableSlotsAsync(clinicId, model.Date);
+
+			return Ok(_mapper.Map<IReadOnlyList<SlotToReturnDto>>(slots));
+
+		}
 	}
 }

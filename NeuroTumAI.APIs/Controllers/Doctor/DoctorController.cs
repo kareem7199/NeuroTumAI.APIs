@@ -24,7 +24,7 @@ namespace NeuroTumAI.APIs.Controllers.Doctor
 
 		[Authorize(Roles = "Patient")]
 		[HttpGet("byClinic/{clinicId}")]
-		public async Task<ActionResult> GetDoctorByClinicId(int clinicId)
+		public async Task<ActionResult<DoctorWithReviewsDto>> GetDoctorByClinicId(int clinicId)
 		{
 			var doctor = await _doctorService.GetDoctorByClinicIdAsync(clinicId);
 
