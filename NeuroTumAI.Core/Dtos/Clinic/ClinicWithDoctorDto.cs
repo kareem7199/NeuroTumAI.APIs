@@ -12,6 +12,7 @@ namespace NeuroTumAI.Core.Dtos.Clinic
 		public string Address { get; set; }
 		public string PhoneNumber { get; set; }
         public string DoctorProfilePicture { get; set; }
-        public string DoctorFullName { get; set; }
+		public double AverageStarRating { get; set; }
+		public string DoctorFullName { get; set; }
     }
 }

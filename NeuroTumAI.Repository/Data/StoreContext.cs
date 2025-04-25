@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using NeuroTumAI.Core.Entities.Appointment;
 using NeuroTumAI.Core.Entities.Post_Aggregate;
 using NeuroTumAI.Core.Identity;
 
@@ -22,6 +23,7 @@ namespace NeuroTumAI.Repository.Data
 		//public DbSet<Doctor> Doctors { get; set; }
 		public DbSet<Patient> Patients { get; set; }
 		public DbSet<Post> Posts { get; set; }
+        public DbSet<Review> Reviews { get; set; }
 
-	}
+    }
 }

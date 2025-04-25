@@ -14,5 +14,10 @@ namespace NeuroTumAI.Core.Specifications.AppointmentSpecs
 		{
 
 		}
+		public AppointmentSpecifications(int doctorId, int patientId)
+			: base(A => A.DoctorId == doctorId && A.PatientId == patientId && A.Status == AppointmentStatus.Completed)
+		{
+
+		}
 	}
 }

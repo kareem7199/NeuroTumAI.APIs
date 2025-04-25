@@ -123,6 +123,12 @@
   <data name="ClinicIdRequired" xml:space="preserve">
     <value>معرف العيادة مطلوب.</value>
   </data>
+  <data name="CommentLength" xml:space="preserve">
+    <value>لا يمكن أن يتجاوز التعليق 1000 حرف.</value>
+  </data>
+  <data name="CommentRequired" xml:space="preserve">
+    <value>التعليق مطلوب.</value>
+  </data>
   <data name="ContentLength" xml:space="preserve">
     <value>يجب أن يكون المحتوى بين 10 و 5000 حرف.</value>
   </data>
@@ -140,6 +146,9 @@
   </data>
   <data name="dob_required" xml:space="preserve">
     <value>تاريخ الميلاد مطلوب.</value>
+  </data>
+  <data name="DoctorIdRequired" xml:space="preserve">
+    <value>رقم الطبيب مطلوب.</value>
   </data>
   <data name="email_invalid" xml:space="preserve">
     <value>تنسيق البريد الإلكتروني غير صالح.</value>
@@ -194,6 +203,12 @@
   </data>
   <data name="SlotIdRequired" xml:space="preserve">
     <value>مطلوب اختيار الموعد.</value>
+  </data>
+  <data name="StarsRange" xml:space="preserve">
+    <value>يجب أن يكون التقييم بين 1 و 5.</value>
+  </data>
+  <data name="StarsRequired" xml:space="preserve">
+    <value>حقل التقييم مطلوب.</value>
   </data>
   <data name="StartTimeRange" xml:space="preserve">
     <value>يجب أن يكون الوقت الابتدائي بين 00:00 و 23:59.</value>

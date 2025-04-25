@@ -12,6 +12,7 @@ namespace NeuroTumAI.Core.Services.Contract
 {
 	public interface IClinicService
 	{
+		Task<Clinic?> GetClinicByIdAsync(int clinicId);
 		Task<IReadOnlyList<Clinic>> GetDoctorClinicAsync(string userId);
 		Task<IReadOnlyList<Clinic>> GetClinicsAsync(ClinicSpecParams specParams);
 		Task<int> GetCountAsync(ClinicSpecParams specParams);

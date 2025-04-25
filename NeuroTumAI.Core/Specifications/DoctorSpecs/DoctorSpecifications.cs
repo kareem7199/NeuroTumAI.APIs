@@ -14,5 +14,12 @@ namespace NeuroTumAI.Core.Specifications.DoctorSpecs
 		{
 			Includes.Add(D => D.ApplicationUser);
 		}
+
+		public DoctorSpecifications(int doctorId)
+			: base(D => D.Id == doctorId)
+		{
+			Includes.Add(D => D.ApplicationUser);
+			Includes.Add(D => D.Reviews);
+		}
 	}
 }

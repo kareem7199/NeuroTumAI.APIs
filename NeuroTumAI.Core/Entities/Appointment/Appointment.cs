@@ -13,6 +13,8 @@ namespace NeuroTumAI.Core.Entities.Appointment
 		public DateOnly Date { get; set; }
 		public TimeOnly StartTime { get; set; }
 		public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
+        public int DoctorId { get; set; }
+        public Doctor Doctor { get; set; }
         public int ClinicId { get; set; }
         public Clinic Clinic { get; set; }
         public int PatientId { get; set; }
