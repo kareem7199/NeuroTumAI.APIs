@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using NeuroTumAI.Core;
 using NeuroTumAI.Core.Dtos.Clinic;
 using NeuroTumAI.Core.Entities;
+using NeuroTumAI.Core.Entities.Appointment;
 using NeuroTumAI.Core.Entities.Clinic_Aggregate;
 using NeuroTumAI.Core.Exceptions;
 using NeuroTumAI.Core.Identity;
 using NeuroTumAI.Core.Resources.Responses;
 using NeuroTumAI.Core.Services.Contract;
+using NeuroTumAI.Core.Specifications.AppointmentSpecs;
 using NeuroTumAI.Core.Specifications.ClinicSpecs;
 using NeuroTumAI.Core.Specifications.DoctorSpecs;
 using NeuroTumAI.Core.Specifications.SlotSpecs;
@@ -83,6 +85,30 @@ namespace NeuroTumAI.Service.Services.ClinicService
 			await _unitOfWork.CompleteAsync();
 
 			return newSlot;
+		}
+
+		public async Task<IReadOnlyList<Slot>> GetClinicAvailableSlotsAsync(int clinicId, DateOnly date)
+		{
+			var clinic = await GetClinicByIdAsync(clinicId);
+			if (clinic is null)
+				throw new NotFoundException(_localizationService.GetMessage<ResponsesResources>("ClinicNotFound"));
+
+			var day = date.DayOfWeek;
+
+			var appointmentRepo = _unitOfWork.Repository<Appointment>();
+			var appointmentSpec = new AppointmentSpecifications(date, clinicId);
+			var appointments = await appointmentRepo.GetAllWithSpecAsync(appointmentSpec);
+
+			var times = new List<TimeOnly>();
+
+			foreach (var appointment in appointments)
+				times.Add(appointment.StartTime);
+
+			var slotRepo = _unitOfWork.Repository<Slot>();
+			var slotSpecs = new AvailableSlotSpecifications(day, clinicId, times);
+			var slots = await slotRepo.GetAllWithSpecAsync(slotSpecs);
+
+			return slots;
 		}
 
 		public async Task<Clinic?> GetClinicByIdAsync(int clinicId)
