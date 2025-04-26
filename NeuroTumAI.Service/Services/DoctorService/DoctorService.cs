@@ -31,5 +31,12 @@ namespace NeuroTumAI.Service.Services.DoctorService
 
 			return doctor!;
 		}
+
+		public async Task<Doctor> GetDoctorByUserIdAsync(string userId)
+		{
+			var doctorRepo = _unitOfWork.Repository<Doctor>();
+			var doctorSpec = new DoctorSpecifications(userId);
+			return await doctorRepo.GetWithSpecAsync(doctorSpec);
+		}
 	}
 }

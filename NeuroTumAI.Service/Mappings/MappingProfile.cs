@@ -65,6 +65,8 @@ namespace NeuroTumAI.Service.Mappings
 				.ForMember(D => D.ProfilePicture, O => O.MapFrom(S => S.ApplicationUser.ProfilePicture))
 				.ForMember(D => D.AverageStarRating, O => O.MapFrom(D => D.Reviews.Any() ? D.Reviews.Average(R => R.Stars) : 0));
 
+			CreateMap<Appointment, AppoitntmentWithPatientDto>();
+
 		}
 	}
 }

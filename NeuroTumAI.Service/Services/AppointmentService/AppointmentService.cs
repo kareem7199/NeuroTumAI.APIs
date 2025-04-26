@@ -14,6 +14,7 @@ using NeuroTumAI.Core.Identity;
 using NeuroTumAI.Core.Resources.Responses;
 using NeuroTumAI.Core.Services.Contract;
 using NeuroTumAI.Core.Specifications.AppointmentSpecs;
+using NeuroTumAI.Core.Specifications.DoctorSpecs;
 using NeuroTumAI.Core.Specifications.PatientSpecs;
 
 namespace NeuroTumAI.Service.Services.AppointmentService
@@ -22,11 +23,13 @@ namespace NeuroTumAI.Service.Services.AppointmentService
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly ILocalizationService _localizationService;
+		private readonly IDoctorService _doctorService;
 
-		public AppointmentService(IUnitOfWork unitOfWork, ILocalizationService localizationService)
+		public AppointmentService(IUnitOfWork unitOfWork, ILocalizationService localizationService, IDoctorService doctorService)
 		{
 			_unitOfWork = unitOfWork;
 			_localizationService = localizationService;
+			_doctorService = doctorService;
 		}
 		public async Task<Appointment> BookAppointmentAsync(BookAppointmentDto model, string userId)
 		{
@@ -74,6 +77,23 @@ namespace NeuroTumAI.Service.Services.AppointmentService
 			await _unitOfWork.CompleteAsync();
 
 			return newAppointment;
+		}
+
+		public async Task<IReadOnlyList<Appointment>> GetDoctorAppointmentsAsync(string userId, int clinicId, DateOnly date)
+		{
+			var doctor = await _doctorService.GetDoctorByUserIdAsync(userId);
+
+			var clinicRepo = _unitOfWork.Repository<Clinic>();
+			var clinic = await clinicRepo.GetAsync(clinicId);
+			if (clinic is null || clinic.DoctorId != doctor.Id)
+				throw new NotFoundException(_localizationService.GetMessage<ResponsesResources>("ClinicNotFound"));
+
+			var appointmentRepo = _unitOfWork.Repository<Appointment>();
+			var appointmentSpecs = new AppointmentWithPatientSpecifications(date, clinicId);
+			var appointments = await appointmentRepo.GetAllWithSpecAsync(appointmentSpecs);
+
+			return appointments;
+
 		}
 	}
 }

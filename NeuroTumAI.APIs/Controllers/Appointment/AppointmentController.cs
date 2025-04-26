@@ -29,5 +29,16 @@ namespace NeuroTumAI.APIs.Controllers.Appointment
 
 			return Ok(_mapper.Map<AppointmentToReturnDto>(appointment));
 		}
+
+		[Authorize(Roles = "Doctor", Policy = "ActiveUserOnly")]
+		[HttpGet("doctor/{clinicId}")]
+		public async Task<ActionResult<IReadOnlyList<AppoitntmentWithPatientDto>>> GetDoctorAppointments(int clinicId, [FromQuery] DateOnly date)
+		{
+			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+			var appointments = await _appointmentService.GetDoctorAppointmentsAsync(userId, clinicId, date);
+
+			return Ok(_mapper.Map<IReadOnlyList<AppoitntmentWithPatientDto>>(appointments));
+		}
 	}
 }

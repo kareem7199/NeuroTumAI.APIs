@@ -11,5 +11,6 @@ namespace NeuroTumAI.Core.Services.Contract
 	public interface IAppointmentService
 	{
 		Task<Appointment> BookAppointmentAsync(BookAppointmentDto model, string userId);
+		Task<IReadOnlyList<Appointment>> GetDoctorAppointmentsAsync(string userId, int clinicId, DateOnly date);
 	}
 }
