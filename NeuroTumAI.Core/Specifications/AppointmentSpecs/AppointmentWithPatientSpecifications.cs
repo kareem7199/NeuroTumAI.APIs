@@ -14,6 +14,7 @@ namespace NeuroTumAI.Core.Specifications.AppointmentSpecs
 		{
 			Includes.Add(A => A.Patient);
 			Includes.Add(A => A.Patient.ApplicationUser);
+			AddOrderBy(A => A.StartTime);
 		}
 	}
 }
