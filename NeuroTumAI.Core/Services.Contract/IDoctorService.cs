@@ -10,5 +10,6 @@ namespace NeuroTumAI.Core.Services.Contract
 	public interface IDoctorService
 	{
 		Task<Doctor> GetDoctorByClinicIdAsync(int clinicId);
+		Task<Doctor> GetDoctorByUserIdAsync(string userId);
 	}
 }
