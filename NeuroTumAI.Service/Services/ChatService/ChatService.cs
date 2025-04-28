@@ -117,5 +117,27 @@ namespace NeuroTumAI.Service.Services.ChatService
 			var conversationSpecs = new UserConversationSpecification(userId);
 			return await conversationRepo.GetCountAsync(conversationSpecs);
 		}
+
+		public async Task<IReadOnlyList<ChatMessage>> GetConversationMessagesAsync(string userId, int conversationId, PaginationParamsDto model)
+		{
+			var conversationRepo = _unitOfWork.Repository<Conversation>();
+			var conversation = await conversationRepo.GetAsync(conversationId);
+
+			if (conversation is null || (conversation.FirstUserId != userId && conversation.SecondUserId != userId))
+				throw new NotFoundException("Conversation not found or you are not a participant.");
+
+			var chatMessageRepo = _unitOfWork.Repository<ChatMessage>();
+			var chatMessageSpecs = new ChatMessageSpecifications(conversationId, model);
+
+			return await chatMessageRepo.GetAllWithSpecAsync(chatMessageSpecs);
+		}
+
+		public Task<int> GetConversationMessagesCountAsync(int conversationId)
+		{
+			var chatMessageRepo = _unitOfWork.Repository<ChatMessage>();
+			var chatMessageSpecs = new ChatMessageSpecifications(conversationId);
+
+			return chatMessageRepo.GetCountAsync(chatMessageSpecs);
+		}
 	}
 }

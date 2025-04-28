@@ -14,5 +14,7 @@ namespace NeuroTumAI.Core.Services.Contract
 		Task<ChatMessage> SendMessageAsync(SendMessageDto sendMessageDto, string userId);
 		Task<IReadOnlyList<ConversationToReturnDto>> GetUserConversationsAsync(string userId, PaginationParamsDto model);
 		Task<int> GetUserConversationsCountAsync(string userId);
+		Task<IReadOnlyList<ChatMessage>> GetConversationMessagesAsync(string userId, int conversationId , PaginationParamsDto model);
+		Task<int> GetConversationMessagesCountAsync(int conversationId);
 	}
 }
