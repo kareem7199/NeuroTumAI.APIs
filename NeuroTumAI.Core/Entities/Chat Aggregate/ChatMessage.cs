@@ -12,7 +12,6 @@ namespace NeuroTumAI.Core.Entities.Chat_Aggregate
 		public string SenderId { get; set; }
 		public string Content { get; set; }
 		public int ConversationId { get; set; }
-		public bool IsRead { get; set; } = false;
 		public DateTime SentAt { get; set; } = DateTime.UtcNow;
 		public Conversation Conversation { get; set; }
 		public ApplicationUser Sender { get; set; }

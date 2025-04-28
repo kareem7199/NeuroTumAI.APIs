@@ -3,8 +3,13 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NeuroTumAI.APIs.Controllers.Base;
+using NeuroTumAI.Core.Dtos;
 using NeuroTumAI.Core.Dtos.Chat;
+using NeuroTumAI.Core.Dtos.Clinic;
+using NeuroTumAI.Core.Dtos.Pagination;
+using NeuroTumAI.Core.Entities.Chat_Aggregate;
 using NeuroTumAI.Core.Services.Contract;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NeuroTumAI.APIs.Controllers.Chat
 {
@@ -28,6 +33,17 @@ namespace NeuroTumAI.APIs.Controllers.Chat
 			var message = await _chatService.SendMessageAsync(dto, userId);
 
 			return Ok(_mapper.Map<MessageToReturnDto>(message));
+		}
+
+		[HttpGet("conversations")]
+		public async Task<ActionResult<IReadOnlyList<ConversationToReturnDto>>> GetUserConversations([FromQuery] PaginationParamsDto specParams)
+		{
+			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+			var conversations = await _chatService.GetUserConversationsAsync(userId, specParams);
+			var count = await _chatService.GetUserConversationsCountAsync(userId);
+
+			return Ok(new PaginationDto<ConversationToReturnDto>(specParams.PageIndex, specParams.PageSize, count, conversations));
 		}
 
 	}

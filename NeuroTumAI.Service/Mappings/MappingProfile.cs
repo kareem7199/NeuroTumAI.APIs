@@ -71,6 +71,12 @@ namespace NeuroTumAI.Service.Mappings
 
 			CreateMap<ChatMessage, MessageToReturnDto>();
 
+			CreateMap<ApplicationUser, ChatUserDto>();
+
+			CreateMap<Conversation, ConversationToReturnDto>()
+				.ForMember(D => D.User, O => O.MapFrom(S => S.FirstUser))
+				.ForMember(D => D.LastMessage, O => O.MapFrom(S => S.ChatMessages.FirstOrDefault()));
+;
 		}
 	}
 }
