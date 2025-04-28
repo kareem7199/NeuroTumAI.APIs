@@ -13,7 +13,7 @@ using NeuroTumAI.Repository.Data;
 namespace NeuroTumAI.Repository.Data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20250428081453_Init")]
+    [Migration("20250428111502_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -244,9 +244,6 @@ namespace NeuroTumAI.Repository.Data.Migrations
 
                     b.Property<int>("ConversationId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
 
                     b.Property<string>("SenderId")
                         .IsRequired()

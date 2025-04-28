@@ -8,11 +8,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using NeuroTumAI.Core;
 using NeuroTumAI.Core.Dtos.Chat;
+using NeuroTumAI.Core.Dtos.Pagination;
 using NeuroTumAI.Core.Entities.Chat_Aggregate;
 using NeuroTumAI.Core.Exceptions;
 using NeuroTumAI.Core.Identity;
 using NeuroTumAI.Core.Services.Contract;
 using NeuroTumAI.Core.Specifications;
+using NeuroTumAI.Core.Specifications.ChatMessageSpecs;
+using NeuroTumAI.Core.Specifications.ConversationSpecs;
 using NeuroTumAI.Service.Hubs;
 
 namespace NeuroTumAI.Service.Services.ChatService
@@ -23,13 +26,15 @@ namespace NeuroTumAI.Service.Services.ChatService
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly IHubContext<ChatHub> _chatHubContext;
 		private readonly IMapper _mapper;
+		private readonly RoleManager<IdentityRole> _roleManager;
 
-		public ChatService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, IHubContext<ChatHub> chatHubContext, IMapper mapper)
+		public ChatService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, IHubContext<ChatHub> chatHubContext, IMapper mapper, RoleManager<IdentityRole> roleManager)
 		{
 			_unitOfWork = unitOfWork;
 			_userManager = userManager;
 			_chatHubContext = chatHubContext;
 			_mapper = mapper;
+			_roleManager = roleManager;
 		}
 
 		private async Task DeliverMessageAsync(string receiverId, MessageToReturnDto message)
@@ -43,7 +48,7 @@ namespace NeuroTumAI.Service.Services.ChatService
 				throw new BadRequestException("The sender and receiver cannot be the same user.");
 
 			var conversationRepo = _unitOfWork.Repository<Conversation>();
-			var conversationSpec = new ConversationSpecs(userId, sendMessageDto.ReceiverId);
+			var conversationSpec = new ConversationSpecification(userId, sendMessageDto.ReceiverId);
 			var conversation = await conversationRepo.GetWithSpecAsync(conversationSpec);
 
 			if (conversation is null)
@@ -80,6 +85,37 @@ namespace NeuroTumAI.Service.Services.ChatService
 			await DeliverMessageAsync(sendMessageDto.ReceiverId, _mapper.Map<MessageToReturnDto>(newMessage));
 
 			return newMessage;
+		}
+
+		public async Task<IReadOnlyList<ConversationToReturnDto>> GetUserConversationsAsync(string userId, PaginationParamsDto model)
+		{
+			var conversationRepo = _unitOfWork.Repository<Conversation>();
+			var conversationSpecs = new ConversationSpecification(userId, model);
+			var conversations = await conversationRepo.GetAllWithSpecAsync(conversationSpecs);
+
+			var ChatMessageRepo = _unitOfWork.Repository<ChatMessage>();
+
+			foreach (var conversation in conversations)
+			{
+				if (conversation.FirstUserId == userId)
+					conversation.FirstUser = conversation.SecondUser;
+
+				var lastMessageSpecs = new LastMessageSpecifications(conversation.Id);
+				var lastMessages = await ChatMessageRepo.GetAllWithSpecAsync(lastMessageSpecs);
+
+				conversation.ChatMessages.Add(lastMessages[0]);
+			}
+
+			var conversationsData = _mapper.Map<IReadOnlyList<ConversationToReturnDto>>(conversations);
+
+			return conversationsData;
+		}
+
+		public async Task<int> GetUserConversationsCountAsync(string userId)
+		{
+			var conversationRepo = _unitOfWork.Repository<Conversation>();
+			var conversationSpecs = new UserConversationSpecification(userId);
+			return await conversationRepo.GetCountAsync(conversationSpecs);
 		}
 	}
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NeuroTumAI.Core.Dtos.Chat;
+using NeuroTumAI.Core.Dtos.Pagination;
 using NeuroTumAI.Core.Entities.Chat_Aggregate;
 
 namespace NeuroTumAI.Core.Services.Contract
@@ -11,5 +12,7 @@ namespace NeuroTumAI.Core.Services.Contract
 	public interface IChatService
 	{
 		Task<ChatMessage> SendMessageAsync(SendMessageDto sendMessageDto, string userId);
+		Task<IReadOnlyList<ConversationToReturnDto>> GetUserConversationsAsync(string userId, PaginationParamsDto model);
+		Task<int> GetUserConversationsCountAsync(string userId);
 	}
 }
