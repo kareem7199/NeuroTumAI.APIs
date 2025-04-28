@@ -132,12 +132,12 @@ namespace NeuroTumAI.Service.Services.ChatService
 			return await chatMessageRepo.GetAllWithSpecAsync(chatMessageSpecs);
 		}
 
-		public Task<int> GetConversationMessagesCountAsync(int conversationId)
+		public async Task<int> GetConversationMessagesCountAsync(int conversationId)
 		{
 			var chatMessageRepo = _unitOfWork.Repository<ChatMessage>();
 			var chatMessageSpecs = new ChatMessageSpecifications(conversationId);
 
-			return chatMessageRepo.GetCountAsync(chatMessageSpecs);
+			return await chatMessageRepo.GetCountAsync(chatMessageSpecs);
 		}
 	}
 }
