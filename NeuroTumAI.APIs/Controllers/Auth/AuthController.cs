@@ -40,7 +40,7 @@ namespace NeuroTumAI.APIs.Controllers.Auth
 		{
 			await _accountService.VerifyEmailAsync(model);
 
-			return Ok();
+			return Ok(new { Message = "Email has been verified successfully." });
 		}
 
 		[HttpPost("login")]

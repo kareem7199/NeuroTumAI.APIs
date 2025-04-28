@@ -107,6 +107,7 @@ namespace NeuroTumAI.APIs
 			#endregion
 
 			app.MapHub<PostHub>("/posthub");
+			app.MapHub<ChatHub>("/chatHub");
 			app.Run();
 		}
 	}
