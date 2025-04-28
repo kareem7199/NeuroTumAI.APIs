@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NeuroTumAI.Core;
+using NeuroTumAI.Core.Dtos.Pagination;
 using NeuroTumAI.Core.Dtos.Review;
 using NeuroTumAI.Core.Entities.Appointment;
 using NeuroTumAI.Core.Exceptions;
@@ -20,11 +21,13 @@ namespace NeuroTumAI.Service.Services.ReviewService
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly ILocalizationService _localizationService;
+		private readonly IDoctorService _doctorService;
 
-		public ReviewService(IUnitOfWork unitOfWork, ILocalizationService localizationService)
+		public ReviewService(IUnitOfWork unitOfWork, ILocalizationService localizationService, IDoctorService doctorService)
 		{
 			_unitOfWork = unitOfWork;
 			_localizationService = localizationService;
+			_doctorService = doctorService;
 		}
 		public async Task<Review> AddReviewAsync(AddReviewDto addReviewDto, string userId)
 		{
@@ -79,6 +82,28 @@ namespace NeuroTumAI.Service.Services.ReviewService
 			var reviews = await reviewRepo.GetAllWithSpecAsync(reviewSpec);
 
 			return reviews;
+		}
+
+		public async Task<IReadOnlyList<Review>> GetDoctorReviewsAsync(int doctorId, PaginationParamsDto specParams)
+		{
+			var doctor = await _doctorService.GetDoctorByIdAsync(doctorId);
+			if (doctor is null)
+				throw new NotFoundException(_localizationService.GetMessage<ResponsesResources>("UserNotFound"));
+
+			var reviewRepo = _unitOfWork.Repository<Review>();
+			var reviewSpec = new DoctorReviewSpecifications(doctorId,specParams);
+
+			var reviews = await reviewRepo.GetAllWithSpecAsync(reviewSpec);
+
+			return reviews;
+		}
+
+		public async Task<int> GetDoctorReviewsCountAsync(int doctorId)
+		{
+			var reviewRepo = _unitOfWork.Repository<Review>();
+			var reviewSpec = new DoctorReviewSpecifications(doctorId);
+
+			return await reviewRepo.GetCountAsync(reviewSpec);
 		}
 	}
 }

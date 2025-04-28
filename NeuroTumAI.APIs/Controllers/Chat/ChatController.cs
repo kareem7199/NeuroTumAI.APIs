@@ -36,7 +36,7 @@ namespace NeuroTumAI.APIs.Controllers.Chat
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<IReadOnlyList<ConversationToReturnDto>>> GetUserConversations([FromQuery] PaginationParamsDto specParams)
+		public async Task<ActionResult<IReadOnlyList<PaginationDto<MessageToReturnDto>>>> GetUserConversations([FromQuery] PaginationParamsDto specParams)
 		{
 			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -47,7 +47,7 @@ namespace NeuroTumAI.APIs.Controllers.Chat
 		}
 
 		[HttpGet("{conversationId}")]
-		public async Task<ActionResult<IReadOnlyList<ConversationToReturnDto>>> GetConversationMessages(int conversationId, [FromQuery] PaginationParamsDto specParams)
+		public async Task<ActionResult<IReadOnlyList<PaginationDto<MessageToReturnDto>>>> GetConversationMessages(int conversationId, [FromQuery] PaginationParamsDto specParams)
 		{
 			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
