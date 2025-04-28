@@ -13,7 +13,7 @@ using NeuroTumAI.Repository.Data;
 namespace NeuroTumAI.Repository.Data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20250425124358_Init")]
+    [Migration("20250428081453_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -228,6 +228,68 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.HasIndex("PatientId");
 
                     b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.Chat_Aggregate.ChatMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ConversationId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SenderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("ChatMessage");
+                });
+
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.Chat_Aggregate.Conversation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FirstUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("LastMessageTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SecondUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FirstUserId");
+
+                    b.HasIndex("SecondUserId");
+
+                    b.ToTable("Conversation");
                 });
 
             modelBuilder.Entity("NeuroTumAI.Core.Entities.Clinic", b =>
@@ -624,6 +686,44 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.Chat_Aggregate.ChatMessage", b =>
+                {
+                    b.HasOne("NeuroTumAI.Core.Entities.Chat_Aggregate.Conversation", "Conversation")
+                        .WithMany("ChatMessages")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NeuroTumAI.Core.Identity.ApplicationUser", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+
+                    b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.Chat_Aggregate.Conversation", b =>
+                {
+                    b.HasOne("NeuroTumAI.Core.Identity.ApplicationUser", "FirstUser")
+                        .WithMany()
+                        .HasForeignKey("FirstUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("NeuroTumAI.Core.Identity.ApplicationUser", "SecondUser")
+                        .WithMany()
+                        .HasForeignKey("SecondUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("FirstUser");
+
+                    b.Navigation("SecondUser");
+                });
+
             modelBuilder.Entity("NeuroTumAI.Core.Entities.Clinic", b =>
                 {
                     b.HasOne("NeuroTumAI.Core.Identity.Doctor", "Doctor")
@@ -721,6 +821,11 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.Chat_Aggregate.Conversation", b =>
+                {
+                    b.Navigation("ChatMessages");
                 });
 
             modelBuilder.Entity("NeuroTumAI.Core.Entities.Clinic", b =>

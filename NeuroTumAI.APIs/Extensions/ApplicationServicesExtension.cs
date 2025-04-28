@@ -20,6 +20,7 @@ using NeuroTumAI.Service.Services.AccountService;
 using NeuroTumAI.Service.Services.AppointmentService;
 using NeuroTumAI.Service.Services.AuthService;
 using NeuroTumAI.Service.Services.BlobStorageService;
+using NeuroTumAI.Service.Services.ChatService;
 using NeuroTumAI.Service.Services.ClinicService;
 using NeuroTumAI.Service.Services.DoctorService;
 using NeuroTumAI.Service.Services.EmailService;
@@ -48,6 +49,7 @@ namespace NeuroTumAI.APIs.Extensions
 			services.AddScoped<IAppointmentService, AppointmentService>();
 			services.AddScoped<IReviewService,ReviewService>();
 			services.AddScoped<IDoctorService, DoctorService>();
+			services.AddScoped<IChatService, ChatService>();
 			services.AddTransient<IEmailService, EmailService>();
 			services.AddScoped<ExceptionMiddleware>();
 
@@ -124,7 +126,7 @@ namespace NeuroTumAI.APIs.Extensions
 						// If the request is for the hub...
 						var path = context.HttpContext.Request.Path;
 						if (!string.IsNullOrEmpty(accessToken) &&
-							(path.StartsWithSegments("/posthub")))
+							(path.StartsWithSegments("/posthub") || path.StartsWithSegments("/chatHub")))
 						{
 							// Read the token from the query string
 							context.Token = accessToken;

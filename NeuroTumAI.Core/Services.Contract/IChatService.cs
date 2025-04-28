@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using NeuroTumAI.Core.Dtos.Chat;
+using NeuroTumAI.Core.Entities.Chat_Aggregate;
+
+namespace NeuroTumAI.Core.Services.Contract
+{
+	public interface IChatService
+	{
+		Task<ChatMessage> SendMessageAsync(SendMessageDto sendMessageDto, string userId);
+	}
+}

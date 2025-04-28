@@ -1,0 +1,85 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
+using NeuroTumAI.Core;
+using NeuroTumAI.Core.Dtos.Chat;
+using NeuroTumAI.Core.Entities.Chat_Aggregate;
+using NeuroTumAI.Core.Exceptions;
+using NeuroTumAI.Core.Identity;
+using NeuroTumAI.Core.Services.Contract;
+using NeuroTumAI.Core.Specifications;
+using NeuroTumAI.Service.Hubs;
+
+namespace NeuroTumAI.Service.Services.ChatService
+{
+	public class ChatService : IChatService
+	{
+		private readonly IUnitOfWork _unitOfWork;
+		private readonly UserManager<ApplicationUser> _userManager;
+		private readonly IHubContext<ChatHub> _chatHubContext;
+		private readonly IMapper _mapper;
+
+		public ChatService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, IHubContext<ChatHub> chatHubContext, IMapper mapper)
+		{
+			_unitOfWork = unitOfWork;
+			_userManager = userManager;
+			_chatHubContext = chatHubContext;
+			_mapper = mapper;
+		}
+
+		private async Task DeliverMessageAsync(string receiverId, MessageToReturnDto message)
+		{
+			await _chatHubContext.Clients.User(receiverId).SendAsync("ReceiveMessage", message);
+		}
+
+		public async Task<ChatMessage> SendMessageAsync(SendMessageDto sendMessageDto, string userId)
+		{
+			if (userId == sendMessageDto.ReceiverId)
+				throw new BadRequestException("The sender and receiver cannot be the same user.");
+
+			var conversationRepo = _unitOfWork.Repository<Conversation>();
+			var conversationSpec = new ConversationSpecs(userId, sendMessageDto.ReceiverId);
+			var conversation = await conversationRepo.GetWithSpecAsync(conversationSpec);
+
+			if (conversation is null)
+			{
+				var receiver = await _userManager.FindByIdAsync(sendMessageDto.ReceiverId);
+				if (receiver is null)
+					throw new NotFoundException("Receiver with the specified ID not found.");
+
+				conversation = new Conversation()
+				{
+					FirstUserId = userId,
+					SecondUserId = sendMessageDto.ReceiverId
+				};
+
+				conversationRepo.Add(conversation);
+				await _unitOfWork.CompleteAsync();
+			}
+
+			var newMessage = new ChatMessage()
+			{
+				Content = sendMessageDto.Content,
+				ConversationId = conversation.Id,
+				SenderId = userId
+			};
+
+			var chatMessageRepo = _unitOfWork.Repository<ChatMessage>();
+
+			conversation.LastMessageTime = DateTime.UtcNow;
+
+			chatMessageRepo.Add(newMessage);
+
+			await _unitOfWork.CompleteAsync();
+
+			await DeliverMessageAsync(sendMessageDto.ReceiverId, _mapper.Map<MessageToReturnDto>(newMessage));
+
+			return newMessage;
+		}
+	}
+}
