@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -17,6 +15,7 @@ using NeuroTumAI.Repository.Data;
 using NeuroTumAI.Service.Mappings;
 using NeuroTumAI.Service.Providers.Identity;
 using NeuroTumAI.Service.Services.AccountService;
+using NeuroTumAI.Service.Services.AdminService;
 using NeuroTumAI.Service.Services.AppointmentService;
 using NeuroTumAI.Service.Services.AuthService;
 using NeuroTumAI.Service.Services.BlobStorageService;
@@ -50,6 +49,7 @@ namespace NeuroTumAI.APIs.Extensions
 			services.AddScoped<IReviewService,ReviewService>();
 			services.AddScoped<IDoctorService, DoctorService>();
 			services.AddScoped<IChatService, ChatService>();
+			services.AddScoped<IAdminService, AdminService>();
 			services.AddTransient<IEmailService, EmailService>();
 			services.AddScoped<ExceptionMiddleware>();
 

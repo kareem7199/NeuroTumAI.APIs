@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using NeuroTumAI.Core.Entities;
+using NeuroTumAI.Core.Entities.Admin;
 using NeuroTumAI.Core.Entities.Appointment;
 using NeuroTumAI.Core.Entities.Clinic_Aggregate;
 using NeuroTumAI.Core.Identity;
@@ -31,6 +32,7 @@ namespace NeuroTumAI.Repository.Data
 			await SeedDoctorsAsync(userManager, _dbContext);
 			await _dbContext.SaveChangesAsync();
 			await SeedAppointmentsWithReviewsAsync(_dbContext);
+			await SeedAdminsAsync(_dbContext);
 			await _dbContext.SaveChangesAsync();
 		}
 		private static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
@@ -146,6 +148,20 @@ namespace NeuroTumAI.Repository.Data
 					await _dbContext.AddAsync(newReview);
 				}
 
+			}
+		}
+		private static async Task SeedAdminsAsync(StoreContext _dbContext)
+		{
+			for (int i = 1; i <= 10; i++)
+			{
+				var admin = new Admin
+				{
+					Username = $"Admin{i}",
+					Email = $"admin{i}@gmail.com",
+					PasswordHash = BCrypt.Net.BCrypt.HashPassword("Pa$$w0rd")
+				};
+
+				await _dbContext.AddAsync(admin);
 			}
 		}
 	}
