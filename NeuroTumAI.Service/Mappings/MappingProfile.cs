@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using NeuroTumAI.Core.Dtos.Account;
+using NeuroTumAI.Core.Dtos.Admin;
 using NeuroTumAI.Core.Dtos.Appointments;
 using NeuroTumAI.Core.Dtos.Chat;
 using NeuroTumAI.Core.Dtos.Clinic;
 using NeuroTumAI.Core.Dtos.Doctor;
 using NeuroTumAI.Core.Dtos.Review;
 using NeuroTumAI.Core.Entities;
+using NeuroTumAI.Core.Entities.Admin;
 using NeuroTumAI.Core.Entities.Appointment;
 using NeuroTumAI.Core.Entities.Chat_Aggregate;
 using NeuroTumAI.Core.Entities.Clinic_Aggregate;
@@ -72,6 +74,8 @@ namespace NeuroTumAI.Service.Mappings
 			CreateMap<ChatMessage, MessageToReturnDto>();
 
 			CreateMap<ApplicationUser, ChatUserDto>();
+
+			CreateMap<Admin, AdminToReturnDto>();
 
 			CreateMap<Conversation, ConversationToReturnDto>()
 				.ForMember(D => D.User, O => O.MapFrom(S => S.FirstUser))
