@@ -23,7 +23,14 @@ namespace NeuroTumAI.Service.Services.AdminService
 			_unitOfWork = unitOfWork;
 			_authService = authService;
 		}
-        public async Task<string> LoginAdminAsync(LoginDto model)
+
+		public async Task<Admin> GetAdminByIdAsync(int id)
+		{
+			var adminRepo = _unitOfWork.Repository<Admin>();
+			return await adminRepo.GetAsync(id);
+		}
+
+		public async Task<string> LoginAdminAsync(LoginDto model)
 		{
 			var adminRepo = _unitOfWork.Repository<Admin>();
 			var adminSpec = new AdminSpecifications(model.Email);

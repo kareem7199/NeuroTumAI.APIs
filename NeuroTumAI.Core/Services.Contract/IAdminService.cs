@@ -11,5 +11,6 @@ namespace NeuroTumAI.Core.Services.Contract
 	public interface IAdminService
 	{
 		Task<string> LoginAdminAsync(LoginDto model);
+		Task<Admin> GetAdminByIdAsync(int id);
 	}
 }
