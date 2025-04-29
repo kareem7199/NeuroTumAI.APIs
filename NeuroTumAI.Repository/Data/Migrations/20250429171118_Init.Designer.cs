@@ -13,7 +13,7 @@ using NeuroTumAI.Repository.Data;
 namespace NeuroTumAI.Repository.Data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20250428111502_Init")]
+    [Migration("20250429171118_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -157,6 +157,31 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.Admin.Admin", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Admins");
                 });
 
             modelBuilder.Entity("NeuroTumAI.Core.Entities.Appointment.Appointment", b =>

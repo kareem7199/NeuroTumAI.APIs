@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using NeuroTumAI.Core.Dtos.Account;
 using NeuroTumAI.Core.Entities.Admin;
-using NeuroTumAI.Core.Identity;
 
 namespace NeuroTumAI.Core.Services.Contract
 {
-	public interface IAuthService
+	public interface IAdminService
 	{
-		Task<string> CreateTokenAsync(ApplicationUser user);
-		Task<string> CreateTokenAsync(Admin user);
+		Task<string> LoginAdminAsync(LoginDto model);
 	}
 }
