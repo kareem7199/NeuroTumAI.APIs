@@ -12,6 +12,8 @@ namespace NeuroTumAI.Core.Services.Contract
 	{
 		Task<Doctor> GetDoctorByClinicIdAsync(int clinicId);
 		Task<IReadOnlyList<Doctor>> GetPendingDoctorsAsync(PendingDoctorSpecParams model);
+		Task<Doctor> AcceptPendingDoctorAsync(int doctorId);
+		Task RejectPendingDoctorAsync(int doctorId);
 		Task<int> GetPendingDoctorsCountAsync(PendingDoctorSpecParams model);
 		Task<Doctor> GetDoctorByUserIdAsync(string userId);
 		Task<Doctor> GetDoctorByIdAsync(int doctorId);
