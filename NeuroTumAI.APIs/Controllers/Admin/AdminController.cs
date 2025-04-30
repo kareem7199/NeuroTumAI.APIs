@@ -1,13 +1,15 @@
 ﻿using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NeuroTumAI.APIs.Controllers.Base;
+using NeuroTumAI.Core.Dtos;
 using NeuroTumAI.Core.Dtos.Account;
 using NeuroTumAI.Core.Dtos.Admin;
+using NeuroTumAI.Core.Dtos.Doctor;
 using NeuroTumAI.Core.Exceptions;
 using NeuroTumAI.Core.Services.Contract;
+using NeuroTumAI.Core.Specifications.DoctorSpecs;
 
 namespace NeuroTumAI.APIs.Controllers.Admin
 {
@@ -15,11 +17,13 @@ namespace NeuroTumAI.APIs.Controllers.Admin
 	{
 		private readonly IAdminService _adminService;
 		private readonly IMapper _mapper;
+		private readonly IDoctorService _doctorService;
 
-		public AdminController(IAdminService adminService, IMapper mapper)
+		public AdminController(IAdminService adminService, IMapper mapper, IDoctorService doctorService)
 		{
 			_adminService = adminService;
 			_mapper = mapper;
+			_doctorService = doctorService;
 		}
 
 		[HttpPost("login")]
@@ -43,6 +47,18 @@ namespace NeuroTumAI.APIs.Controllers.Admin
 
 
 			return Ok(new { Data = _mapper.Map<AdminToReturnDto>(admin) });
+		}
+
+		[Authorize(Roles = "Admin")]
+		[HttpGet("pendingDoctors")]
+		public async Task<ActionResult> GetPendingDoctors([FromQuery] PendingDoctorSpecParams specParams)
+		{
+			var doctors = await _doctorService.GetPendingDoctorsAsync(specParams);
+			var count = await _doctorService.GetPendingDoctorsCountAsync(specParams);
+
+			var data = _mapper.Map<IReadOnlyList<PendingDoctorDto>>(doctors);
+
+			return Ok(new PaginationDto<PendingDoctorDto>(specParams.PageIndex, specParams.PageSize, count, data));
 		}
 	}
 }

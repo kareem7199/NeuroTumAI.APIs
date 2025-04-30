@@ -71,11 +71,11 @@ namespace NeuroTumAI.Repository.Data
 		}
 		private static async Task SeedDoctorsAsync(UserManager<ApplicationUser> userManager, StoreContext _dbContext)
 		{
-			for (int i = 0; i < 5; i++)
+			for (int i = 0; i < 100; i++)
 			{
 				var newAccount = new ApplicationUser()
 				{
-					ProfilePicture = "",
+					ProfilePicture = "https://kareem.blob.core.windows.net/profilepictures/471182393_2003306546854517_2794750337341868811_n.jpg",
 					FullName = $"Doctor{i + 1}",
 					Email = $"doctor{i + 1}@gmail.com",
 					UserName = $"Doctor{i + 1}",
@@ -88,9 +88,9 @@ namespace NeuroTumAI.Repository.Data
 				var newDoctor = new Doctor()
 				{
 					ApplicationUserId = newAccount.Id,
-					LicenseDocumentBack = "",
-					LicenseDocumentFront = "",
-					IsApproved = true
+					LicenseDocumentBack = "https://kareem.blob.core.windows.net/doctor-licenses/FxtVyt2XgAA1zis.jpeg",
+					LicenseDocumentFront = "https://kareem.blob.core.windows.net/doctor-licenses/FxtVyt2XgAA1zis.jpeg",
+					IsApproved = i < 50
 				};
 				var location = new NetTopologySuite.Geometries.Point(31.2357, 30.0444) { SRID = 4326 };
 				var newClinic = new Clinic()

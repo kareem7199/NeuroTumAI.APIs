@@ -44,5 +44,21 @@ namespace NeuroTumAI.Service.Services.DoctorService
 			var doctorRepo = _unitOfWork.Repository<Doctor>();
 			return await doctorRepo.GetAsync(doctorId);
 		}
+
+		public async Task<IReadOnlyList<Doctor>> GetPendingDoctorsAsync(PendingDoctorSpecParams model)
+		{
+			var doctorRepo = _unitOfWork.Repository<Doctor>();
+			var doctorSpecs = new PendingDoctorSpecifications(model);
+
+			return await doctorRepo.GetAllWithSpecAsync(doctorSpecs);
+		}
+
+		public async Task<int> GetPendingDoctorsCountAsync(PendingDoctorSpecParams model)
+		{
+			var doctorRepo = _unitOfWork.Repository<Doctor>();
+			var doctorSpecs = new PendingDoctorCountSpecifications(model);
+
+			return await doctorRepo.GetCountAsync(doctorSpecs);
+		}
 	}
 }
