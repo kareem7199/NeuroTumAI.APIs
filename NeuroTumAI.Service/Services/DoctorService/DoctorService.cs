@@ -1,4 +1,5 @@
-﻿using NeuroTumAI.Core;
+﻿using Microsoft.AspNetCore.Identity;
+using NeuroTumAI.Core;
 using NeuroTumAI.Core.Exceptions;
 using NeuroTumAI.Core.Identity;
 using NeuroTumAI.Core.Resources.Responses;
@@ -12,12 +13,14 @@ namespace NeuroTumAI.Service.Services.DoctorService
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IClinicService _clinicService;
 		private readonly ILocalizationService _localizationService;
+		private readonly UserManager<ApplicationUser> _userManager;
 
-		public DoctorService(IUnitOfWork unitOfWork, IClinicService clinicService, ILocalizationService localizationService)
+		public DoctorService(IUnitOfWork unitOfWork, IClinicService clinicService, ILocalizationService localizationService, UserManager<ApplicationUser> userManager)
 		{
 			_unitOfWork = unitOfWork;
 			_clinicService = clinicService;
 			_localizationService = localizationService;
+			_userManager = userManager;
 		}
 		public async Task<Doctor> GetDoctorByClinicIdAsync(int clinicId)
 		{
@@ -59,6 +62,38 @@ namespace NeuroTumAI.Service.Services.DoctorService
 			var doctorSpecs = new PendingDoctorCountSpecifications(model);
 
 			return await doctorRepo.GetCountAsync(doctorSpecs);
+		}
+
+		public async Task<Doctor> AcceptPendingDoctorAsync(int doctorId)
+		{
+			var doctorRepo = _unitOfWork.Repository<Doctor>();
+
+			var doctor = await doctorRepo.GetAsync(doctorId);
+			if (doctor is null)
+				throw new NotFoundException($"Doctor with ID {doctorId} was not found.");
+
+			doctor.IsApproved = true;
+
+			doctorRepo.Update(doctor);
+			
+			await _unitOfWork.CompleteAsync();
+
+			return doctor;
+		}
+
+		public async Task RejectPendingDoctorAsync(int doctorId)
+		{
+			var doctorRepo = _unitOfWork.Repository<Doctor>();
+
+			var doctor = await doctorRepo.GetAsync(doctorId);
+			if (doctor is null)
+				throw new NotFoundException($"Doctor with ID {doctorId} was not found.");
+
+			var user = await _userManager.FindByIdAsync(doctor.ApplicationUserId);
+			var result = await _userManager.DeleteAsync(user);
+
+			if (!result.Succeeded)
+				throw new BadRequestException("Failed to delete doctor");
 		}
 	}
 }

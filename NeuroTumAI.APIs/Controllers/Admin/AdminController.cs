@@ -60,5 +60,23 @@ namespace NeuroTumAI.APIs.Controllers.Admin
 
 			return Ok(new PaginationDto<PendingDoctorDto>(specParams.PageIndex, specParams.PageSize, count, data));
 		}
+
+		[Authorize(Roles = "Admin")]
+		[HttpPut("pendingDoctors/accept/{doctorId}")]
+		public async Task<ActionResult> AcceptPendingDoctor(int doctorId)
+		{
+			await _doctorService.AcceptPendingDoctorAsync(doctorId);
+
+			return Ok();
+		}
+
+		[Authorize(Roles = "Admin")]
+		[HttpDelete("pendingDoctors/reject/{doctorId}")]
+		public async Task<ActionResult> RejectPendingDoctor(int doctorId)
+		{
+			await _doctorService.RejectPendingDoctorAsync(doctorId);
+
+			return Ok();
+		}
 	}
 }

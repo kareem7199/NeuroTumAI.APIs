@@ -12,6 +12,7 @@ namespace NeuroTumAI.Core.Specifications.DoctorSpecs
 		public PendingDoctorSpecifications(PendingDoctorSpecParams specParams)
 			: base(D => !D.IsApproved && (string.IsNullOrEmpty(specParams.Search) || D.ApplicationUser.FullName.ToUpper().Contains(specParams.Search) || D.ApplicationUser.NormalizedEmail.Contains(specParams.Search) || D.ApplicationUser.NormalizedUserName.Contains(specParams.Search)))
 		{
+			AddOrderBy(D => D.Id);
 			Includes.Add(D => D.ApplicationUser);
 			ApplyPagination((specParams.PageIndex - 1) * specParams.PageSize, specParams.PageSize);
 		}
