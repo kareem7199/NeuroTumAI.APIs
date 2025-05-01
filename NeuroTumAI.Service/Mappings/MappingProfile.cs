@@ -88,7 +88,10 @@ namespace NeuroTumAI.Service.Mappings
 				.ForMember(D => D.DateOfBirth, O => O.MapFrom(S => S.ApplicationUser.DateOfBirth))
 				.ForMember(D => D.Email, O => O.MapFrom(S => S.ApplicationUser.Email))
 				.ForMember(D => D.ProfilePicture, O => O.MapFrom(S => S.ApplicationUser.ProfilePicture));
-			;
+
+			CreateMap<Clinic, PendingClinicDto>()
+				.ForMember(D => D.DoctorName, O => O.MapFrom(S => S.Doctor.ApplicationUser.FullName))
+				.ForMember(D => D.DoctorProfilePicture, O => O.MapFrom(S => S.Doctor.ApplicationUser.ProfilePicture));
 		}
 	}
 }

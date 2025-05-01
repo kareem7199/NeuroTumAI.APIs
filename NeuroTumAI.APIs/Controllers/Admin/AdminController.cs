@@ -6,9 +6,11 @@ using NeuroTumAI.APIs.Controllers.Base;
 using NeuroTumAI.Core.Dtos;
 using NeuroTumAI.Core.Dtos.Account;
 using NeuroTumAI.Core.Dtos.Admin;
+using NeuroTumAI.Core.Dtos.Clinic;
 using NeuroTumAI.Core.Dtos.Doctor;
 using NeuroTumAI.Core.Exceptions;
 using NeuroTumAI.Core.Services.Contract;
+using NeuroTumAI.Core.Specifications.ClinicSpecs;
 using NeuroTumAI.Core.Specifications.DoctorSpecs;
 
 namespace NeuroTumAI.APIs.Controllers.Admin
@@ -18,12 +20,14 @@ namespace NeuroTumAI.APIs.Controllers.Admin
 		private readonly IAdminService _adminService;
 		private readonly IMapper _mapper;
 		private readonly IDoctorService _doctorService;
+		private readonly IClinicService _clinicService;
 
-		public AdminController(IAdminService adminService, IMapper mapper, IDoctorService doctorService)
+		public AdminController(IAdminService adminService, IMapper mapper, IDoctorService doctorService, IClinicService clinicService)
 		{
 			_adminService = adminService;
 			_mapper = mapper;
 			_doctorService = doctorService;
+			_clinicService = clinicService;
 		}
 
 		[HttpPost("login")]
@@ -75,6 +79,37 @@ namespace NeuroTumAI.APIs.Controllers.Admin
 		public async Task<ActionResult> RejectPendingDoctor(int doctorId)
 		{
 			await _doctorService.RejectPendingDoctorAsync(doctorId);
+
+			return Ok();
+		}
+
+
+		[Authorize(Roles = "Admin")]
+		[HttpGet("pendingClinics")]
+		public async Task<ActionResult> GetPendingClinics([FromQuery] PendingClinicSpecParams specParams)
+		{
+			var clinics = await _clinicService.GetPendingClinicsAsync(specParams);
+			var count = await _clinicService.GetPendingClinicsCountAsync(specParams);
+
+			var data = _mapper.Map<IReadOnlyList<PendingClinicDto>>(clinics);
+
+			return Ok(new PaginationDto<PendingClinicDto>(specParams.PageIndex, specParams.PageSize, count, data));
+		}
+
+		[Authorize(Roles = "Admin")]
+		[HttpPut("pendingClinics/accept/{clinicId}")]
+		public async Task<ActionResult> AcceptPendingClinic(int clinicId)
+		{
+			await _clinicService.AcceptPendingClinicAsync(clinicId);
+
+			return Ok();
+		}
+
+		[Authorize(Roles = "Admin")]
+		[HttpDelete("pendingClinics/reject/{clinicId}")]
+		public async Task<ActionResult> RejectPendingClinic(int clinicId)
+		{
+			await _clinicService.RejectPendingClinicAsync(clinicId);
 
 			return Ok();
 		}

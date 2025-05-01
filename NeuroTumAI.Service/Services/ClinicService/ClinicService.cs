@@ -31,6 +31,20 @@ namespace NeuroTumAI.Service.Services.ClinicService
 			_blobStorageService = blobStorageService;
 		}
 
+		public async Task<Clinic> AcceptPendingClinicAsync(int clinicId)
+		{
+			var clinicRepo = _unitOfWork.Repository<Clinic>();
+			var clinic = await clinicRepo.GetAsync(clinicId);
+			if (clinic is null)
+				throw new NotFoundException($"Clinic with the specified ID was not found.");
+
+			clinic.IsApproved = true;
+
+			await _unitOfWork.CompleteAsync();
+
+			return clinic;
+		}
+
 		public async Task<Clinic> AddClinicAsync(BaseAddClinicDto model, string userId)
 		{
 			var doctorRepo = _unitOfWork.Repository<Doctor>();
@@ -167,6 +181,34 @@ namespace NeuroTumAI.Service.Services.ClinicService
 			var clinics = await clinicRepo.GetAllWithSpecAsync(clinicSpecs);
 
 			return clinics;
+		}
+
+		public async Task<IReadOnlyList<Clinic>> GetPendingClinicsAsync(PendingClinicSpecParams specParams)
+		{
+			var clinicRepo = _unitOfWork.Repository<Clinic>();
+			var clinicSpecs = new PendingClinicSpecifications(specParams);
+
+			return await clinicRepo.GetAllWithSpecAsync(clinicSpecs);
+		}
+
+		public async Task<int> GetPendingClinicsCountAsync(PendingClinicSpecParams specParams)
+		{
+			var clinicRepo = _unitOfWork.Repository<Clinic>();
+			var clinicSpecs = new PendingClinicCountSpecifications(specParams);
+
+			return await clinicRepo.GetCountAsync(clinicSpecs);
+		}
+
+		public async Task RejectPendingClinicAsync(int clinicId)
+		{
+			var clinicRepo = _unitOfWork.Repository<Clinic>();
+			var clinic = await clinicRepo.GetAsync(clinicId);
+			if (clinic is null)
+				throw new NotFoundException($"Clinic with the specified ID was not found.");
+
+			clinicRepo.Delete(clinic);
+
+			await _unitOfWork.CompleteAsync();
 		}
 	}
 }
