@@ -9,6 +9,11 @@ namespace NeuroTumAI.Core.Specifications.DoctorSpecs
 {
 	public class DoctorSpecifications : BaseSpecifications<Doctor>
 	{
+		public DoctorSpecifications()
+			: base()
+		{
+
+		}
 		public DoctorSpecifications(string ApplicationUserId)
 			: base(D => D.ApplicationUserId == ApplicationUserId && D.IsApproved == true)
 		{

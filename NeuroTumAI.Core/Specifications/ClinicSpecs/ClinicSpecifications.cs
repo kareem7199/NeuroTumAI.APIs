@@ -9,6 +9,11 @@ namespace NeuroTumAI.Core.Specifications.ClinicSpecs
 {
 	public class ClinicSpecifications : BaseSpecifications<Clinic>
 	{
+        public ClinicSpecifications()
+            : base()
+        {
+            
+        }
         public ClinicSpecifications(int doctorId) : base(C => C.DoctorId == doctorId)
         {
             
