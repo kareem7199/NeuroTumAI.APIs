@@ -93,13 +93,14 @@ namespace NeuroTumAI.Repository.Data
 					IsApproved = i < 50
 				};
 				var location = new NetTopologySuite.Geometries.Point(31.2357, 30.0444) { SRID = 4326 };
+
 				var newClinic = new Clinic()
 				{
 					Address = "123 Health Street, Cairo, Egypt",
 					Location = location,
 					PhoneNumber = "+20 100 123 4567",
-					LicenseDocument = "dummy-license.pdf",
-					IsApproved = true
+					LicenseDocument = "https://kareem.blob.core.windows.net/clinic-licenses/133792076_3601250089930660_5112076721351997915_n.jpg",
+					IsApproved = i < 50
 				};
 
 				for (int day = 0; day < 7; ++day)
@@ -116,6 +117,20 @@ namespace NeuroTumAI.Repository.Data
 				}
 
 				newDoctor.Clinics.Add(newClinic);
+
+				if (i < 50)
+				{
+					var secondClinic = new Clinic()
+					{
+						Address = "123 Health Street, Cairo, Egypt",
+						Location = location,
+						PhoneNumber = "+20 100 123 4567",
+						LicenseDocument = "https://kareem.blob.core.windows.net/clinic-licenses/133792076_3601250089930660_5112076721351997915_n.jpg",
+						IsApproved = false
+					};
+					newDoctor.Clinics.Add(secondClinic);
+				}
+
 				await _dbContext.AddAsync(newDoctor);
 			}
 		}
