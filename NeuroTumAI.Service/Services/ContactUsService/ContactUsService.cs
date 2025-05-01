@@ -1,0 +1,59 @@
+﻿using NeuroTumAI.Core;
+using NeuroTumAI.Core.Dtos.ContactUs;
+using NeuroTumAI.Core.Dtos.Review;
+using NeuroTumAI.Core.Entities.Appointment;
+using NeuroTumAI.Core.Entities.Contact_Us;
+using NeuroTumAI.Core.Exceptions;
+using NeuroTumAI.Core.Identity;
+using NeuroTumAI.Core.Resources.Responses;
+using NeuroTumAI.Core.Services.Contract;
+using NeuroTumAI.Core.Specifications.AppointmentSpecs;
+using NeuroTumAI.Core.Specifications.PatientSpecs;
+using NeuroTumAI.Core.Specifications.ReviewSpecs;
+using NeuroTumAI.Service.Services.DoctorService;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace NeuroTumAI.Service.Services.ContactUsService
+{
+    internal class ContactUsService : IContactUsService
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILocalizationService _localizationService;
+        public ContactUsService(IUnitOfWork unitOfWork, ILocalizationService localizationService)
+        {
+            _unitOfWork = unitOfWork;
+            _localizationService = localizationService;
+        }
+        public async Task<ContactUS> SendMessageAsync(ContactUsDto model, string userId)
+        {
+            var patientRepo = _unitOfWork.Repository<Patient>();
+            var patientSpec = new PatientSpecifications(userId);
+            var patient = await patientRepo.GetWithSpecAsync(patientSpec);
+
+            if (patient == null)
+                throw new BadRequestException(_localizationService.GetMessage<ResponsesResources>("User Not Found"));
+
+
+            var ContactUsRepo = _unitOfWork.Repository<ContactUS>();
+
+            var contactMessage = new ContactUS
+            {
+                PatientId = patient.Id,
+                Patient = patient,
+                Id = model.Id,
+                Message = model.Message,
+            };
+            ContactUsRepo.Add(contactMessage);
+
+            return contactMessage;
+
+
+
+
+        }
+    }
+}
