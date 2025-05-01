@@ -63,8 +63,6 @@ namespace NeuroTumAI.Repository.Data
 				var newPatient = new Patient()
 				{
 					ApplicationUserId = newAccount.Id,
-					Latitude = 90,
-					Longitude = 90
 				};
 				await _dbContext.AddAsync(newPatient);
 			}

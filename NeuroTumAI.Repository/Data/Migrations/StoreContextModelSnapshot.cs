@@ -595,12 +595,6 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<decimal>("Latitude")
-                        .HasColumnType("decimal(9,6)");
-
-                    b.Property<decimal>("Longitude")
-                        .HasColumnType("decimal(9,6)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
