@@ -21,13 +21,15 @@ namespace NeuroTumAI.APIs.Controllers.Admin
 		private readonly IMapper _mapper;
 		private readonly IDoctorService _doctorService;
 		private readonly IClinicService _clinicService;
+		private readonly IDashboardService _dashboardService;
 
-		public AdminController(IAdminService adminService, IMapper mapper, IDoctorService doctorService, IClinicService clinicService)
+		public AdminController(IAdminService adminService, IMapper mapper, IDoctorService doctorService, IClinicService clinicService, IDashboardService dashboardService)
 		{
 			_adminService = adminService;
 			_mapper = mapper;
 			_doctorService = doctorService;
 			_clinicService = clinicService;
+			_dashboardService = dashboardService;
 		}
 
 		[HttpPost("login")]
@@ -112,6 +114,15 @@ namespace NeuroTumAI.APIs.Controllers.Admin
 			await _clinicService.RejectPendingClinicAsync(clinicId);
 
 			return Ok();
+		}
+
+		[Authorize(Roles = "Admin")]
+		[HttpGet("stats")]
+		public async Task<ActionResult> GetStatistics()
+		{
+			var stats = await _dashboardService.GetStatisticsAsync();
+
+			return Ok(new { Data = stats });
 		}
 	}
 }
