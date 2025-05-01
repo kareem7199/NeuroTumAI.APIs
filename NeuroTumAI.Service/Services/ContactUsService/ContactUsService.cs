@@ -34,9 +34,6 @@ namespace NeuroTumAI.Service.Services.ContactUsService
             var patientSpec = new PatientSpecifications(userId);
             var patient = await patientRepo.GetWithSpecAsync(patientSpec);
 
-            if (patient == null)
-                throw new BadRequestException(_localizationService.GetMessage<ResponsesResources>("User Not Found"));
-
 
             var ContactUsRepo = _unitOfWork.Repository<ContactUS>();
 
@@ -44,7 +41,6 @@ namespace NeuroTumAI.Service.Services.ContactUsService
             {
                 PatientId = patient.Id,
                 Patient = patient,
-                Id = model.Id,
                 Message = model.Message,
             };
             ContactUsRepo.Add(contactMessage);
