@@ -13,7 +13,7 @@ using NeuroTumAI.Repository.Data;
 namespace NeuroTumAI.Repository.Data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20250429171118_Init")]
+    [Migration("20250501073800_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -597,12 +597,6 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.Property<string>("ApplicationUserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<decimal>("Latitude")
-                        .HasColumnType("decimal(9,6)");
-
-                    b.Property<decimal>("Longitude")
-                        .HasColumnType("decimal(9,6)");
 
                     b.HasKey("Id");
 

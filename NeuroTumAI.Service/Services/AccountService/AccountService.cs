@@ -96,9 +96,7 @@ namespace NeuroTumAI.Service.Services.AccountService
 
 			var newPatient = new Patient()
 			{
-				ApplicationUserId = newAccount.Id,
-				Latitude = model.Latitude,
-				Longitude = model.Longitude
+				ApplicationUserId = newAccount.Id
 			};
 			var patientRepo = _unitOfWork.Repository<Patient>();
 
@@ -234,7 +232,7 @@ namespace NeuroTumAI.Service.Services.AccountService
 				return new LoginResponseDto()
 				{
 					Token = token,
-					User = _mapper.Map<PatientDto>(patient)
+					User = _mapper.Map<UserDto>(patient)
 				};
 			}
 			else
@@ -373,7 +371,7 @@ namespace NeuroTumAI.Service.Services.AccountService
 
 				var patient = await patientRepo.GetWithSpecAsync(patientSpec);
 
-				return _mapper.Map<PatientDto>(patient);
+				return _mapper.Map<UserDto>(patient);
 			}
 			else
 			{

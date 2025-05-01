@@ -13,11 +13,6 @@ namespace NeuroTumAI.Repository.Config
 	{
 		public void Configure(EntityTypeBuilder<Patient> builder)
 		{
-			builder.Property(D => D.Latitude)
-				   .HasColumnType("decimal(9,6)");
-
-			builder.Property(D => D.Longitude)
-				   .HasColumnType("decimal(9,6)");
 		}
 	}
 }
