@@ -8,6 +8,7 @@ using NeuroTumAI.Core.Identity;
 using NeuroTumAI.Core.Resources.Responses;
 using NeuroTumAI.Core.Services.Contract;
 using NeuroTumAI.Core.Specifications.AppointmentSpecs;
+using NeuroTumAI.Core.Specifications.ContactUsMessageSpecs;
 using NeuroTumAI.Core.Specifications.PatientSpecs;
 using NeuroTumAI.Core.Specifications.ReviewSpecs;
 using NeuroTumAI.Service.Services.DoctorService;
@@ -28,6 +29,35 @@ namespace NeuroTumAI.Service.Services.ContactUsService
 		{
 			_unitOfWork = unitOfWork;
 			_localizationService = localizationService;
+		}
+
+		public async Task<ContactUsMessage> GetMessageAsync(int messageId)
+		{
+			var ContactUsRepo = _unitOfWork.Repository<ContactUsMessage>();
+			var contactUsSpecs = new ContactUsMessageSpecifications(messageId);
+
+			var message = await ContactUsRepo.GetWithSpecAsync(contactUsSpecs);
+			if (message is null)
+				throw new NotFoundException("Message not found");
+
+			return message;
+		}
+
+		public async Task<IReadOnlyList<ContactUsMessage>> GetPendingMessagesAsync(PendingMessagesSpecParams specParams)
+		{
+			var ContactUsRepo = _unitOfWork.Repository<ContactUsMessage>();
+			var contactUsSpecs = new ContactUsMessageSpecifications(specParams);
+
+			return await ContactUsRepo.GetAllWithSpecAsync(contactUsSpecs);
+		}
+
+		public async Task<int> GetPendingMessagesCountAsync(PendingMessagesSpecParams specParams)
+		{
+
+			var ContactUsRepo = _unitOfWork.Repository<ContactUsMessage>();
+			var contactUsSpecs = new ContactUsMessageCountSpecifications(specParams);
+
+			return await ContactUsRepo.GetCountAsync(contactUsSpecs);
 		}
 
 		public async Task<ContactUsMessage> SendMessageAsync(ContactUsDto model, string userId)

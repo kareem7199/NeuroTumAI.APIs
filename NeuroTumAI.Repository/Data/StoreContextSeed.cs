@@ -3,6 +3,7 @@ using NeuroTumAI.Core.Entities;
 using NeuroTumAI.Core.Entities.Admin;
 using NeuroTumAI.Core.Entities.Appointment;
 using NeuroTumAI.Core.Entities.Clinic_Aggregate;
+using NeuroTumAI.Core.Entities.Contact_Us;
 using NeuroTumAI.Core.Identity;
 
 namespace NeuroTumAI.Repository.Data
@@ -31,6 +32,7 @@ namespace NeuroTumAI.Repository.Data
 			await SeedPatientsAsync(userManager, _dbContext);
 			await SeedDoctorsAsync(userManager, _dbContext);
 			await _dbContext.SaveChangesAsync();
+			await SeedContactUsMessagesAsync(_dbContext);
 			await SeedAppointmentsWithReviewsAsync(_dbContext);
 			await SeedAdminsAsync(_dbContext);
 			await _dbContext.SaveChangesAsync();
@@ -175,6 +177,19 @@ namespace NeuroTumAI.Repository.Data
 				};
 
 				await _dbContext.AddAsync(admin);
+			}
+		}
+		private static async Task SeedContactUsMessagesAsync(StoreContext _dbContext)
+		{
+			for (int i = 1; i <= 10; i++)
+			{
+				var message = new ContactUsMessage
+				{
+					PatientId = i,
+					Message = "Hello World *_*"
+				};
+
+				await _dbContext.AddAsync(message);
 			}
 		}
 	}
