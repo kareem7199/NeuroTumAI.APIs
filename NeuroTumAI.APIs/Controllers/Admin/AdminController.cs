@@ -7,10 +7,12 @@ using NeuroTumAI.Core.Dtos;
 using NeuroTumAI.Core.Dtos.Account;
 using NeuroTumAI.Core.Dtos.Admin;
 using NeuroTumAI.Core.Dtos.Clinic;
+using NeuroTumAI.Core.Dtos.ContactUs;
 using NeuroTumAI.Core.Dtos.Doctor;
 using NeuroTumAI.Core.Exceptions;
 using NeuroTumAI.Core.Services.Contract;
 using NeuroTumAI.Core.Specifications.ClinicSpecs;
+using NeuroTumAI.Core.Specifications.ContactUsMessageSpecs;
 using NeuroTumAI.Core.Specifications.DoctorSpecs;
 
 namespace NeuroTumAI.APIs.Controllers.Admin
@@ -22,14 +24,16 @@ namespace NeuroTumAI.APIs.Controllers.Admin
 		private readonly IDoctorService _doctorService;
 		private readonly IClinicService _clinicService;
 		private readonly IDashboardService _dashboardService;
+		private readonly IContactUsService _contactUsService;
 
-		public AdminController(IAdminService adminService, IMapper mapper, IDoctorService doctorService, IClinicService clinicService, IDashboardService dashboardService)
+		public AdminController(IAdminService adminService, IMapper mapper, IDoctorService doctorService, IClinicService clinicService, IDashboardService dashboardService, IContactUsService contactUsService)
 		{
 			_adminService = adminService;
 			_mapper = mapper;
 			_doctorService = doctorService;
 			_clinicService = clinicService;
 			_dashboardService = dashboardService;
+			_contactUsService = contactUsService;
 		}
 
 		[HttpPost("login")]
@@ -123,6 +127,27 @@ namespace NeuroTumAI.APIs.Controllers.Admin
 			var stats = await _dashboardService.GetStatisticsAsync();
 
 			return Ok(new { Data = stats });
+		}
+
+		[Authorize(Roles = "Admin")]
+		[HttpGet("contactUsMessages")]
+		public async Task<ActionResult> GetPendingMessages([FromQuery] PendingMessagesSpecParams specParams)
+		{
+			var messages = await _contactUsService.GetPendingMessagesAsync(specParams);
+			var count = await _contactUsService.GetPendingMessagesCountAsync(specParams);
+
+			var data = _mapper.Map<IReadOnlyList<ContactUsMessageToReturnDto>>(messages);
+
+			return Ok(new PaginationDto<ContactUsMessageToReturnDto>(specParams.PageIndex, specParams.PageSize, count, data));
+		}
+
+		[Authorize(Roles = "Admin")]
+		[HttpGet("contactUsMessages/{messageId}")]
+		public async Task<ActionResult> GetMessageById(int messageId)
+		{
+			var message = await _contactUsService.GetMessageAsync(messageId);
+
+			return Ok(new { Data = _mapper.Map<ContactUsMessageToReturnDto>(message) });
 		}
 	}
 }
