@@ -12,7 +12,7 @@ namespace NeuroTumAI.Core.Services.Contract
 {
     public interface IContactUsService
     {
-        Task <ContactUS> SendMessageAsync(ContactUsDto model, string userId);
+        Task <ContactUsMessage> SendMessageAsync(ContactUsDto model, string userId);
 
     }
 }

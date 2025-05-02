@@ -9,26 +9,23 @@ using NeuroTumAI.Core.Identity;
 
 namespace NeuroTumAI.Repository.Data
 {
-    public class StoreContext : IdentityDbContext<ApplicationUser>
-    {
-        public StoreContext(DbContextOptions<StoreContext> options)
-        : base(options)
-        {
-        }
+	public class StoreContext : IdentityDbContext<ApplicationUser>
+	{
+		public StoreContext(DbContextOptions<StoreContext> options)
+		: base(options)
+		{
+		}
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-            base.OnModelCreating(modelBuilder);
-        }
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+			base.OnModelCreating(modelBuilder);
+		}
 
-        //public DbSet<Doctor> Doctors { get; set; }
-        public DbSet<Patient> Patients { get; set; }
-        public DbSet<Post> Posts { get; set; }
-        public DbSet<Review> Reviews { get; set; }
-        public DbSet<Admin> Admins { get; set; }
-        public DbSet<ContactUS> ContactUS { get; set; }
-
-
-    }
+		//public DbSet<Doctor> Doctors { get; set; }
+		public DbSet<Patient> Patients { get; set; }
+		public DbSet<Post> Posts { get; set; }
+		public DbSet<Review> Reviews { get; set; }
+		public DbSet<Admin> Admins { get; set; }
+	}
 }

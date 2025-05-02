@@ -13,7 +13,7 @@ using NeuroTumAI.Repository.Data;
 namespace NeuroTumAI.Repository.Data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20250501073800_Init")]
+    [Migration("20250502131608_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -376,6 +376,35 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.HasIndex("ClinicId");
 
                     b.ToTable("Slot");
+                });
+
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.Contact_Us.ContactUsMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("ContactUsMessage");
                 });
 
             modelBuilder.Entity("NeuroTumAI.Core.Entities.Post_Aggregate.Comment", b =>
@@ -760,6 +789,17 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Clinic");
+                });
+
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.Contact_Us.ContactUsMessage", b =>
+                {
+                    b.HasOne("NeuroTumAI.Core.Identity.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Patient");
                 });
 
             modelBuilder.Entity("NeuroTumAI.Core.Entities.Post_Aggregate.Comment", b =>

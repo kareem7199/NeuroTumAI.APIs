@@ -186,6 +186,9 @@
   <data name="longitude_range" xml:space="preserve">
     <value>يجب أن يكون خط الطول بين -180 و 180.</value>
   </data>
+  <data name="MessageTooLong" xml:space="preserve">
+    <value>يجب ألا تتجاوز الرسالة 1000 حرف.</value>
+  </data>
   <data name="password_complexity" xml:space="preserve">
     <value>يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل، وحرف صغير، ورقم، وحرف خاص.</value>
   </data>
@@ -200,6 +203,9 @@
   </data>
   <data name="ProfilePictureRequired" xml:space="preserve">
     <value>الصورة الشخصية مطلوبة.</value>
+  </data>
+  <data name="RequiredMessage" xml:space="preserve">
+    <value>الرجاء إدخال الرسالة.</value>
   </data>
   <data name="SlotIdRequired" xml:space="preserve">
     <value>مطلوب اختيار الموعد.</value>
