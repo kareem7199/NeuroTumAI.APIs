@@ -195,6 +195,9 @@
   <data name="longitude_range" xml:space="preserve">
     <value>Longitude must be between -180 and 180.</value>
   </data>
+  <data name="MessageTooLong" xml:space="preserve">
+    <value>Message cannot exceed 1000 characters.</value>
+  </data>
   <data name="password_complexity" xml:space="preserve">
     <value>Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.</value>
   </data>
@@ -209,6 +212,9 @@
   </data>
   <data name="ProfilePictureRequired" xml:space="preserve">
     <value>Profile Picture is required.</value>
+  </data>
+  <data name="RequiredMessage" xml:space="preserve">
+    <value>Please enter your message.</value>
   </data>
   <data name="SlotIdRequired" xml:space="preserve">
     <value>Slot is required.</value>
