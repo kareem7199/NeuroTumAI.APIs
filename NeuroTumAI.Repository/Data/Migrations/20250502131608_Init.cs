@@ -319,6 +319,28 @@ namespace NeuroTumAI.Repository.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ContactUsMessage",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PatientId = table.Column<int>(type: "int", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ContactUsMessage", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ContactUsMessage_Patients_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Patients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Reviews",
                 columns: table => new
                 {
@@ -549,6 +571,11 @@ namespace NeuroTumAI.Repository.Data.Migrations
                 column: "PostId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ContactUsMessage_PatientId",
+                table: "ContactUsMessage",
+                column: "PatientId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Conversation_FirstUserId",
                 table: "Conversation",
                 column: "FirstUserId");
@@ -628,6 +655,9 @@ namespace NeuroTumAI.Repository.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Comment");
+
+            migrationBuilder.DropTable(
+                name: "ContactUsMessage");
 
             migrationBuilder.DropTable(
                 name: "Like");
