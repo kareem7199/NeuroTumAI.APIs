@@ -7,14 +7,11 @@ using System.Threading.Tasks;
 
 namespace NeuroTumAI.Core.Dtos.ContactUs
 {
-    public class ContactUsDto
-    {
-        public int Id { get; set; }
+	public class ContactUsDto
+	{
 
-        [Required(ErrorMessage = "Enter You Message")]
-        [StringLength(1000, ErrorMessage = "Message Length")]
-        public string Message { get; set; }
-
-
-    }
+		[Required(ErrorMessage = "RequiredMessage")]
+		[StringLength(1000, ErrorMessage = "MessageTooLong")]
+		public string Message { get; set; }
+	}
 }

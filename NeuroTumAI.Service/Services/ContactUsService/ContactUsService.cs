@@ -19,37 +19,37 @@ using System.Threading.Tasks;
 
 namespace NeuroTumAI.Service.Services.ContactUsService
 {
-    internal class ContactUsService : IContactUsService
-    {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ILocalizationService _localizationService;
-        public ContactUsService(IUnitOfWork unitOfWork, ILocalizationService localizationService)
-        {
-            _unitOfWork = unitOfWork;
-            _localizationService = localizationService;
-        }
-        public async Task<ContactUS> SendMessageAsync(ContactUsDto model, string userId)
-        {
-            var patientRepo = _unitOfWork.Repository<Patient>();
-            var patientSpec = new PatientSpecifications(userId);
-            var patient = await patientRepo.GetWithSpecAsync(patientSpec);
+	public class ContactUsService : IContactUsService
+	{
+		private readonly IUnitOfWork _unitOfWork;
+		private readonly ILocalizationService _localizationService;
+
+		public ContactUsService(IUnitOfWork unitOfWork, ILocalizationService localizationService)
+		{
+			_unitOfWork = unitOfWork;
+			_localizationService = localizationService;
+		}
+
+		public async Task<ContactUsMessage> SendMessageAsync(ContactUsDto model, string userId)
+		{
+			var patientRepo = _unitOfWork.Repository<Patient>();
+			var patientSpec = new PatientSpecifications(userId);
+			var patient = await patientRepo.GetWithSpecAsync(patientSpec);
 
 
-            var ContactUsRepo = _unitOfWork.Repository<ContactUS>();
+			var ContactUsRepo = _unitOfWork.Repository<ContactUsMessage>();
 
-            var contactMessage = new ContactUS
-            {
-                PatientId = patient.Id,
-                Patient = patient,
-                Message = model.Message,
-            };
-            ContactUsRepo.Add(contactMessage);
+			var contactMessage = new ContactUsMessage
+			{
+				PatientId = patient.Id,
+				Patient = patient,
+				Message = model.Message,
+			};
 
-            return contactMessage;
+			ContactUsRepo.Add(contactMessage);
+			await _unitOfWork.CompleteAsync();
 
-
-
-
-        }
-    }
+			return contactMessage;
+		}
+	}
 }

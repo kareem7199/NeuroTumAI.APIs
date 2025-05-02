@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace NeuroTumAI.Repository.Config
 {
-    internal class ContactUSConfigurations : IEntityTypeConfiguration<ContactUS>
+    internal class ContactUSConfigurations : IEntityTypeConfiguration<ContactUsMessage>
     {
-        public void Configure(EntityTypeBuilder<ContactUS> builder)
+        public void Configure(EntityTypeBuilder<ContactUsMessage> builder)
         {
             builder.Property(C => C.Status)
                 .HasConversion(
