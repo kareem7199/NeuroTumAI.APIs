@@ -19,6 +19,7 @@ using NeuroTumAI.Service.Services.AdminService;
 using NeuroTumAI.Service.Services.AppointmentService;
 using NeuroTumAI.Service.Services.AuthService;
 using NeuroTumAI.Service.Services.BlobStorageService;
+using NeuroTumAI.Service.Services.CancerDetectionService;
 using NeuroTumAI.Service.Services.ChatService;
 using NeuroTumAI.Service.Services.ClinicService;
 using NeuroTumAI.Service.Services.ContactUsService;
@@ -54,6 +55,8 @@ namespace NeuroTumAI.APIs.Extensions
 			services.AddScoped<IAdminService, AdminService>();
 			services.AddScoped<IDashboardService, DashboardService>();
 			services.AddScoped<IContactUsService, ContactUsService>();
+			services.AddScoped<ICancerDetectionService, CancerDetectionService>();
+			services.AddHttpClient<ICancerDetectionService, CancerDetectionService>();
 			services.AddTransient<IEmailService, EmailService>();
 			services.AddScoped<ExceptionMiddleware>();
 
