@@ -149,5 +149,14 @@ namespace NeuroTumAI.APIs.Controllers.Admin
 
 			return Ok(new { Data = _mapper.Map<ContactUsMessageToReturnDto>(message) });
 		}
+
+		[Authorize(Roles = "Admin")]
+		[HttpPost("contactUsMessages/{messageId}/reply")]
+		public async Task<ActionResult> Reply(int messageId,[FromBody] ContactUsDto model)
+		{
+			await _contactUsService.ReplyAsync(messageId, model.Message);
+
+			return Ok();
+		}
 	}
 }

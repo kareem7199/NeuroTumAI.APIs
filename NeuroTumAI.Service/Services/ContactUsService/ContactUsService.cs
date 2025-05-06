@@ -24,11 +24,13 @@ namespace NeuroTumAI.Service.Services.ContactUsService
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly ILocalizationService _localizationService;
+		private readonly IEmailService _emailService;
 
-		public ContactUsService(IUnitOfWork unitOfWork, ILocalizationService localizationService)
+		public ContactUsService(IUnitOfWork unitOfWork, ILocalizationService localizationService, IEmailService emailService)
 		{
 			_unitOfWork = unitOfWork;
 			_localizationService = localizationService;
+			_emailService = emailService;
 		}
 
 		public async Task<ContactUsMessage> GetMessageAsync(int messageId)
@@ -58,6 +60,29 @@ namespace NeuroTumAI.Service.Services.ContactUsService
 			var contactUsSpecs = new ContactUsMessageCountSpecifications(specParams);
 
 			return await ContactUsRepo.GetCountAsync(contactUsSpecs);
+		}
+
+		public async Task ReplyAsync(int messageId, string message)
+		{
+
+			var ContactUsRepo = _unitOfWork.Repository<ContactUsMessage>();
+			var contactUsSpecs = new ContactUsMessageSpecifications(messageId);
+			var contactUsMessage = await ContactUsRepo.GetWithSpecAsync(contactUsSpecs);
+
+			if (contactUsMessage is null)
+				throw new NotFoundException("Message not found");
+
+			await _emailService.SendAsync(
+				contactUsMessage.Patient.ApplicationUser.Email,
+				$"Response to Your Support Ticket #{messageId}",
+				message
+			);
+
+			contactUsMessage.Status = MessageStatus.Closed;
+
+			ContactUsRepo.Update(contactUsMessage);
+
+			await _unitOfWork.CompleteAsync();
 		}
 
 		public async Task<ContactUsMessage> SendMessageAsync(ContactUsDto model, string userId)
