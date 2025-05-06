@@ -95,5 +95,29 @@ namespace NeuroTumAI.Service.Services.AppointmentService
 			return appointments;
 
 		}
+
+		public async Task<IReadOnlyList<Appointment>> GetPatientAppointmentsAsync(string userId, AppointmentSpecParams specParams)
+		{
+			var patientRepo = _unitOfWork.Repository<Patient>();
+			var patientSpec = new PatientSpecifications(userId);
+			var patient = await patientRepo.GetWithSpecAsync(patientSpec);
+
+			var appointmentRepo = _unitOfWork.Repository<Appointment>();
+			var appointmentSpecs = new PatientAppointmentSpecifications(specParams, patient.Id);
+
+			return await appointmentRepo.GetAllWithSpecAsync(appointmentSpecs);
+		}
+
+		public async Task<int> GetPatientAppointmentsCountAsync(string userId, AppointmentSpecParams specParams)
+		{
+			var patientRepo = _unitOfWork.Repository<Patient>();
+			var patientSpec = new PatientSpecifications(userId);
+			var patient = await patientRepo.GetWithSpecAsync(patientSpec);
+
+			var appointmentRepo = _unitOfWork.Repository<Appointment>();
+			var appointmentSpecs = new PatientAppointmentCountSpecifications(specParams, patient.Id);
+
+			return await appointmentRepo.GetCountAsync(appointmentSpecs);
+		}
 	}
 }
