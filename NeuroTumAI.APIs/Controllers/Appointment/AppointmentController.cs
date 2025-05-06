@@ -3,8 +3,12 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NeuroTumAI.APIs.Controllers.Base;
+using NeuroTumAI.Core.Dtos;
 using NeuroTumAI.Core.Dtos.Appointments;
+using NeuroTumAI.Core.Dtos.ContactUs;
 using NeuroTumAI.Core.Services.Contract;
+using NeuroTumAI.Core.Specifications.AppointmentSpecs;
+using NeuroTumAI.Service.Services.ContactUsService;
 
 namespace NeuroTumAI.APIs.Controllers.Appointment
 {
@@ -39,6 +43,20 @@ namespace NeuroTumAI.APIs.Controllers.Appointment
 			var appointments = await _appointmentService.GetDoctorAppointmentsAsync(userId, clinicId, date);
 
 			return Ok(_mapper.Map<IReadOnlyList<AppoitntmentWithPatientDto>>(appointments));
+		}
+
+		[Authorize(Roles = "Patient")]
+		[HttpGet]
+		public async Task<ActionResult<IReadOnlyList<PaginationDto<AppointmentWithDoctorDto>>>> GetPatientAppointments([FromQuery] AppointmentSpecParams specParams)
+		{
+			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+			var appointments = await _appointmentService.GetPatientAppointmentsAsync(userId, specParams);
+			var count = await _appointmentService.GetPatientAppointmentsCountAsync(userId, specParams);
+
+			var data = _mapper.Map<IReadOnlyList<AppointmentWithDoctorDto>>(appointments);
+
+			return Ok(new PaginationDto<AppointmentWithDoctorDto>(specParams.PageIndex, specParams.PageSize, count, data));
 		}
 	}
 }

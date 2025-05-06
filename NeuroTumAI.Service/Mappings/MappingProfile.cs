@@ -100,6 +100,11 @@ namespace NeuroTumAI.Service.Mappings
 				.ForMember(D => D.PatientName, O => O.MapFrom(S => S.Patient.ApplicationUser.FullName))
 				.ForMember(D => D.PatientProfilePicture, O => O.MapFrom(S => S.Patient.ApplicationUser.ProfilePicture))
 				.ForMember(D => D.PatientEmail, O => O.MapFrom(S => S.Patient.ApplicationUser.Email));
+
+			CreateMap<Appointment, AppointmentWithDoctorDto>()
+				.ForMember(D => D.DoctorProfilePicture, O => O.MapFrom(S => S.Doctor.ApplicationUser.ProfilePicture))
+				.ForMember(D => D.DoctorName, O => O.MapFrom(S => S.Doctor.ApplicationUser.FullName))
+				.ForMember(D => D.Address, O => O.MapFrom(S => S.Clinic.Address));
 		}
 	}
 }
