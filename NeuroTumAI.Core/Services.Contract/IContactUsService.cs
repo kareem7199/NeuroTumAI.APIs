@@ -11,12 +11,13 @@ using System.Threading.Tasks;
 
 namespace NeuroTumAI.Core.Services.Contract
 {
-    public interface IContactUsService
-    {
-        Task <ContactUsMessage> SendMessageAsync(ContactUsDto model, string userId);
+	public interface IContactUsService
+	{
+		Task<ContactUsMessage> SendMessageAsync(ContactUsDto model, string userId);
 		Task<ContactUsMessage> GetMessageAsync(int messageId);
 		Task<IReadOnlyList<ContactUsMessage>> GetPendingMessagesAsync(PendingMessagesSpecParams specParams);
 		Task<int> GetPendingMessagesCountAsync(PendingMessagesSpecParams specParams);
+		Task ReplyAsync(int messageId, string message);
 
 	}
 }
