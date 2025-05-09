@@ -404,6 +404,100 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.ToTable("ContactUsMessage");
                 });
 
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.MriScan.DoctorMriAssignment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MriScanId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("MriScanId");
+
+                    b.ToTable("DoctorMriAssignment");
+                });
+
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.MriScan.DoctorReview", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Findings")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reasoning")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DoctorId");
+
+                    b.ToTable("DoctorReview");
+                });
+
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.MriScan.MriScan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AiGeneratedImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Confidence")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DetectionClass")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("DoctorReviewId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsReviewed")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UploadDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DoctorReviewId");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("MriScan");
+                });
+
             modelBuilder.Entity("NeuroTumAI.Core.Entities.Post_Aggregate.Comment", b =>
                 {
                     b.Property<int>("Id")
@@ -799,6 +893,53 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.MriScan.DoctorMriAssignment", b =>
+                {
+                    b.HasOne("NeuroTumAI.Core.Identity.Doctor", "Doctor")
+                        .WithMany("MriAssignments")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("NeuroTumAI.Core.Entities.MriScan.MriScan", "MriScan")
+                        .WithMany("DoctorAssignments")
+                        .HasForeignKey("MriScanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("MriScan");
+                });
+
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.MriScan.DoctorReview", b =>
+                {
+                    b.HasOne("NeuroTumAI.Core.Identity.Doctor", "Doctor")
+                        .WithMany()
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+                });
+
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.MriScan.MriScan", b =>
+                {
+                    b.HasOne("NeuroTumAI.Core.Entities.MriScan.DoctorReview", "DoctorReview")
+                        .WithMany()
+                        .HasForeignKey("DoctorReviewId");
+
+                    b.HasOne("NeuroTumAI.Core.Identity.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("DoctorReview");
+
+                    b.Navigation("Patient");
+                });
+
             modelBuilder.Entity("NeuroTumAI.Core.Entities.Post_Aggregate.Comment", b =>
                 {
                     b.HasOne("NeuroTumAI.Core.Identity.ApplicationUser", "ApplicationUser")
@@ -886,6 +1027,11 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.Navigation("Slots");
                 });
 
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.MriScan.MriScan", b =>
+                {
+                    b.Navigation("DoctorAssignments");
+                });
+
             modelBuilder.Entity("NeuroTumAI.Core.Entities.Post_Aggregate.Comment", b =>
                 {
                     b.Navigation("Replies");
@@ -901,6 +1047,8 @@ namespace NeuroTumAI.Repository.Data.Migrations
             modelBuilder.Entity("NeuroTumAI.Core.Identity.Doctor", b =>
                 {
                     b.Navigation("Clinics");
+
+                    b.Navigation("MriAssignments");
 
                     b.Navigation("Reviews");
                 });

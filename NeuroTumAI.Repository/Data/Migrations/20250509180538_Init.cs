@@ -319,6 +319,27 @@ namespace NeuroTumAI.Repository.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DoctorReview",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Findings = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Reasoning = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DoctorId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DoctorReview", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DoctorReview_Doctor_DoctorId",
+                        column: x => x.DoctorId,
+                        principalTable: "Doctor",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ContactUsMessage",
                 columns: table => new
                 {
@@ -486,6 +507,63 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "MriScan",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DetectionClass = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Confidence = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AiGeneratedImagePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsReviewed = table.Column<bool>(type: "bit", nullable: false),
+                    UploadDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PatientId = table.Column<int>(type: "int", nullable: false),
+                    DoctorReviewId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MriScan", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MriScan_DoctorReview_DoctorReviewId",
+                        column: x => x.DoctorReviewId,
+                        principalTable: "DoctorReview",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_MriScan_Patients_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Patients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DoctorMriAssignment",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MriScanId = table.Column<int>(type: "int", nullable: false),
+                    DoctorId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DoctorMriAssignment", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DoctorMriAssignment_Doctor_DoctorId",
+                        column: x => x.DoctorId,
+                        principalTable: "Doctor",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_DoctorMriAssignment_MriScan_MriScanId",
+                        column: x => x.MriScanId,
+                        principalTable: "MriScan",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Appointment_ClinicId",
                 table: "Appointment",
@@ -591,6 +669,21 @@ namespace NeuroTumAI.Repository.Data.Migrations
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DoctorMriAssignment_DoctorId",
+                table: "DoctorMriAssignment",
+                column: "DoctorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DoctorMriAssignment_MriScanId",
+                table: "DoctorMriAssignment",
+                column: "MriScanId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DoctorReview_DoctorId",
+                table: "DoctorReview",
+                column: "DoctorId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Like_ApplicationUserId",
                 table: "Like",
                 column: "ApplicationUserId");
@@ -599,6 +692,16 @@ namespace NeuroTumAI.Repository.Data.Migrations
                 name: "IX_Like_PostId",
                 table: "Like",
                 column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MriScan_DoctorReviewId",
+                table: "MriScan",
+                column: "DoctorReviewId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MriScan_PatientId",
+                table: "MriScan",
+                column: "PatientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Patients_ApplicationUserId",
@@ -660,6 +763,9 @@ namespace NeuroTumAI.Repository.Data.Migrations
                 name: "ContactUsMessage");
 
             migrationBuilder.DropTable(
+                name: "DoctorMriAssignment");
+
+            migrationBuilder.DropTable(
                 name: "Like");
 
             migrationBuilder.DropTable(
@@ -675,13 +781,19 @@ namespace NeuroTumAI.Repository.Data.Migrations
                 name: "Conversation");
 
             migrationBuilder.DropTable(
+                name: "MriScan");
+
+            migrationBuilder.DropTable(
                 name: "Posts");
 
             migrationBuilder.DropTable(
-                name: "Patients");
+                name: "Clinic");
 
             migrationBuilder.DropTable(
-                name: "Clinic");
+                name: "DoctorReview");
+
+            migrationBuilder.DropTable(
+                name: "Patients");
 
             migrationBuilder.DropTable(
                 name: "Doctor");

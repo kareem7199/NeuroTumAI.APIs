@@ -12,6 +12,7 @@ using NeuroTumAI.Core.Identity;
 using NeuroTumAI.Core.Services.Contract;
 using NeuroTumAI.Repository;
 using NeuroTumAI.Repository.Data;
+using NeuroTumAI.Service.Jobs;
 using NeuroTumAI.Service.Mappings;
 using NeuroTumAI.Service.Providers.Identity;
 using NeuroTumAI.Service.Services.AccountService;
@@ -27,8 +28,10 @@ using NeuroTumAI.Service.Services.DashboardService;
 using NeuroTumAI.Service.Services.DoctorService;
 using NeuroTumAI.Service.Services.EmailService;
 using NeuroTumAI.Service.Services.LocalizationService;
+using NeuroTumAI.Service.Services.MriScanService;
 using NeuroTumAI.Service.Services.PostService;
 using NeuroTumAI.Service.Services.ReviewService;
+using Quartz;
 using System.Globalization;
 using System.Text;
 
@@ -56,9 +59,26 @@ namespace NeuroTumAI.APIs.Extensions
 			services.AddScoped<IDashboardService, DashboardService>();
 			services.AddScoped<IContactUsService, ContactUsService>();
 			services.AddScoped<ICancerDetectionService, CancerDetectionService>();
+			services.AddScoped<IMriScanService, MriScanService>();
 			services.AddHttpClient<ICancerDetectionService, CancerDetectionService>();
 			services.AddTransient<IEmailService, EmailService>();
 			services.AddScoped<ExceptionMiddleware>();
+
+			services.AddQuartz(q =>
+			{
+				q.UseMicrosoftDependencyInjectionJobFactory();
+
+				var jobKey = new JobKey("MriReviewCleanupJob");
+
+				q.AddJob<MriReviewCleanupJob>(opts => opts.WithIdentity(jobKey));
+				q.AddTrigger(opts => opts
+					.ForJob(jobKey)
+					.WithIdentity("MriReviewCleanupTrigger")
+					.WithCronSchedule("0 0,30 * * * ?"));
+			});
+
+			services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
+
 
 			services.AddLocalization();
 
