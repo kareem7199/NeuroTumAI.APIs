@@ -44,6 +44,10 @@ namespace NeuroTumAI.Repository
 			return await ApplySpecifications(spec).CountAsync();
 		}
 
+
+		public void RemoveRange(IEnumerable<T> entities) 
+			=> _dbContext.Set<T>().RemoveRange(entities);
+
 		public void Add(T entity)
 			=> _dbContext.Set<T>().Add(entity);
 
