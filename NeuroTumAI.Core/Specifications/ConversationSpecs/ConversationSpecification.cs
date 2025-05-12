@@ -13,7 +13,8 @@ namespace NeuroTumAI.Core.Specifications.ConversationSpecs
 		public ConversationSpecification(string firstUserId, string secondUserId)
 			: base(C => C.FirstUserId == firstUserId && C.SecondUserId == secondUserId || C.FirstUserId == secondUserId && C.SecondUserId == firstUserId)
 		{
-
+			Includes.Add(C => C.FirstUser);
+			Includes.Add(C => C.SecondUser);
 		}
 
 		public ConversationSpecification(string userId, PaginationParamsDto specParams)

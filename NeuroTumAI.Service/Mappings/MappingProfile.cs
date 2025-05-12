@@ -80,9 +80,13 @@ namespace NeuroTumAI.Service.Mappings
 
 			CreateMap<Admin, AdminToReturnDto>();
 
-			CreateMap<Conversation, ConversationToReturnDto>()
+			CreateMap<Conversation, ConversationWithLastMessageToReturnDto>()
 				.ForMember(D => D.User, O => O.MapFrom(S => S.FirstUser))
 				.ForMember(D => D.LastMessage, O => O.MapFrom(S => S.ChatMessages.FirstOrDefault()));
+
+
+			CreateMap<Conversation, ConversationDto>()
+				.ForMember(D => D.User, O => O.MapFrom(S => S.FirstUser));
 
 			CreateMap<Doctor, PendingDoctorDto>()
 				.ForMember(D => D.FullName, O => O.MapFrom(S => S.ApplicationUser.FullName))
