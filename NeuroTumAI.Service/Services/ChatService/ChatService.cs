@@ -87,7 +87,7 @@ namespace NeuroTumAI.Service.Services.ChatService
 			return newMessage;
 		}
 
-		public async Task<IReadOnlyList<ConversationToReturnDto>> GetUserConversationsAsync(string userId, PaginationParamsDto model)
+		public async Task<IReadOnlyList<ConversationWithLastMessageToReturnDto>> GetUserConversationsAsync(string userId, PaginationParamsDto model)
 		{
 			var conversationRepo = _unitOfWork.Repository<Conversation>();
 			var conversationSpecs = new ConversationSpecification(userId, model);
@@ -106,7 +106,7 @@ namespace NeuroTumAI.Service.Services.ChatService
 				conversation.ChatMessages.Add(lastMessages[0]);
 			}
 
-			var conversationsData = _mapper.Map<IReadOnlyList<ConversationToReturnDto>>(conversations);
+			var conversationsData = _mapper.Map<IReadOnlyList<ConversationWithLastMessageToReturnDto>>(conversations);
 
 			return conversationsData;
 		}
@@ -138,6 +138,21 @@ namespace NeuroTumAI.Service.Services.ChatService
 			var chatMessageSpecs = new ChatMessageSpecifications(conversationId);
 
 			return await chatMessageRepo.GetCountAsync(chatMessageSpecs);
+		}
+
+		public async Task<Conversation> GetConversationByUserIdAsync(string userId, string otherUserId)
+		{
+			var conversationRepo = _unitOfWork.Repository<Conversation>();
+			var conversationSpecs = new ConversationSpecification(userId, otherUserId);
+			var conversation = await conversationRepo.GetWithSpecAsync(conversationSpecs);
+
+			if (conversation is null)
+				throw new NotFoundException("Conversation not found or you are not a participant.");
+
+			if (conversation.FirstUserId == userId)
+				conversation.FirstUser = conversation.SecondUser;
+
+			return conversation;
 		}
 	}
 }
