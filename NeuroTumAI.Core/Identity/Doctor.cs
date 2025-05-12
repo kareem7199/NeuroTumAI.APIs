@@ -19,6 +19,6 @@ namespace NeuroTumAI.Core.Identity
 		public ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
 		public string ApplicationUserId { get; set; }
 		public ApplicationUser ApplicationUser { get; set; }
-		public List<DoctorMriAssignment> MriAssignments { get; set; } = new List<DoctorMriAssignment>();
+		public ICollection<DoctorMriAssignment> MriAssignments { get; set; } = new HashSet<DoctorMriAssignment>();
 	}
 }

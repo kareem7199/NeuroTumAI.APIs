@@ -725,6 +725,29 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.ToTable("Patients");
                 });
 
+            modelBuilder.Entity("NeuroTumAI.Core.Identity.UserDeviceToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FcmToken")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("UserDeviceToken");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -1017,6 +1040,17 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.Navigation("ApplicationUser");
                 });
 
+            modelBuilder.Entity("NeuroTumAI.Core.Identity.UserDeviceToken", b =>
+                {
+                    b.HasOne("NeuroTumAI.Core.Identity.ApplicationUser", "ApplicationUser")
+                        .WithMany("DeviceTokens")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+                });
+
             modelBuilder.Entity("NeuroTumAI.Core.Entities.Chat_Aggregate.Conversation", b =>
                 {
                     b.Navigation("ChatMessages");
@@ -1042,6 +1076,11 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Likes");
+                });
+
+            modelBuilder.Entity("NeuroTumAI.Core.Identity.ApplicationUser", b =>
+                {
+                    b.Navigation("DeviceTokens");
                 });
 
             modelBuilder.Entity("NeuroTumAI.Core.Identity.Doctor", b =>
