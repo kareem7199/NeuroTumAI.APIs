@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using NeuroTumAI.APIs.Controllers.Base;
 using NeuroTumAI.Core.Dtos.Account;
-using NeuroTumAI.Core.Identity;
 using NeuroTumAI.Core.Services.Contract;
 using NeuroTumAI.Service.Dtos.Account;
 
@@ -68,7 +67,7 @@ namespace NeuroTumAI.APIs.Controllers.Auth
 		public async Task<ActionResult> ResetPassword(ResetPasswordDto model)
 		{
 			await _accountService.ResetPasswordAsync(model);
-			return Ok();
+			return Ok(new { message = "Password has been successfully reset." });
 		}
 
 	}
