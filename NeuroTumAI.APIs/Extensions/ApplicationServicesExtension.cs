@@ -32,6 +32,7 @@ using NeuroTumAI.Service.Services.MriScanService;
 using NeuroTumAI.Service.Services.NotificationService;
 using NeuroTumAI.Service.Services.PostService;
 using NeuroTumAI.Service.Services.ReviewService;
+using NeuroTumAI.Service.Services.UserDeviceTokenService;
 using Quartz;
 using System.Globalization;
 using System.Text;
@@ -62,6 +63,7 @@ namespace NeuroTumAI.APIs.Extensions
 			services.AddScoped<ICancerDetectionService, CancerDetectionService>();
 			services.AddScoped<IMriScanService, MriScanService>();
 			services.AddScoped<INotificationService, NotificationService>();
+			services.AddScoped<IUserDeviceTokenService, UserDeviceTokenService>();
 			services.AddHttpClient<ICancerDetectionService, CancerDetectionService>();
 			services.AddTransient<IEmailService, EmailService>();
 			services.AddScoped<ExceptionMiddleware>();

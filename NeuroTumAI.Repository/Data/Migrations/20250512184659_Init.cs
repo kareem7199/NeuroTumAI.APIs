@@ -267,6 +267,26 @@ namespace NeuroTumAI.Repository.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserDeviceToken",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FcmToken = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserDeviceToken", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserDeviceToken_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ChatMessage",
                 columns: table => new
                 {
@@ -727,6 +747,11 @@ namespace NeuroTumAI.Repository.Data.Migrations
                 name: "IX_Slot_ClinicId",
                 table: "Slot",
                 column: "ClinicId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserDeviceToken_ApplicationUserId",
+                table: "UserDeviceToken",
+                column: "ApplicationUserId");
         }
 
         /// <inheritdoc />
@@ -773,6 +798,9 @@ namespace NeuroTumAI.Repository.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Slot");
+
+            migrationBuilder.DropTable(
+                name: "UserDeviceToken");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
