@@ -36,14 +36,14 @@ namespace NeuroTumAI.APIs.Controllers.Chat
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<IReadOnlyList<PaginationDto<MessageToReturnDto>>>> GetUserConversations([FromQuery] PaginationParamsDto specParams)
+		public async Task<ActionResult<IReadOnlyList<PaginationDto<ConversationWithLastMessageToReturnDto>>>> GetUserConversations([FromQuery] PaginationParamsDto specParams)
 		{
 			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
 			var conversations = await _chatService.GetUserConversationsAsync(userId, specParams);
 			var count = await _chatService.GetUserConversationsCountAsync(userId);
 
-			return Ok(new PaginationDto<ConversationToReturnDto>(specParams.PageIndex, specParams.PageSize, count, conversations));
+			return Ok(new PaginationDto<ConversationWithLastMessageToReturnDto>(specParams.PageIndex, specParams.PageSize, count, conversations));
 		}
 
 		[HttpGet("{conversationId}")]
@@ -55,6 +55,16 @@ namespace NeuroTumAI.APIs.Controllers.Chat
 			var count = await _chatService.GetConversationMessagesCountAsync(conversationId);
 
 			return Ok(new PaginationDto<MessageToReturnDto>(specParams.PageIndex, specParams.PageSize, count, _mapper.Map<IReadOnlyList<MessageToReturnDto>>(messages)));
+		}
+
+		[HttpGet("user/{otherUserId}")]
+		public async Task<ActionResult<ConversationDto>> GetConversationByUserId(string otherUserId)
+		{
+			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+			var conversation = await _chatService.GetConversationByUserIdAsync(userId, otherUserId);
+
+			return Ok(_mapper.Map<ConversationDto>(conversation));
 		}
 
 	}

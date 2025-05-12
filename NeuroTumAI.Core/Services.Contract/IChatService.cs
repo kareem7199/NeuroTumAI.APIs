@@ -12,9 +12,11 @@ namespace NeuroTumAI.Core.Services.Contract
 	public interface IChatService
 	{
 		Task<ChatMessage> SendMessageAsync(SendMessageDto sendMessageDto, string userId);
-		Task<IReadOnlyList<ConversationToReturnDto>> GetUserConversationsAsync(string userId, PaginationParamsDto model);
+		Task<IReadOnlyList<ConversationWithLastMessageToReturnDto>> GetUserConversationsAsync(string userId, PaginationParamsDto model);
 		Task<int> GetUserConversationsCountAsync(string userId);
 		Task<IReadOnlyList<ChatMessage>> GetConversationMessagesAsync(string userId, int conversationId , PaginationParamsDto model);
 		Task<int> GetConversationMessagesCountAsync(int conversationId);
+		Task<Conversation> GetConversationByUserIdAsync(string userId, string otherUserId);
+
 	}
 }

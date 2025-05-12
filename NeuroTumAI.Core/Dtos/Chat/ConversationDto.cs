@@ -7,10 +7,9 @@ using NeuroTumAI.Core.Dtos.Account;
 
 namespace NeuroTumAI.Core.Dtos.Chat
 {
-	public class ConversationToReturnDto
+	public class ConversationDto
 	{
-        public int Id { get; set; }
-        public MessageToReturnDto LastMessage { get; set; }
-        public ChatUserDto User { get; set; }
-    }
+		public int Id { get; set; }
+		public ChatUserDto User { get; set; }
+	}
 }
