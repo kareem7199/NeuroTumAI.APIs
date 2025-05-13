@@ -88,7 +88,17 @@ namespace NeuroTumAI.APIs.Controllers.Clinic
 			await _clinicService.DeleteSlotAsync(userId, slotId);
 
 			return Ok();
+		}
 
+		[Authorize(Roles = "Doctor", Policy = "ActiveUserOnly")]
+		[HttpPut("slot/{slotId}")]
+		public async Task<ActionResult> UpdateSlotTime(int slotId, [FromBody] UpdateSlotTimeDto updateSlotTimeDto)
+		{
+			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+			await _clinicService.UpdateSlotTimeAsync(userId, slotId, updateSlotTimeDto.StartTime);
+
+			return Ok();
 		}
 
 		[Authorize(Roles = "Patient")]

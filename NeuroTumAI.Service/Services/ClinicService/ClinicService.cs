@@ -275,5 +275,52 @@ namespace NeuroTumAI.Service.Services.ClinicService
 
 			return result;
 		}
+
+		public async Task UpdateSlotTimeAsync(string userId, int slotId, TimeOnly time)
+		{
+			var doctorRepo = _unitOfWork.Repository<Doctor>();
+			var doctorSpec = new DoctorSpecifications(userId);
+			var doctor = await doctorRepo.GetWithSpecAsync(doctorSpec);
+
+			var slotRepo = _unitOfWork.Repository<Slot>();
+			var slot = await slotRepo.GetAsync(slotId);
+			if (slot is null)
+				throw new NotFoundException(_localizationService.GetMessage<ResponsesResources>("SlotNotFound"));
+
+			var clinic = await GetClinicByIdAsync(slot.ClinicId);
+			if (clinic is null || clinic.DoctorId != doctor.Id)
+				throw new NotFoundException(_localizationService.GetMessage<ResponsesResources>("SlotNotFound"));
+
+			var upComingDates = GetUpcomingDatesForDay(slot.DayOfWeek, 120, DateTime.Today.AddDays(-1));
+
+			var appointmentRepo = _unitOfWork.Repository<Appointment>();
+			var appointmentSpecs = new AppointmentSpecifications(upComingDates, AppointmentStatus.Pending, slot.StartTime);
+			var appointments = await appointmentRepo.GetAllWithSpecAsync(appointmentSpecs);
+
+			var notifications = new List<AppointmentTimeChangeNotificationDto>();
+
+			foreach (var appointment in appointments)
+			{
+				var newNotification = new AppointmentTimeChangeNotificationDto()
+				{
+					Date = appointment.Date,
+					PatientId = appointment.PatientId,
+					OldTime = appointment.StartTime
+				};
+
+				notifications.Add(newNotification);
+
+				appointment.StartTime = time;
+				appointmentRepo.Update(appointment);
+			}
+
+			slot.StartTime = time;
+			slotRepo.Update(slot);
+
+
+			await _unitOfWork.CompleteAsync();
+
+			await _notificationService.SendAppointmentTimeChangeNotificationsAsync(notifications, time);
+		}
 	}
 }

@@ -13,7 +13,7 @@ using NeuroTumAI.Repository.Data;
 namespace NeuroTumAI.Repository.Data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20250512184659_Init")]
+    [Migration("20250513153932_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -501,6 +501,45 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.ToTable("MriScan");
                 });
 
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.Notification.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BodyAR")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BodyEN")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TitleAR")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TitleEN")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("Notification");
+                });
+
             modelBuilder.Entity("NeuroTumAI.Core.Entities.Post_Aggregate.Comment", b =>
                 {
                     b.Property<int>("Id")
@@ -964,6 +1003,17 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.Navigation("DoctorReview");
 
                     b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.Notification.Notification", b =>
+                {
+                    b.HasOne("NeuroTumAI.Core.Identity.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("NeuroTumAI.Core.Entities.Post_Aggregate.Comment", b =>

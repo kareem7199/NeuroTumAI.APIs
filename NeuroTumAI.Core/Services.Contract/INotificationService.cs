@@ -10,5 +10,6 @@ namespace NeuroTumAI.Core.Services.Contract
 	public interface INotificationService
 	{
 		Task SendAppointmentCancellationNotificationsAsync(List<AppointmentCancellationNotificationDto> notifications);
+		Task SendAppointmentTimeChangeNotificationsAsync(List<AppointmentTimeChangeNotificationDto> notifications, TimeOnly time);
 	}
 }
