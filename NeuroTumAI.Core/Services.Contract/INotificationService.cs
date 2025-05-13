@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NeuroTumAI.Core.Dtos.Notification;
 
 namespace NeuroTumAI.Core.Services.Contract
 {
 	public interface INotificationService
 	{
-		Task SendNotificationAsync(string title, string body, string fcmToken);
+		Task SendAppointmentCancellationNotificationsAsync(List<AppointmentCancellationNotificationDto> notifications);
 	}
 }

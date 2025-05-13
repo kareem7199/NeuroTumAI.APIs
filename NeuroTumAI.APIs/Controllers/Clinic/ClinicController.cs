@@ -79,6 +79,18 @@ namespace NeuroTumAI.APIs.Controllers.Clinic
 
 		}
 
+		[Authorize(Roles = "Doctor", Policy = "ActiveUserOnly")]
+		[HttpDelete("slot/{slotId}")]
+		public async Task<ActionResult> DeleteSlot(int slotId)
+		{
+			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+			await _clinicService.DeleteSlotAsync(userId, slotId);
+
+			return Ok();
+
+		}
+
 		[Authorize(Roles = "Patient")]
 		[HttpGet("availableSlots/{clinicId}")]
 		public async Task<ActionResult<IReadOnlyList<SlotToReturnDto>>> GetClinicAvailableSlots([FromQuery] GetAvailableSlotsDto model, int clinicId)

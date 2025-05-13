@@ -14,7 +14,11 @@ namespace NeuroTumAI.Core.Specifications.AppointmentSpecs
         {
             
         }
-        public AppointmentSpecifications(TimeOnly time, DateOnly date, int clinicId)
+		public AppointmentSpecifications(List<DateOnly> dates, AppointmentStatus status)
+			:base(A => dates.Contains(A.Date) && A.Status == status)
+		{
+		}
+		public AppointmentSpecifications(TimeOnly time, DateOnly date, int clinicId)
 			: base(A => A.StartTime == time && A.Date == date && A.Status != AppointmentStatus.Cancelled && A.ClinicId == clinicId)
 		{
 

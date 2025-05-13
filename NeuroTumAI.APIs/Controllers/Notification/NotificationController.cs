@@ -7,9 +7,9 @@ namespace NeuroTumAI.APIs.Controllers.Notification
 {
 	public class NotificationController : BaseApiController
 	{
-		private readonly INotificationService _notificationService;
+		private readonly IFireBaseNotificationService _notificationService;
 
-		public NotificationController(INotificationService notificationService)
+		public NotificationController(IFireBaseNotificationService notificationService)
         {
 			_notificationService = notificationService;
 		}
@@ -18,7 +18,7 @@ namespace NeuroTumAI.APIs.Controllers.Notification
 		public async Task<ActionResult> Send([FromQuery] string fcmToken)
 		{
 
-			await _notificationService.SendNotificationAsync("test title" , "test body" , fcmToken);
+			await _notificationService.SendNotificationAsync("test title" , "test body" , fcmToken, Core.Entities.Notification.NotificationType.AppointmentCancellation);
 			return Ok();
 		}
     }

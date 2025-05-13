@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NeuroTumAI.Core;
 using NeuroTumAI.Core.Dtos.Clinic;
+using NeuroTumAI.Core.Dtos.Notification;
 using NeuroTumAI.Core.Entities;
 using NeuroTumAI.Core.Entities.Appointment;
 using NeuroTumAI.Core.Entities.Clinic_Aggregate;
@@ -22,13 +23,15 @@ namespace NeuroTumAI.Service.Services.ClinicService
 		private readonly IMapper _mapper;
 		private readonly ILocalizationService _localizationService;
 		private readonly IBlobStorageService _blobStorageService;
+		private readonly INotificationService _notificationService;
 
-		public ClinicService(IUnitOfWork unitOfWork, IMapper mapper, ILocalizationService localizationService, IBlobStorageService blobStorageService)
+		public ClinicService(IUnitOfWork unitOfWork, IMapper mapper, ILocalizationService localizationService, IBlobStorageService blobStorageService, INotificationService notificationService)
 		{
 			_unitOfWork = unitOfWork;
 			_mapper = mapper;
 			_localizationService = localizationService;
 			_blobStorageService = blobStorageService;
+			_notificationService = notificationService;
 		}
 
 		public async Task<Clinic> AcceptPendingClinicAsync(int clinicId)
@@ -99,6 +102,51 @@ namespace NeuroTumAI.Service.Services.ClinicService
 			await _unitOfWork.CompleteAsync();
 
 			return newSlot;
+		}
+
+		public async Task DeleteSlotAsync(string userId, int slotId)
+		{
+			var doctorRepo = _unitOfWork.Repository<Doctor>();
+			var doctorSpec = new DoctorSpecifications(userId);
+			var doctor = await doctorRepo.GetWithSpecAsync(doctorSpec);
+
+			var slotRepo = _unitOfWork.Repository<Slot>();
+			var slot = await slotRepo.GetAsync(slotId);
+			if (slot is null)
+				throw new NotFoundException(_localizationService.GetMessage<ResponsesResources>("SlotNotFound"));
+
+			var clinic = await GetClinicByIdAsync(slot.ClinicId);
+			if (clinic is null || clinic.DoctorId != doctor.Id)
+				throw new NotFoundException(_localizationService.GetMessage<ResponsesResources>("SlotNotFound"));
+
+			var upComingDates = GetUpcomingDatesForDay(slot.DayOfWeek, 120, DateTime.Today.AddDays(-1));
+
+			var appointmentRepo = _unitOfWork.Repository<Appointment>();
+			var appointmentSpecs = new AppointmentSpecifications(upComingDates, AppointmentStatus.Pending);
+			var appointments = await appointmentRepo.GetAllWithSpecAsync(appointmentSpecs);
+
+			var notifications = new List<AppointmentCancellationNotificationDto>();
+
+			foreach ( var appointment in appointments)
+			{
+				appointment.Status = AppointmentStatus.Cancelled;
+				appointmentRepo.Update(appointment);
+
+				var newNotification = new AppointmentCancellationNotificationDto()
+				{
+					Date = appointment.Date,
+					PatientId = appointment.PatientId,
+				};
+
+				notifications.Add(newNotification);
+			}
+
+			slotRepo.Delete(slot);
+
+
+			await _unitOfWork.CompleteAsync();
+
+			await _notificationService.SendAppointmentCancellationNotificationsAsync(notifications);
 		}
 
 		public async Task<IReadOnlyList<Slot>> GetClinicAvailableSlotsAsync(int clinicId, DateOnly date)
@@ -209,6 +257,23 @@ namespace NeuroTumAI.Service.Services.ClinicService
 			clinicRepo.Delete(clinic);
 
 			await _unitOfWork.CompleteAsync();
+		}
+
+		public static List<DateOnly> GetUpcomingDatesForDay(DayOfWeek targetDay, int count, DateTime? startDate = null)
+		{
+			var result = new List<DateOnly>();
+			var start = startDate ?? DateTime.Today;
+
+			int daysUntilTarget = ((int)targetDay - (int)start.DayOfWeek + 7) % 7;
+			var current = start.AddDays(daysUntilTarget == 0 ? 7 : daysUntilTarget);
+
+			for (int i = 0; i < count; i++)
+			{
+				result.Add(DateOnly.FromDateTime(current));
+				current = current.AddDays(7);
+			}
+
+			return result;
 		}
 	}
 }

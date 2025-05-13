@@ -1,38 +1,50 @@
-﻿using FirebaseAdmin;
-using FirebaseAdmin.Messaging;
-using Google.Apis.Auth.OAuth2;
+﻿using Microsoft.Extensions.Logging;
+using NeuroTumAI.Core;
+using NeuroTumAI.Core.Dtos.Notification;
+using NeuroTumAI.Core.Entities.Notification;
+using NeuroTumAI.Core.Identity;
 using NeuroTumAI.Core.Services.Contract;
+using NeuroTumAI.Core.Specifications.PatientSpecs;
 
 namespace NeuroTumAI.Service.Services.NotificationService
 {
 	public class NotificationService : INotificationService
 	{
-		private static bool _isInitialized;
+		private readonly IUnitOfWork _unitOfWork;
+		private readonly IFireBaseNotificationService _fireBaseNotificationService;
+		private readonly ILogger<NotificationService> _logger;
 
-		public NotificationService()
+		public NotificationService(IUnitOfWork unitOfWork, IFireBaseNotificationService fireBaseNotificationService, ILogger<NotificationService> logger)
 		{
-			if (!_isInitialized)
-			{
-				FirebaseApp.Create(new AppOptions()
-				{
-					Credential = GoogleCredential.FromFile("../NeuroTumAI.Service/Services/NotificationService/nuerotum-firebase-adminsdk-fbsvc-927b811ac6.json")
-				});
-				_isInitialized = true;
-			}
+			_unitOfWork = unitOfWork;
+			_fireBaseNotificationService = fireBaseNotificationService;
+			_logger = logger;
 		}
-		public async Task SendNotificationAsync(string title, string body, string fcmToken)
-		{
-			var message = new Message()
-			{
-				Token = fcmToken,
-				Notification = new Notification
-				{
-					Title = title,
-					Body = body,
-				}
-			};
 
-			await FirebaseMessaging.DefaultInstance.SendAsync(message);
+		public async Task SendAppointmentCancellationNotificationsAsync(List<AppointmentCancellationNotificationDto> notifications)
+		{
+			var patientIds = notifications.Select(N => N.PatientId);
+
+			var patientRepo = _unitOfWork.Repository<Patient>();
+			var patientSpecs = new PatientSpecifications(patientIds);
+
+			var patients = await patientRepo.GetAllWithSpecAsync(patientSpecs);
+
+			foreach (var notification in notifications)
+			{
+				var tokens = patients.Where(P => P.Id == notification.PatientId).FirstOrDefault()!.ApplicationUser.DeviceTokens;
+
+				string title = "Your Appointment has been Cancelled";
+				string body = $"We regret to inform you that your appointment scheduled for {notification.Date:MMMM dd, yyyy} has been cancelled.";
+
+				if (tokens.Any())
+				{
+					foreach (var token in tokens)
+					{
+						_fireBaseNotificationService.SendNotificationAsync(title, body, token.FcmToken, NotificationType.AppointmentCancellation);
+					}
+				}
+			}
 		}
 	}
 }
