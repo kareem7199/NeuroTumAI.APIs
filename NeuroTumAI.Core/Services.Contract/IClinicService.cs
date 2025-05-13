@@ -16,6 +16,7 @@ namespace NeuroTumAI.Core.Services.Contract
 		Task<Clinic?> GetClinicByIdAsync(int clinicId);
 		Task<IReadOnlyList<Clinic>> GetDoctorClinicAsync(string userId);
 		Task<IReadOnlyList<Slot>> GetClinicAvailableSlotsAsync(int clinicId, DateOnly date);
+		Task DeleteSlotAsync(string userId, int slotId);
 		Task<IReadOnlyList<Clinic>> GetClinicsAsync(ClinicSpecParams specParams);
 		Task<int> GetCountAsync(ClinicSpecParams specParams);
 		Task<IReadOnlyList<Clinic>> GetPendingClinicsAsync(PendingClinicSpecParams specParams);

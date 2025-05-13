@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NeuroTumAI.Core.Identity;
+﻿using NeuroTumAI.Core.Identity;
 
 namespace NeuroTumAI.Core.Specifications.PatientSpecs
 {
@@ -13,6 +8,13 @@ namespace NeuroTumAI.Core.Specifications.PatientSpecs
 			: base(P => P.ApplicationUserId == ApplicationUserId)
 		{
 			Includes.Add(P => P.ApplicationUser);
+		}
+
+		public PatientSpecifications(IEnumerable<int> patientIds)
+			: base(P => patientIds.Contains(P.Id))
+		{
+			Includes.Add(P => P.ApplicationUser);
+			Includes.Add(P => P.ApplicationUser.DeviceTokens);
 		}
 	}
 }
