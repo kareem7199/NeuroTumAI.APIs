@@ -4,6 +4,7 @@ using Google.Apis.Auth.OAuth2;
 using Microsoft.Extensions.Logging;
 using NeuroTumAI.Core.Entities.Notification;
 using NeuroTumAI.Core.Services.Contract;
+using Notification = FirebaseAdmin.Messaging.Notification;
 
 namespace NeuroTumAI.Service.Services.FireBaseNotificationService
 {

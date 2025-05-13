@@ -17,7 +17,8 @@ namespace NeuroTumAI.Core.Entities.Notification
 
 		[Display(Name = "AppointmentReminder")]
 		AppointmentReminder,
-
+		[Display(Name = "AppointmentTimeChange")]
+		AppointmentTimeChange,
 		[Display(Name = "ScanPatient")]
 		ScanPatient,
 
