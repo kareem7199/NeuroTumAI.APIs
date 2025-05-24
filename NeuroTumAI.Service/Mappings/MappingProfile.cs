@@ -6,6 +6,7 @@ using NeuroTumAI.Core.Dtos.Chat;
 using NeuroTumAI.Core.Dtos.Clinic;
 using NeuroTumAI.Core.Dtos.ContactUs;
 using NeuroTumAI.Core.Dtos.Doctor;
+using NeuroTumAI.Core.Dtos.Notification;
 using NeuroTumAI.Core.Dtos.Review;
 using NeuroTumAI.Core.Entities;
 using NeuroTumAI.Core.Entities.Admin;
@@ -13,6 +14,7 @@ using NeuroTumAI.Core.Entities.Appointment;
 using NeuroTumAI.Core.Entities.Chat_Aggregate;
 using NeuroTumAI.Core.Entities.Clinic_Aggregate;
 using NeuroTumAI.Core.Entities.Contact_Us;
+using NeuroTumAI.Core.Entities.Notification;
 using NeuroTumAI.Core.Identity;
 using NeuroTumAI.Service.Dtos.Account;
 
@@ -109,6 +111,12 @@ namespace NeuroTumAI.Service.Mappings
 				.ForMember(D => D.DoctorProfilePicture, O => O.MapFrom(S => S.Doctor.ApplicationUser.ProfilePicture))
 				.ForMember(D => D.DoctorName, O => O.MapFrom(S => S.Doctor.ApplicationUser.FullName))
 				.ForMember(D => D.Address, O => O.MapFrom(S => S.Clinic.Address));
+
+			CreateMap<Notification, NotificationToReturnDto>()
+				.ForMember(dest => dest.Title, opt => opt.MapFrom((src, dest, member, context) =>
+					context.Items.TryGetValue("Language", out var lang) && lang?.ToString() == "ar" ? src.TitleAR : src.TitleEN))
+				.ForMember(dest => dest.Body, opt => opt.MapFrom((src, dest, member, context) =>
+					context.Items.TryGetValue("Language", out var lang) && lang?.ToString() == "ar" ? src.BodyAR : src.BodyEN));
 		}
 	}
 }
