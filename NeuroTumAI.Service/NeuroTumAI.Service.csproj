@@ -8,6 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Services\FireBaseNotificationService\nuerotum-firebase-adminsdk-fbsvc-927b811ac6.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Services\FireBaseNotificationService\nuerotum-firebase-adminsdk-fbsvc-927b811ac6.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="14.0.0" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.24.0" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />

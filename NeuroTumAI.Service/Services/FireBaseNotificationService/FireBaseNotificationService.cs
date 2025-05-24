@@ -17,9 +17,12 @@ namespace NeuroTumAI.Service.Services.FireBaseNotificationService
 		{
 			if (!_isInitialized)
 			{
+				var basePath = AppContext.BaseDirectory;
+				var jsonPath = Path.Combine(basePath, "nuerotum-firebase-adminsdk-fbsvc-927b811ac6.json");
+
 				FirebaseApp.Create(new AppOptions()
 				{
-					Credential = GoogleCredential.FromFile("../NeuroTumAI.Service/Services/FireBaseNotificationService/nuerotum-firebase-adminsdk-fbsvc-927b811ac6.json")
+					Credential = GoogleCredential.FromFile(jsonPath)
 				});
 				_isInitialized = true;
 			}

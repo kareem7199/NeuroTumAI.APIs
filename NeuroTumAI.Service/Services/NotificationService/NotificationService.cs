@@ -4,6 +4,7 @@ using NeuroTumAI.Core.Dtos.Notification;
 using NeuroTumAI.Core.Entities.Notification;
 using NeuroTumAI.Core.Identity;
 using NeuroTumAI.Core.Services.Contract;
+using NeuroTumAI.Core.Specifications.NotificationSpecs;
 using NeuroTumAI.Core.Specifications.PatientSpecs;
 
 namespace NeuroTumAI.Service.Services.NotificationService
@@ -19,6 +20,18 @@ namespace NeuroTumAI.Service.Services.NotificationService
 			_unitOfWork = unitOfWork;
 			_fireBaseNotificationService = fireBaseNotificationService;
 			_logger = logger;
+		}
+
+		public Task<IReadOnlyList<Notification>> GetNotificationsAsync(string userId, NotificationSpecParams specParams)
+		{
+			var notificationSpecs = new NotificationSpecifications(userId, specParams);
+			return _unitOfWork.Repository<Notification>().GetAllWithSpecAsync(notificationSpecs);
+		}
+
+		public Task<int> GetNotificationsCountAsync(string userId)
+		{
+			var notificationSpecs = new NotificationSpecifications(userId);
+			return _unitOfWork.Repository<Notification>().GetCountAsync(notificationSpecs);
 		}
 
 		public async Task SendAppointmentCancellationNotificationsAsync(List<AppointmentCancellationNotificationDto> notifications)
