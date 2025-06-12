@@ -120,6 +120,9 @@
   <data name="AccountNotApproved" xml:space="preserve">
     <value>لم يتم الموافقة على الحساب بعد</value>
   </data>
+  <data name="appointmentCancelInvalid" xml:space="preserve">
+    <value>لم يتم العثور على الموعد أو لا يمكن إلغاؤه.</value>
+  </data>
   <data name="AppointmentExists" xml:space="preserve">
     <value>يوجد حجز مسبق لهذا الوقت.</value>
   </data>

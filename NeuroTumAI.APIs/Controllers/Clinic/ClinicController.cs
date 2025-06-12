@@ -87,7 +87,10 @@ namespace NeuroTumAI.APIs.Controllers.Clinic
 
 			await _clinicService.DeleteSlotAsync(userId, slotId);
 
-			return Ok();
+			return Ok(new
+			{
+				Message = "Slot deleted successfully."
+			});
 		}
 
 		[Authorize(Roles = "Doctor", Policy = "ActiveUserOnly")]
@@ -98,7 +101,10 @@ namespace NeuroTumAI.APIs.Controllers.Clinic
 
 			await _clinicService.UpdateSlotTimeAsync(userId, slotId, updateSlotTimeDto.StartTime);
 
-			return Ok();
+			return Ok(new
+			{
+				Message = "Slot time updated successfully."
+			});
 		}
 
 		[Authorize(Roles = "Patient")]

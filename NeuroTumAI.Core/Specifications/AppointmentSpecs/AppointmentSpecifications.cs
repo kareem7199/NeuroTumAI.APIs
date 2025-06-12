@@ -14,6 +14,14 @@ namespace NeuroTumAI.Core.Specifications.AppointmentSpecs
 		{
 
 		}
+
+		public AppointmentSpecifications(int appointmentId)
+			: base(A => A.Id == appointmentId)
+		{
+			Includes.Add(A => A.Patient);
+			Includes.Add(A => A.Doctor);
+		}
+
 		public AppointmentSpecifications(List<DateOnly> dates, AppointmentStatus status)
 			: base(A => dates.Contains(A.Date) && A.Status == status)
 		{

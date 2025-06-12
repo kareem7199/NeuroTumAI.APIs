@@ -58,5 +58,18 @@ namespace NeuroTumAI.APIs.Controllers.Appointment
 
 			return Ok(new PaginationDto<AppointmentWithDoctorDto>(specParams.PageIndex, specParams.PageSize, count, data));
 		}
+
+		[Authorize]
+		[HttpPatch("cancel/{appointmentId}")]
+		public async Task<ActionResult> CancelAppointment(int appointmentId)
+		{
+			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+			await _appointmentService.CancelAppointmentAsync(userId, appointmentId);
+
+			return Ok(new
+			{
+				Message = "Appointment has been successfully cancelled."
+			});
+		}
 	}
 }
