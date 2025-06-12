@@ -13,7 +13,7 @@ using NeuroTumAI.Repository.Data;
 namespace NeuroTumAI.Repository.Data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20250513153932_Init")]
+    [Migration("20250612233600_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -520,6 +520,9 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.Property<string>("BodyEN")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("TitleAR")
                         .IsRequired()

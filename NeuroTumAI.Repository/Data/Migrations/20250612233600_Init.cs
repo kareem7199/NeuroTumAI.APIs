@@ -234,6 +234,7 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     TitleEN = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BodyAR = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BodyEN = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>

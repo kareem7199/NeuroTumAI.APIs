@@ -518,6 +518,9 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("TitleAR")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
