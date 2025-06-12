@@ -4,6 +4,7 @@ using NeuroTumAI.Core.Dtos.Notification;
 using NeuroTumAI.Core.Entities.Notification;
 using NeuroTumAI.Core.Identity;
 using NeuroTumAI.Core.Services.Contract;
+using NeuroTumAI.Core.Specifications.DoctorSpecs;
 using NeuroTumAI.Core.Specifications.NotificationSpecs;
 using NeuroTumAI.Core.Specifications.PatientSpecs;
 
@@ -75,6 +76,51 @@ namespace NeuroTumAI.Service.Services.NotificationService
 					}
 				}
 			}
+
+
+			var doctorIds = notifications.Select(N => N.DoctorId);
+
+			var doctorRepo = _unitOfWork.Repository<Doctor>();
+			var doctorSpecs = new DoctorSpecifications(doctorIds);
+
+			var doctors = await doctorRepo.GetAllWithSpecAsync(doctorSpecs);
+
+			foreach (var notification in notifications)
+			{
+				var doctor = doctors.FirstOrDefault(d => d.Id == notification.DoctorId)!;
+				var tokens = doctor.ApplicationUser.DeviceTokens;
+
+				string titleEN = "An Appointment Has Been Cancelled";
+				string bodyEN = $"The appointment scheduled for {notification.Date:MMMM dd, yyyy} with your patient has been cancelled.";
+				string titleAR = "تم إلغاء موعد";
+				string bodyAR = $"تم إلغاء الموعد المحدد في {notification.Date:dd MMMM yyyy} مع المريض.";
+
+				var newNotification = new Notification
+				{
+					TitleEN = titleEN,
+					TitleAR = titleAR,
+					BodyEN = bodyEN,
+					BodyAR = bodyAR,
+					Type = NotificationType.AppointmentCancellation,
+					ApplicationUserId = doctor.ApplicationUserId
+				};
+
+				notificationRepo.Add(newNotification);
+
+				if (tokens.Any())
+				{
+					foreach (var token in tokens)
+					{
+						_fireBaseNotificationService.SendNotificationAsync(
+							titleEN,
+							bodyEN,
+							token.FcmToken,
+							NotificationType.AppointmentCancellation
+						);
+					}
+				}
+			}
+
 
 			await _unitOfWork.CompleteAsync();
 		}

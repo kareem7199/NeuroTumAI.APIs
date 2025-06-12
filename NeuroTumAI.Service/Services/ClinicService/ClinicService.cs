@@ -136,6 +136,7 @@ namespace NeuroTumAI.Service.Services.ClinicService
 				{
 					Date = appointment.Date,
 					PatientId = appointment.PatientId,
+					DoctorId = appointment.DoctorId
 				};
 
 				notifications.Add(newNotification);

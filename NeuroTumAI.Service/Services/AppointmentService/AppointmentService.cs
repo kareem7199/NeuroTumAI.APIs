@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NeuroTumAI.Core;
 using NeuroTumAI.Core.Dtos.Appointments;
+using NeuroTumAI.Core.Dtos.Notification;
 using NeuroTumAI.Core.Entities;
 using NeuroTumAI.Core.Entities.Appointment;
 using NeuroTumAI.Core.Entities.Clinic_Aggregate;
@@ -16,6 +17,7 @@ using NeuroTumAI.Core.Services.Contract;
 using NeuroTumAI.Core.Specifications.AppointmentSpecs;
 using NeuroTumAI.Core.Specifications.DoctorSpecs;
 using NeuroTumAI.Core.Specifications.PatientSpecs;
+using NeuroTumAI.Service.Services.NotificationService;
 
 namespace NeuroTumAI.Service.Services.AppointmentService
 {
@@ -24,13 +26,16 @@ namespace NeuroTumAI.Service.Services.AppointmentService
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly ILocalizationService _localizationService;
 		private readonly IDoctorService _doctorService;
+		private readonly INotificationService _notificationService;
 
-		public AppointmentService(IUnitOfWork unitOfWork, ILocalizationService localizationService, IDoctorService doctorService)
+		public AppointmentService(IUnitOfWork unitOfWork, ILocalizationService localizationService, IDoctorService doctorService, INotificationService notificationService)
 		{
 			_unitOfWork = unitOfWork;
 			_localizationService = localizationService;
 			_doctorService = doctorService;
+			_notificationService = notificationService;
 		}
+
 		public async Task<Appointment> BookAppointmentAsync(BookAppointmentDto model, string userId)
 		{
 			if (model.Date < DateOnly.FromDateTime(DateTime.Today))
@@ -85,16 +90,32 @@ namespace NeuroTumAI.Service.Services.AppointmentService
 
 			var appoitnmentRepo = _unitOfWork.Repository<Appointment>();
 
-			var appoitnment = await appoitnmentRepo.GetWithSpecAsync(appointmentSpecs);
-			if (appoitnment is null || appoitnment.Status != AppointmentStatus.Pending || (appoitnment.Doctor.ApplicationUserId != userId && appoitnment.Patient.ApplicationUserId != userId))
+			var appointment = await appoitnmentRepo.GetWithSpecAsync(appointmentSpecs);
+			if (appointment is null || appointment.Status != AppointmentStatus.Pending || (appointment.Doctor.ApplicationUserId != userId && appointment.Patient.ApplicationUserId != userId))
 				throw new NotFoundException(_localizationService.GetMessage<ResponsesResources>("appointmentCancelInvalid"));
 
-			appoitnment.Status = AppointmentStatus.Cancelled;
-			appoitnmentRepo.Update(appoitnment);
+			appointment.Status = AppointmentStatus.Cancelled;
+			appoitnmentRepo.Update(appointment);
+
+
+			var notifications = new List<AppointmentCancellationNotificationDto>();
+
+
+			var newNotification = new AppointmentCancellationNotificationDto()
+			{
+				Date = appointment.Date,
+				PatientId = appointment.PatientId,
+				DoctorId = appointment.DoctorId
+			};
+
+			notifications.Add(newNotification);
+
 
 			await _unitOfWork.CompleteAsync();
 
-			return appoitnment;
+			await _notificationService.SendAppointmentCancellationNotificationsAsync(notifications);
+
+			return appointment;
 		}
 
 		public async Task<IReadOnlyList<Appointment>> GetDoctorAppointmentsAsync(string userId, int clinicId, DateOnly date)

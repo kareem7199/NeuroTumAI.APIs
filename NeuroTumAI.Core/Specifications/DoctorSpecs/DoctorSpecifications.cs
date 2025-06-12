@@ -14,6 +14,14 @@ namespace NeuroTumAI.Core.Specifications.DoctorSpecs
 		{
 
 		}
+
+        public DoctorSpecifications(IEnumerable<int> doctorIds)
+			: base(D => doctorIds.Contains(D.Id))
+		{
+			Includes.Add(D => D.ApplicationUser);
+			Includes.Add(D => D.ApplicationUser.DeviceTokens);
+		}
+
 		public DoctorSpecifications(string ApplicationUserId)
 			: base(D => D.ApplicationUserId == ApplicationUserId && D.IsApproved == true)
 		{
