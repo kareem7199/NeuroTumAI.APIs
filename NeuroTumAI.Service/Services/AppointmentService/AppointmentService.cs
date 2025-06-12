@@ -79,6 +79,24 @@ namespace NeuroTumAI.Service.Services.AppointmentService
 			return newAppointment;
 		}
 
+		public async Task<Appointment> CancelAppointmentAsync(string userId, int appointmentId)
+		{
+			var appointmentSpecs = new AppointmentSpecifications(appointmentId);
+
+			var appoitnmentRepo = _unitOfWork.Repository<Appointment>();
+
+			var appoitnment = await appoitnmentRepo.GetWithSpecAsync(appointmentSpecs);
+			if (appoitnment is null || appoitnment.Status != AppointmentStatus.Pending || (appoitnment.Doctor.ApplicationUserId != userId && appoitnment.Patient.ApplicationUserId != userId))
+				throw new NotFoundException(_localizationService.GetMessage<ResponsesResources>("appointmentCancelInvalid"));
+
+			appoitnment.Status = AppointmentStatus.Cancelled;
+			appoitnmentRepo.Update(appoitnment);
+
+			await _unitOfWork.CompleteAsync();
+
+			return appoitnment;
+		}
+
 		public async Task<IReadOnlyList<Appointment>> GetDoctorAppointmentsAsync(string userId, int clinicId, DateOnly date)
 		{
 			var doctor = await _doctorService.GetDoctorByUserIdAsync(userId);

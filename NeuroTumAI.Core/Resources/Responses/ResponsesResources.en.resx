@@ -120,6 +120,9 @@
   <data name="AccountNotApproved" xml:space="preserve">
     <value>The account is not approved yet.</value>
   </data>
+  <data name="appointmentCancelInvalid" xml:space="preserve">
+    <value>Appointment not found or cannot be cancelled.</value>
+  </data>
   <data name="AppointmentExists" xml:space="preserve">
     <value>An appointment already exists for this slot.</value>
   </data>
