@@ -1,9 +1,12 @@
 ﻿using NeuroTumAI.Core;
 using NeuroTumAI.Core.Dtos.CancerPrediction;
+using NeuroTumAI.Core.Dtos.MriScan;
 using NeuroTumAI.Core.Dtos.Pagination;
 using NeuroTumAI.Core.Entities;
 using NeuroTumAI.Core.Entities.MriScan;
+using NeuroTumAI.Core.Exceptions;
 using NeuroTumAI.Core.Identity;
+using NeuroTumAI.Core.Resources.Responses;
 using NeuroTumAI.Core.Services.Contract;
 using NeuroTumAI.Core.Specifications.ClinicSpecs;
 using NeuroTumAI.Core.Specifications.DoctorMriAssignmentsSpecs;
@@ -18,13 +21,15 @@ namespace NeuroTumAI.Service.Services.MriScanService
 		private readonly ICancerDetectionService _cancerDetectionService;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IDoctorService _doctorService;
+		private readonly ILocalizationService _localizationService;
 
-		public MriScanService(IBlobStorageService blobStorageService, ICancerDetectionService cancerDetectionService, IUnitOfWork unitOfWork, IDoctorService doctorService)
+		public MriScanService(IBlobStorageService blobStorageService, ICancerDetectionService cancerDetectionService, IUnitOfWork unitOfWork, IDoctorService doctorService, ILocalizationService localizationService)
 		{
 			_blobStorageService = blobStorageService;
 			_cancerDetectionService = cancerDetectionService;
 			_unitOfWork = unitOfWork;
 			_doctorService = doctorService;
+			_localizationService = localizationService;
 		}
 
 		public async Task AutoReviewAsync(int mriId)
@@ -68,6 +73,51 @@ namespace NeuroTumAI.Service.Services.MriScanService
 			var mriScansSpec = new MriScanSpecifications(twelveHoursAgo);
 
 			return await _unitOfWork.Repository<MriScan>().GetAllWithSpecAsync(mriScansSpec);
+		}
+
+		public Task<IReadOnlyList<DoctorMriAssignment>> GetPatientScansAsync(string userId, PaginationParamsDto dto)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<int> GetPatientScansCountAsync(string userId)
+		{
+			throw new NotImplementedException();
+		}
+
+		public async Task ReviewAsync(int mriScanId, string userId, AddMriScanReviewDto reviewDto)
+		{
+			var doctor = await _doctorService.GetDoctorByUserIdAsync(userId);
+
+			var mriScanSpecs = new MriScanSpecifications(doctor.Id);
+			var mriScanRepo = _unitOfWork.Repository<MriScan>();
+
+			var mriScan = await mriScanRepo.GetWithSpecAsync(mriScanSpecs);
+
+			if (mriScan is null || mriScan.IsReviewed)
+				throw new NotFoundException(_localizationService.GetMessage<ResponsesResources>("MriScan_NotFoundOrReviewed"));
+
+			var isAssigned = mriScan.DoctorAssignments.Any(DA => DA.DoctorId == doctor.Id);
+			if (!isAssigned)
+				throw new NotFoundException(_localizationService.GetMessage<ResponsesResources>("MriScan_NotFoundOrReviewed"));
+
+			mriScan.IsReviewed = true;
+			mriScan.DetectionClass = reviewDto.DetectionClass;
+
+			var newReview = new DoctorReview()
+			{
+				Findings = reviewDto.Findings,
+				Reasoning = reviewDto.Reasoning,
+				DoctorId = doctor.Id,
+			};
+
+			mriScan.DoctorReview = newReview;
+
+			mriScan.DoctorAssignments = new HashSet<DoctorMriAssignment>();
+
+			mriScanRepo.Update(mriScan);
+
+			await _unitOfWork.CompleteAsync();
 		}
 
 		public async Task<MriScan> UploadAndProcessMriScanAsync(PredictRequestDto model, string userId)

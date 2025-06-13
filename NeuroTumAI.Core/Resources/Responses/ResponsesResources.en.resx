@@ -147,6 +147,9 @@
   <data name="InvalidOrExpiredToken" xml:space="preserve">
     <value>Invalid or expired token.</value>
   </data>
+  <data name="MriScan_NotFoundOrReviewed" xml:space="preserve">
+    <value>The MRI scan was not found or has already been reviewed.</value>
+  </data>
   <data name="PostNotFound" xml:space="preserve">
     <value>Post not found.</value>
   </data>
