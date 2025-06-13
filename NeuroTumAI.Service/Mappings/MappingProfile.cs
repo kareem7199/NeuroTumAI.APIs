@@ -76,6 +76,14 @@ namespace NeuroTumAI.Service.Mappings
 				.ForMember(D => D.ProfilePicture, O => O.MapFrom(S => S.ApplicationUser.ProfilePicture))
 				.ForMember(D => D.AverageStarRating, O => O.MapFrom(D => D.Reviews.Any() ? D.Reviews.Average(R => R.Stars) : 0));
 
+			CreateMap<Doctor, DoctorProfileDto>()
+				.ForMember(D => D.FullName, O => O.MapFrom(S => S.ApplicationUser.FullName))
+				.ForMember(D => D.UserName, O => O.MapFrom(S => S.ApplicationUser.UserName))
+				.ForMember(D => D.Gender, O => O.MapFrom(S => S.ApplicationUser.Gender))
+				.ForMember(D => D.DateOfBirth, O => O.MapFrom(S => S.ApplicationUser.DateOfBirth))
+				.ForMember(D => D.ProfilePicture, O => O.MapFrom(S => S.ApplicationUser.ProfilePicture))
+				.ForMember(D => D.AverageStarRating, O => O.MapFrom(D => D.Reviews.Any() ? D.Reviews.Average(R => R.Stars) : 0));
+
 			CreateMap<Appointment, AppoitntmentWithPatientDto>();
 
 			CreateMap<ChatMessage, MessageToReturnDto>();
