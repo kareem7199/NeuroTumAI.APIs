@@ -124,6 +124,8 @@ namespace NeuroTumAI.Service.Mappings
 				.ForMember(D => D.PatientName, O => O.MapFrom(S => S.MriScan.Patient.ApplicationUser.FullName))
 				.ForMember(D => D.PatientId, O => O.MapFrom(S => S.MriScan.Patient.Id))
 				.ForMember(D => D.PatientProfilePicture, O => O.MapFrom(S => S.MriScan.Patient.ApplicationUser.ProfilePicture))
+				.ForMember(D => D.PatientDateOfBirth, O => O.MapFrom(S => S.MriScan.Patient.ApplicationUser.DateOfBirth))
+				.ForMember(D => D.PatientGender, O => O.MapFrom(S => S.MriScan.Patient.ApplicationUser.Gender))
 				.ForMember(D => D.ImagePath, O => O.MapFrom(S => S.MriScan.ImagePath))
 				.ForMember(D => D.AiGeneratedImagePath, O => O.MapFrom(S => S.MriScan.AiGeneratedImagePath))
 				.ForMember(D => D.Confidence, O => O.MapFrom(S => S.MriScan.Confidence))
