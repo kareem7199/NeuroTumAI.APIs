@@ -6,6 +6,7 @@ using NeuroTumAI.Core.Dtos.Chat;
 using NeuroTumAI.Core.Dtos.Clinic;
 using NeuroTumAI.Core.Dtos.ContactUs;
 using NeuroTumAI.Core.Dtos.Doctor;
+using NeuroTumAI.Core.Dtos.MriScan;
 using NeuroTumAI.Core.Dtos.Notification;
 using NeuroTumAI.Core.Dtos.Review;
 using NeuroTumAI.Core.Entities;
@@ -14,6 +15,7 @@ using NeuroTumAI.Core.Entities.Appointment;
 using NeuroTumAI.Core.Entities.Chat_Aggregate;
 using NeuroTumAI.Core.Entities.Clinic_Aggregate;
 using NeuroTumAI.Core.Entities.Contact_Us;
+using NeuroTumAI.Core.Entities.MriScan;
 using NeuroTumAI.Core.Entities.Notification;
 using NeuroTumAI.Core.Identity;
 using NeuroTumAI.Service.Dtos.Account;
@@ -117,6 +119,18 @@ namespace NeuroTumAI.Service.Mappings
 					context.Items.TryGetValue("Language", out var lang) && lang?.ToString() == "ar" ? src.TitleAR : src.TitleEN))
 				.ForMember(dest => dest.Body, opt => opt.MapFrom((src, dest, member, context) =>
 					context.Items.TryGetValue("Language", out var lang) && lang?.ToString() == "ar" ? src.BodyAR : src.BodyEN));
+
+			CreateMap<DoctorMriAssignment, MriScanResultToReviewDto>()
+				.ForMember(D => D.PatientName, O => O.MapFrom(S => S.MriScan.Patient.ApplicationUser.FullName))
+				.ForMember(D => D.PatientId, O => O.MapFrom(S => S.MriScan.Patient.Id))
+				.ForMember(D => D.PatientProfilePicture, O => O.MapFrom(S => S.MriScan.Patient.ApplicationUser.ProfilePicture))
+				.ForMember(D => D.ImagePath, O => O.MapFrom(S => S.MriScan.ImagePath))
+				.ForMember(D => D.AiGeneratedImagePath, O => O.MapFrom(S => S.MriScan.AiGeneratedImagePath))
+				.ForMember(D => D.Confidence, O => O.MapFrom(S => S.MriScan.Confidence))
+				.ForMember(D => D.DetectionClass, O => O.MapFrom(S => S.MriScan.DetectionClass))
+				.ForMember(D => D.Id, O => O.MapFrom(S => S.MriScan.Id))
+				.ForMember(D => D.UploadDate, O => O.MapFrom(S => S.MriScan.UploadDate));
+
 		}
 	}
 }

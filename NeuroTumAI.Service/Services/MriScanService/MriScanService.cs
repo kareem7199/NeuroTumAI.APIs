@@ -1,10 +1,12 @@
 ﻿using NeuroTumAI.Core;
 using NeuroTumAI.Core.Dtos.CancerPrediction;
+using NeuroTumAI.Core.Dtos.Pagination;
 using NeuroTumAI.Core.Entities;
 using NeuroTumAI.Core.Entities.MriScan;
 using NeuroTumAI.Core.Identity;
 using NeuroTumAI.Core.Services.Contract;
 using NeuroTumAI.Core.Specifications.ClinicSpecs;
+using NeuroTumAI.Core.Specifications.DoctorMriAssignmentsSpecs;
 using NeuroTumAI.Core.Specifications.MriScanSpecs;
 using NeuroTumAI.Core.Specifications.PatientSpecs;
 
@@ -15,12 +17,14 @@ namespace NeuroTumAI.Service.Services.MriScanService
 		private readonly IBlobStorageService _blobStorageService;
 		private readonly ICancerDetectionService _cancerDetectionService;
 		private readonly IUnitOfWork _unitOfWork;
+		private readonly IDoctorService _doctorService;
 
-		public MriScanService(IBlobStorageService blobStorageService, ICancerDetectionService cancerDetectionService, IUnitOfWork unitOfWork)
+		public MriScanService(IBlobStorageService blobStorageService, ICancerDetectionService cancerDetectionService, IUnitOfWork unitOfWork, IDoctorService doctorService)
 		{
 			_blobStorageService = blobStorageService;
 			_cancerDetectionService = cancerDetectionService;
 			_unitOfWork = unitOfWork;
+			_doctorService = doctorService;
 		}
 
 		public async Task AutoReviewAsync(int mriId)
@@ -38,6 +42,24 @@ namespace NeuroTumAI.Service.Services.MriScanService
 			doctorAssignmentsRepository.RemoveRange(mriScan.DoctorAssignments);
 
 			await _unitOfWork.CompleteAsync();
+		}
+
+		public async Task<IReadOnlyList<DoctorMriAssignment>> GetAssignedScansAsync(string userId, PaginationParamsDto dto)
+		{
+			var doctor = await _doctorService.GetDoctorByUserIdAsync(userId);
+
+			var mriAssignmentSpecs = new DoctorMriAssignmentsSpecifications(doctor.Id, dto);
+
+			return await _unitOfWork.Repository<DoctorMriAssignment>().GetAllWithSpecAsync(mriAssignmentSpecs);
+		}
+
+		public async Task<int> GetAssignedScansCountAsync(string userId)
+		{
+			var doctor = await _doctorService.GetDoctorByUserIdAsync(userId);
+
+			var mriAssignmentSpecs = new DoctorMriAssignmentsSpecifications(doctor.Id);
+
+			return await _unitOfWork.Repository<DoctorMriAssignment>().GetCountAsync(mriAssignmentSpecs);
 		}
 
 		public async Task<IReadOnlyList<MriScan>> GetExpiredUnreviewedScansAsync()

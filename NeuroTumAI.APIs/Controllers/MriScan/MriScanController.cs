@@ -1,10 +1,12 @@
 ﻿using System.Security.Claims;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NeuroTumAI.APIs.Controllers.Base;
+using NeuroTumAI.Core.Dtos;
 using NeuroTumAI.Core.Dtos.CancerPrediction;
-using NeuroTumAI.Core.Identity;
+using NeuroTumAI.Core.Dtos.MriScan;
+using NeuroTumAI.Core.Dtos.Pagination;
 using NeuroTumAI.Core.Services.Contract;
 
 namespace NeuroTumAI.APIs.Controllers.MriScan
@@ -12,13 +14,15 @@ namespace NeuroTumAI.APIs.Controllers.MriScan
 	public class MriScanController : BaseApiController
 	{
 		private readonly IMriScanService _mriScanService;
+		private readonly IMapper _mapper;
 
-		public MriScanController(IMriScanService mriScanService)
-        {
+		public MriScanController(IMriScanService mriScanService, IMapper mapper)
+		{
 			_mriScanService = mriScanService;
+			_mapper = mapper;
 		}
 
-        [Authorize(Roles = "Patient")]
+		[Authorize(Roles = "Patient")]
 		[HttpPost("upload")]
 		public async Task<ActionResult> UploadMriScan([FromForm] PredictRequestDto model)
 		{
@@ -27,6 +31,18 @@ namespace NeuroTumAI.APIs.Controllers.MriScan
 			var result = await _mriScanService.UploadAndProcessMriScanAsync(model, userId);
 
 			return Ok(new { result.Id });
+		}
+
+		[Authorize(Roles = "Doctor")]
+		[HttpGet("assignedScans")]
+		public async Task<ActionResult<IReadOnlyList<MriScanResultToReviewDto>>> GetAssignedMriScans([FromQuery] PaginationParamsDto dto)
+		{
+			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value!;
+
+			var scans = await _mriScanService.GetAssignedScansAsync(userId, dto);
+			var count = await _mriScanService.GetAssignedScansCountAsync(userId);
+
+			return Ok(new PaginationDto<MriScanResultToReviewDto>(dto.PageIndex, dto.PageSize, count, _mapper.Map<IReadOnlyList<MriScanResultToReviewDto>>(scans)));
 		}
 	}
 }
