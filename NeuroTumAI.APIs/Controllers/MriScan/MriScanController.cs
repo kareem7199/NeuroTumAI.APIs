@@ -35,7 +35,7 @@ namespace NeuroTumAI.APIs.Controllers.MriScan
 
 		[Authorize(Roles = "Doctor")]
 		[HttpGet("assignedScans")]
-		public async Task<ActionResult<IReadOnlyList<MriScanResultToReviewDto>>> GetAssignedMriScans([FromQuery] PaginationParamsDto dto)
+		public async Task<ActionResult<PaginationDto<MriScanResultToReviewDto>>> GetAssignedMriScans([FromQuery] PaginationParamsDto dto)
 		{
 			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value!;
 
