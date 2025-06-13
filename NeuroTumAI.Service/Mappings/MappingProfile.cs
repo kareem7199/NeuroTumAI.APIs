@@ -131,6 +131,11 @@ namespace NeuroTumAI.Service.Mappings
 				.ForMember(D => D.Id, O => O.MapFrom(S => S.MriScan.Id))
 				.ForMember(D => D.UploadDate, O => O.MapFrom(S => S.MriScan.UploadDate));
 
+
+			CreateMap<MriScan, PatientMriScanDto>();
+
+			CreateMap<DoctorReview, DoctorReviewDto>();
+
 		}
 	}
 }

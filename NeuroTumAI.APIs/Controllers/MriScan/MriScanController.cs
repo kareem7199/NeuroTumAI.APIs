@@ -60,16 +60,16 @@ namespace NeuroTumAI.APIs.Controllers.MriScan
 			});
 		}
 
-		//[Authorize(Roles = "Patient")]
-		//[HttpGet("assignedScans")]
-		//public async Task<ActionResult<PaginationDto<MriScanResultToReviewDto>>> GetMriScans([FromQuery] PaginationParamsDto dto)
-		//{
-		//	var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value!;
+		[Authorize(Roles = "Patient")]
+		[HttpGet]
+		public async Task<ActionResult<PaginationDto<PatientMriScanDto>>> GetPatientMriScans([FromQuery] PaginationParamsDto dto)
+		{
+			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value!;
 
-		//	var scans = await _mriScanService.GetAssignedScansAsync(userId, dto);
-		//	var count = await _mriScanService.GetAssignedScansCountAsync(userId);
+			var scans = await _mriScanService.GetPatientScansAsync(userId, dto);
+			var count = await _mriScanService.GetPatientScansCountAsync(userId);
 
-		//	return Ok(new PaginationDto<MriScanResultToReviewDto>(dto.PageIndex, dto.PageSize, count, _mapper.Map<IReadOnlyList<MriScanResultToReviewDto>>(scans)));
-		//}
+			return Ok(new PaginationDto<PatientMriScanDto>(dto.PageIndex, dto.PageSize, count, _mapper.Map<IReadOnlyList<PatientMriScanDto>>(scans)));
+		}
 	}
 }

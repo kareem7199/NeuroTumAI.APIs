@@ -75,14 +75,24 @@ namespace NeuroTumAI.Service.Services.MriScanService
 			return await _unitOfWork.Repository<MriScan>().GetAllWithSpecAsync(mriScansSpec);
 		}
 
-		public Task<IReadOnlyList<DoctorMriAssignment>> GetPatientScansAsync(string userId, PaginationParamsDto dto)
+		public async Task<IReadOnlyList<MriScan>> GetPatientScansAsync(string userId, PaginationParamsDto dto)
 		{
-			throw new NotImplementedException();
+			var patientSpecs = new PatientSpecifications(userId);
+			var patient = await _unitOfWork.Repository<Patient>().GetWithSpecAsync(patientSpecs);
+
+			var mriScanSpecs = new PatientMriScanSpecifications(patient.Id, dto);
+
+			return await _unitOfWork.Repository<MriScan>().GetAllWithSpecAsync(mriScanSpecs);
 		}
 
-		public Task<int> GetPatientScansCountAsync(string userId)
+		public async Task<int> GetPatientScansCountAsync(string userId)
 		{
-			throw new NotImplementedException();
+			var patientSpecs = new PatientSpecifications(userId);
+			var patient = await _unitOfWork.Repository<Patient>().GetWithSpecAsync(patientSpecs);
+
+			var mriScanSpecs = new PatientMriScanSpecifications(patient.Id);
+
+			return await _unitOfWork.Repository<MriScan>().GetCountAsync(mriScanSpecs);
 		}
 
 		public async Task ReviewAsync(int mriScanId, string userId, AddMriScanReviewDto reviewDto)

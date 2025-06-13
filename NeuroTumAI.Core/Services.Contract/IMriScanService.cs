@@ -17,7 +17,7 @@ namespace NeuroTumAI.Core.Services.Contract
 		Task<IReadOnlyList<DoctorMriAssignment>> GetAssignedScansAsync(string userId, PaginationParamsDto dto);
 		Task<int> GetAssignedScansCountAsync(string userId);
 		Task ReviewAsync(int mriScanId, string userId, AddMriScanReviewDto scanReviewDto);
-		Task<IReadOnlyList<DoctorMriAssignment>> GetPatientScansAsync(string userId, PaginationParamsDto dto);
+		Task<IReadOnlyList<MriScan>> GetPatientScansAsync(string userId, PaginationParamsDto dto);
 		Task<int> GetPatientScansCountAsync(string userId);
 		Task AutoReviewAsync(int mriId);
 	}
