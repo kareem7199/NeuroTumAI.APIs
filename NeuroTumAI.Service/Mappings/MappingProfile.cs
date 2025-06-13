@@ -136,7 +136,10 @@ namespace NeuroTumAI.Service.Mappings
 
 			CreateMap<MriScan, PatientMriScanDto>();
 
-			CreateMap<DoctorReview, DoctorReviewDto>();
+			CreateMap<DoctorReview, DoctorReviewDto>()
+				.ForMember(D => D.DoctorId, O => O.MapFrom(S => S.Doctor.ApplicationUser.Id))
+				.ForMember(D => D.DoctorName, O => O.MapFrom(S => S.Doctor.ApplicationUser.FullName))
+				.ForMember(D => D.DoctorProfilePicture, O => O.MapFrom(S => S.Doctor.ApplicationUser.ProfilePicture));
 
 		}
 	}

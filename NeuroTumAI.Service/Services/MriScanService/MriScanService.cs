@@ -22,14 +22,16 @@ namespace NeuroTumAI.Service.Services.MriScanService
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IDoctorService _doctorService;
 		private readonly ILocalizationService _localizationService;
+		private readonly INotificationService _notificationService;
 
-		public MriScanService(IBlobStorageService blobStorageService, ICancerDetectionService cancerDetectionService, IUnitOfWork unitOfWork, IDoctorService doctorService, ILocalizationService localizationService)
+		public MriScanService(IBlobStorageService blobStorageService, ICancerDetectionService cancerDetectionService, IUnitOfWork unitOfWork, IDoctorService doctorService, ILocalizationService localizationService, INotificationService notificationService)
 		{
 			_blobStorageService = blobStorageService;
 			_cancerDetectionService = cancerDetectionService;
 			_unitOfWork = unitOfWork;
 			_doctorService = doctorService;
 			_localizationService = localizationService;
+			_notificationService = notificationService;
 		}
 
 		public async Task AutoReviewAsync(int mriId)
@@ -151,6 +153,7 @@ namespace NeuroTumAI.Service.Services.MriScanService
 			var patientSpecs = new PatientSpecifications(userId);
 			var patient = await _unitOfWork.Repository<Patient>().GetWithSpecAsync(patientSpecs);
 
+
 			var newMriScan = new MriScan()
 			{
 				Confidence = aiResponse.Confidence,
@@ -160,6 +163,8 @@ namespace NeuroTumAI.Service.Services.MriScanService
 				ImagePath = fileUrl
 			};
 
+
+			var doctorIds = new List<int>();
 			foreach (var nearbyClinic in nearbyClinics)
 			{
 				var doctorId = nearbyClinic.Doctor.Id;
@@ -172,6 +177,7 @@ namespace NeuroTumAI.Service.Services.MriScanService
 					};
 
 					newMriScan.DoctorAssignments.Add(newDoctorAssignment);
+					doctorIds.Add(nearbyClinic.Doctor.Id);
 				}
 
 				if (newMriScan.DoctorAssignments.Count == 2) break;
@@ -180,6 +186,8 @@ namespace NeuroTumAI.Service.Services.MriScanService
 			_unitOfWork.Repository<MriScan>().Add(newMriScan);
 
 			await _unitOfWork.CompleteAsync();
+
+			await _notificationService.SendMriScanAssignmentNotificationToDoctorAsync(doctorIds);
 
 			return newMriScan;
 		}

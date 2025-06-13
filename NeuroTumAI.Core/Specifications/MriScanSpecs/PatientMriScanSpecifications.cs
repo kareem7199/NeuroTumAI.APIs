@@ -15,6 +15,7 @@ namespace NeuroTumAI.Core.Specifications.MriScanSpecs
 		{
 			AddOrderByDesc(MS => MS.UploadDate);
 			Includes.Add(MS => MS.DoctorReview);
+			Includes.Add(MS => MS.DoctorReview.Doctor.ApplicationUser);
 			ApplyPagination((paginationParams.PageIndex - 1) * paginationParams.PageSize, paginationParams.PageSize);
 		}
 

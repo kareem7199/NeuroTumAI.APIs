@@ -170,5 +170,56 @@ namespace NeuroTumAI.Service.Services.NotificationService
 
 			await _unitOfWork.CompleteAsync();
 		}
+
+		public async Task SendMriScanAssignmentNotificationToDoctorAsync(List<int> doctorIds)
+		{
+			var doctorRepo = _unitOfWork.Repository<Doctor>();
+			var doctorSpecs = new DoctorSpecifications(doctorIds);
+
+			var doctors = await doctorRepo.GetAllWithSpecAsync(doctorSpecs);
+
+			var notificationRepo = _unitOfWork.Repository<Notification>();
+
+			foreach (var doctorId in doctorIds)
+			{
+				var doctor = doctors.FirstOrDefault(d => d.Id == doctorId)!;
+				var tokens = doctor.ApplicationUser.DeviceTokens;
+
+				string titleEN = "MRI Scan Assigned for Review";
+				string bodyEN = "You have been assigned to review a new MRI scan. Please review it as soon as possible.";
+
+				string titleAR = "تم تعيين فحص MRI للمراجعة";
+				string bodyAR = "تم تعيينك لمراجعة فحص MRI جديد. يُرجى مراجعته في أقرب وقت ممكن.";
+
+
+				var newNotification = new Notification
+				{
+					TitleEN = titleEN,
+					TitleAR = titleAR,
+					BodyEN = bodyEN,
+					BodyAR = bodyAR,
+					Type = NotificationType.ScanPhysician,
+					ApplicationUserId = doctor.ApplicationUserId
+				};
+
+				notificationRepo.Add(newNotification);
+
+				if (tokens.Any())
+				{
+					foreach (var token in tokens)
+					{
+						_fireBaseNotificationService.SendNotificationAsync(
+							titleEN,
+							bodyEN,
+							token.FcmToken,
+							NotificationType.AppointmentCancellation
+						);
+					}
+				}
+			}
+
+
+			await _unitOfWork.CompleteAsync();
+		}
 	}
 }

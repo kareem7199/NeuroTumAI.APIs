@@ -10,5 +10,8 @@ namespace NeuroTumAI.Core.Dtos.MriScan
 	{
         public string Findings { get; set; }
 		public string Reasoning { get; set; }
-	}
+        public string DoctorId { get; set; }
+        public string DoctorName { get; set; }
+        public string DoctorProfilePicture { get; set; }
+    }
 }

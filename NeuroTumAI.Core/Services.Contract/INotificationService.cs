@@ -13,6 +13,7 @@ namespace NeuroTumAI.Core.Services.Contract
 	{
 		Task SendAppointmentCancellationNotificationsAsync(List<AppointmentCancellationNotificationDto> notifications);
 		Task SendAppointmentTimeChangeNotificationsAsync(List<AppointmentTimeChangeNotificationDto> notifications, TimeOnly time);
+		Task SendMriScanAssignmentNotificationToDoctorAsync(List<int> notifications);
 		Task<IReadOnlyList<Notification>> GetNotificationsAsync(string userId, NotificationSpecParams specParams);
 		Task<int> GetNotificationsCountAsync(string userId);
 
