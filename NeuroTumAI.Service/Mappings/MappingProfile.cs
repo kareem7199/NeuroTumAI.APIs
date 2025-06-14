@@ -154,6 +154,7 @@ namespace NeuroTumAI.Service.Mappings
 			CreateMap<Post, PostToReturnDto>()
 				.ForMember(D => D.UserProfilePicture, O => O.MapFrom(S => S.ApplicationUser.ProfilePicture))
 				.ForMember(D => D.UserName, O => O.MapFrom(S => S.ApplicationUser.FullName))
+				.ForMember(D => D.UserId, O => O.MapFrom(S => S.ApplicationUser.Id))
 				.ForMember(D => D.LikesCount, O => O.MapFrom(S => S.Likes.Count()))
 				.ForMember(D => D.CommentsCount, O => O.MapFrom(S => S.Comments.Count()));
 

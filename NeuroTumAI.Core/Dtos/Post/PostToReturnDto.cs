@@ -16,6 +16,7 @@ namespace NeuroTumAI.Core.Dtos.Post
         public int LikesCount { get; set; }
         public int CommentsCount { get; set; }
         public string UserName { get; set; }
+        public string UserId { get; set; }
         public string UserProfilePicture { get; set; }
         public DateTime CreatedAt { get; set; }
 	}
