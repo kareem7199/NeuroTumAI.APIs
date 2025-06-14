@@ -555,9 +555,6 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ParentCommentId")
-                        .HasColumnType("int");
-
                     b.Property<int>("PostId")
                         .HasColumnType("int");
 
@@ -568,8 +565,6 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("ParentCommentId");
 
                     b.HasIndex("PostId");
 
@@ -615,18 +610,12 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("CommentsCount")
-                        .HasColumnType("int");
-
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("LikesCount")
-                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -1024,10 +1013,6 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NeuroTumAI.Core.Entities.Post_Aggregate.Comment", "ParentComment")
-                        .WithMany("Replies")
-                        .HasForeignKey("ParentCommentId");
-
                     b.HasOne("NeuroTumAI.Core.Entities.Post_Aggregate.Post", "Post")
                         .WithMany("Comments")
                         .HasForeignKey("PostId")
@@ -1035,8 +1020,6 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
-
-                    b.Navigation("ParentComment");
 
                     b.Navigation("Post");
                 });
@@ -1117,11 +1100,6 @@ namespace NeuroTumAI.Repository.Data.Migrations
             modelBuilder.Entity("NeuroTumAI.Core.Entities.MriScan.MriScan", b =>
                 {
                     b.Navigation("DoctorAssignments");
-                });
-
-            modelBuilder.Entity("NeuroTumAI.Core.Entities.Post_Aggregate.Comment", b =>
-                {
-                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("NeuroTumAI.Core.Entities.Post_Aggregate.Post", b =>

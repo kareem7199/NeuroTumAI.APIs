@@ -101,7 +101,7 @@ namespace NeuroTumAI.Service.Services.MriScanService
 		{
 			var doctor = await _doctorService.GetDoctorByUserIdAsync(userId);
 
-			var mriScanSpecs = new MriScanSpecifications(doctor.Id);
+			var mriScanSpecs = new MriScanSpecifications(mriScanId);
 			var mriScanRepo = _unitOfWork.Repository<MriScan>();
 
 			var mriScan = await mriScanRepo.GetWithSpecAsync(mriScanSpecs);

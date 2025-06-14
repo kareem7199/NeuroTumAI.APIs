@@ -275,8 +275,6 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LikesCount = table.Column<int>(type: "int", nullable: false),
-                    CommentsCount = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
@@ -443,7 +441,6 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ParentCommentId = table.Column<int>(type: "int", nullable: true),
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PostId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -456,11 +453,6 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Comment_Comment_ParentCommentId",
-                        column: x => x.ParentCommentId,
-                        principalTable: "Comment",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Comment_Posts_PostId",
                         column: x => x.PostId,
@@ -682,11 +674,6 @@ namespace NeuroTumAI.Repository.Data.Migrations
                 name: "IX_Comment_ApplicationUserId",
                 table: "Comment",
                 column: "ApplicationUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Comment_ParentCommentId",
-                table: "Comment",
-                column: "ParentCommentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comment_PostId",

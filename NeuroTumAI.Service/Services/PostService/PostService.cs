@@ -5,6 +5,7 @@ using NeuroTumAI.Core.Entities.Post_Aggregate;
 using NeuroTumAI.Core.Exceptions;
 using NeuroTumAI.Core.Resources.Responses;
 using NeuroTumAI.Core.Services.Contract;
+using NeuroTumAI.Core.Specifications.PostSpecs;
 using NeuroTumAI.Core.Specifications.PostSpecs.LikeSpecs;
 using NeuroTumAI.Service.Hubs;
 
@@ -16,15 +17,17 @@ namespace NeuroTumAI.Service.Services.PostService
 		private readonly IHubContext<PostHub> _hubContext;
 		private readonly ILocalizationService _localizationService;
 
-		public PostService(IUnitOfWork unitOfWork,IHubContext<PostHub> hubContext,ILocalizationService localizationService)
+		public PostService(IUnitOfWork unitOfWork, IHubContext<PostHub> hubContext, ILocalizationService localizationService)
 		{
 			_unitOfWork = unitOfWork;
 			_hubContext = hubContext;
 			_localizationService = localizationService;
 		}
+
 		public async Task<Post> AddPostAsync(AddPostDto model, string applicationUserId)
 		{
-			var newPost = new Post() {
+			var newPost = new Post()
+			{
 				Title = model.Title,
 				Content = model.Content,
 				ApplicationUserId = applicationUserId
@@ -41,21 +44,25 @@ namespace NeuroTumAI.Service.Services.PostService
 		public async Task<ToggleLikeResponseDto> ToggleLikeAsync(string userId, int postId)
 		{
 			var postRepo = _unitOfWork.Repository<Post>();
-			var post = await postRepo.GetAsync(postId);
+			var postSpec = new PostSpecifications(postId);
+			var post = await postRepo.GetWithSpecAsync(postSpec);
 
 			if (post is null)
 				throw new NotFoundException(_localizationService.GetMessage<ResponsesResources>("PostNotFound"));
 
+			var likesCount = post.Likes.Count();
+			var commentsCount = post.Comments.Count();
+
 			var likeRepo = _unitOfWork.Repository<Like>();
 
-			var likeSpec = new LikeByUserAndPostSpecification(userId , postId);
+			var likeSpec = new LikeByUserAndPostSpecification(userId, postId);
 			var existingLike = await likeRepo.GetWithSpecAsync(likeSpec);
 			if (existingLike is not null)
 			{
 				likeRepo.Delete(existingLike);
-				post.LikesCount--;
-				postRepo.Update(post);
-			} else
+				likesCount--;
+			}
+			else
 			{
 				var newLike = new Like()
 				{
@@ -63,15 +70,16 @@ namespace NeuroTumAI.Service.Services.PostService
 					PostId = postId
 				};
 				likeRepo.Add(newLike);
-				post.LikesCount++;
-				postRepo.Update(post);
+				likesCount++;
 			}
 
 			await _unitOfWork.CompleteAsync();
-			await _hubContext.Clients.All.SendAsync("ReceivePostUpdate", new {
+
+			await _hubContext.Clients.All.SendAsync("ReceivePostUpdate", new
+			{
 				PostId = postId,
-				post.LikesCount,
-				post.CommentsCount
+				likesCount,
+				commentsCount
 			});
 
 			return new ToggleLikeResponseDto()

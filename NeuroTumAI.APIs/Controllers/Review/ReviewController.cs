@@ -1,16 +1,11 @@
 ﻿using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NeuroTumAI.APIs.Controllers.Base;
-using NeuroTumAI.Core.Dtos.Chat;
 using NeuroTumAI.Core.Dtos;
 using NeuroTumAI.Core.Dtos.Pagination;
 using NeuroTumAI.Core.Dtos.Review;
-using NeuroTumAI.Core.Entities.Appointment;
-
-using NeuroTumAI.Core.Entities.Appointment;
 using NeuroTumAI.Core.Services.Contract;
 
 namespace NeuroTumAI.APIs.Controllers.Review
