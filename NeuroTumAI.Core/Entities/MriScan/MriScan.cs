@@ -20,7 +20,7 @@ namespace NeuroTumAI.Core.Entities.MriScan
 		public int? DoctorReviewId { get; set; }
 		public Patient Patient { get; set; }
 		public DoctorReview? DoctorReview { get; set; }
-		public List<DoctorMriAssignment> DoctorAssignments { get; set; } = new List<DoctorMriAssignment>();
+		public ICollection<DoctorMriAssignment> DoctorAssignments { get; set; } = new HashSet<DoctorMriAssignment>();
 
 	}
 }

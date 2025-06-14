@@ -234,6 +234,7 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     TitleEN = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BodyAR = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BodyEN = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
@@ -274,8 +275,6 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LikesCount = table.Column<int>(type: "int", nullable: false),
-                    CommentsCount = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
@@ -442,7 +441,6 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ParentCommentId = table.Column<int>(type: "int", nullable: true),
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PostId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -455,11 +453,6 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Comment_Comment_ParentCommentId",
-                        column: x => x.ParentCommentId,
-                        principalTable: "Comment",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Comment_Posts_PostId",
                         column: x => x.PostId,
@@ -488,6 +481,31 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Like_Posts_PostId",
+                        column: x => x.PostId,
+                        principalTable: "Posts",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SavedPost",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    PostId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SavedPost", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SavedPost_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SavedPost_Posts_PostId",
                         column: x => x.PostId,
                         principalTable: "Posts",
                         principalColumn: "Id");
@@ -683,11 +701,6 @@ namespace NeuroTumAI.Repository.Data.Migrations
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comment_ParentCommentId",
-                table: "Comment",
-                column: "ParentCommentId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Comment_PostId",
                 table: "Comment",
                 column: "PostId");
@@ -773,6 +786,16 @@ namespace NeuroTumAI.Repository.Data.Migrations
                 column: "PatientId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SavedPost_ApplicationUserId",
+                table: "SavedPost",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SavedPost_PostId",
+                table: "SavedPost",
+                column: "PostId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Slot_ClinicId",
                 table: "Slot",
                 column: "ClinicId");
@@ -827,6 +850,9 @@ namespace NeuroTumAI.Repository.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Reviews");
+
+            migrationBuilder.DropTable(
+                name: "SavedPost");
 
             migrationBuilder.DropTable(
                 name: "Slot");

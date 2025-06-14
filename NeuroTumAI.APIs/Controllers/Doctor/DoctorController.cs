@@ -38,5 +38,16 @@ namespace NeuroTumAI.APIs.Controllers.Doctor
 			return Ok(doctorDto);
 		}
 
+		[Authorize(Roles = "Patient")]
+		[HttpGet("{doctorId}")]
+		public async Task<ActionResult<DoctorProfileDto>> GetDoctorProfile(string doctorId)
+		{
+			var doctor = await _doctorService.GetDoctorProfileAsync(doctorId);
+
+			var doctorDto = _mapper.Map<DoctorProfileDto>(doctor);
+
+			return Ok(doctorDto);
+		}
+
 	}
 }

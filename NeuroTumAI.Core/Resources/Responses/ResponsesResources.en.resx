@@ -132,6 +132,9 @@
   <data name="ClinicNotFound" xml:space="preserve">
     <value>Clinic is not found.</value>
   </data>
+  <data name="CommentNotFound" xml:space="preserve">
+    <value>The comment you are looking for does not exist.</value>
+  </data>
   <data name="EmailNotConfirmed" xml:space="preserve">
     <value>Your email is not confirmed. Please verify it before logging in.</value>
   </data>
@@ -146,6 +149,9 @@
   </data>
   <data name="InvalidOrExpiredToken" xml:space="preserve">
     <value>Invalid or expired token.</value>
+  </data>
+  <data name="MriScan_NotFoundOrReviewed" xml:space="preserve">
+    <value>The MRI scan was not found or has already been reviewed.</value>
   </data>
   <data name="PostNotFound" xml:space="preserve">
     <value>Post not found.</value>

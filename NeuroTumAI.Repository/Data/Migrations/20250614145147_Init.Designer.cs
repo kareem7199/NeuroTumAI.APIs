@@ -13,7 +13,7 @@ using NeuroTumAI.Repository.Data;
 namespace NeuroTumAI.Repository.Data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20250513153932_Init")]
+    [Migration("20250614145147_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -521,6 +521,9 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("TitleAR")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -555,9 +558,6 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ParentCommentId")
-                        .HasColumnType("int");
-
                     b.Property<int>("PostId")
                         .HasColumnType("int");
 
@@ -568,8 +568,6 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("ParentCommentId");
 
                     b.HasIndex("PostId");
 
@@ -615,18 +613,12 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("CommentsCount")
-                        .HasColumnType("int");
-
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("LikesCount")
-                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -637,6 +629,30 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Posts");
+                });
+
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.Post_Aggregate.SavedPost", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("SavedPost");
                 });
 
             modelBuilder.Entity("NeuroTumAI.Core.Identity.ApplicationUser", b =>
@@ -1024,10 +1040,6 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NeuroTumAI.Core.Entities.Post_Aggregate.Comment", "ParentComment")
-                        .WithMany("Replies")
-                        .HasForeignKey("ParentCommentId");
-
                     b.HasOne("NeuroTumAI.Core.Entities.Post_Aggregate.Post", "Post")
                         .WithMany("Comments")
                         .HasForeignKey("PostId")
@@ -1035,8 +1047,6 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
-
-                    b.Navigation("ParentComment");
 
                     b.Navigation("Post");
                 });
@@ -1069,6 +1079,25 @@ namespace NeuroTumAI.Repository.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.Post_Aggregate.SavedPost", b =>
+                {
+                    b.HasOne("NeuroTumAI.Core.Identity.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NeuroTumAI.Core.Entities.Post_Aggregate.Post", "Post")
+                        .WithMany("Saves")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Post");
                 });
 
             modelBuilder.Entity("NeuroTumAI.Core.Identity.Doctor", b =>
@@ -1119,16 +1148,13 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.Navigation("DoctorAssignments");
                 });
 
-            modelBuilder.Entity("NeuroTumAI.Core.Entities.Post_Aggregate.Comment", b =>
-                {
-                    b.Navigation("Replies");
-                });
-
             modelBuilder.Entity("NeuroTumAI.Core.Entities.Post_Aggregate.Post", b =>
                 {
                     b.Navigation("Comments");
 
                     b.Navigation("Likes");
+
+                    b.Navigation("Saves");
                 });
 
             modelBuilder.Entity("NeuroTumAI.Core.Identity.ApplicationUser", b =>

@@ -147,6 +147,12 @@
   <data name="DayOfWeekRequired" xml:space="preserve">
     <value>The day of the week is required.</value>
   </data>
+  <data name="DetectionClass_MinLength" xml:space="preserve">
+    <value>Detection class must be at least 1 character long.</value>
+  </data>
+  <data name="DetectionClass_Required" xml:space="preserve">
+    <value>Detection class is required.</value>
+  </data>
   <data name="dob_invalid" xml:space="preserve">
     <value>Invalid date format.</value>
   </data>
@@ -164,6 +170,12 @@
   </data>
   <data name="email_required" xml:space="preserve">
     <value>Email is required.</value>
+  </data>
+  <data name="Findings_MinLength" xml:space="preserve">
+    <value>Findings must be at least 1 character long.</value>
+  </data>
+  <data name="Findings_Required" xml:space="preserve">
+    <value>Findings are required.</value>
   </data>
   <data name="fullName_maxLength" xml:space="preserve">
     <value>Full name must not exceed 50 characters.</value>
@@ -212,6 +224,12 @@
   </data>
   <data name="ProfilePictureRequired" xml:space="preserve">
     <value>Profile Picture is required.</value>
+  </data>
+  <data name="Reasoning_MinLength" xml:space="preserve">
+    <value>Reasoning must be at least 1 character long.</value>
+  </data>
+  <data name="Reasoning_Required" xml:space="preserve">
+    <value>Reasoning is required.</value>
   </data>
   <data name="RequiredMessage" xml:space="preserve">
     <value>Please enter your message.</value>

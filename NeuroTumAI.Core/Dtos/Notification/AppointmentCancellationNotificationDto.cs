@@ -9,6 +9,7 @@ namespace NeuroTumAI.Core.Dtos.Notification
 	public class AppointmentCancellationNotificationDto
 	{
         public int PatientId { get; set; }
+        public int DoctorId { get; set; }
         public DateOnly Date { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using NeuroTumAI.Core;
+using NeuroTumAI.Core.Entities;
 using NeuroTumAI.Core.Exceptions;
 using NeuroTumAI.Core.Identity;
 using NeuroTumAI.Core.Resources.Responses;
@@ -94,6 +95,20 @@ namespace NeuroTumAI.Service.Services.DoctorService
 
 			if (!result.Succeeded)
 				throw new BadRequestException("Failed to delete doctor");
+		}
+
+		public async Task<Doctor> GetDoctorProfileAsync(string userId)
+		{
+			var doctorRepo = _unitOfWork.Repository<Doctor>();
+			var doctorSpec = new DoctorProfileSpecifications(userId);
+			var doctor = await doctorRepo.GetWithSpecAsync(doctorSpec);
+
+			if(doctor is null)
+				throw new NotFoundException(_localizationService.GetMessage<ResponsesResources>("UserNotFound"));
+
+			doctor.Clinics = doctor.Clinics.Where(C => C.IsApproved).ToList();
+
+			return doctor!;
 		}
 	}
 }
