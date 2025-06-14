@@ -12,8 +12,9 @@ namespace NeuroTumAI.Core.Services.Contract
 		Task<Doctor> RegisterDoctorAsync(RegisterDoctorWithClinicDto model);
 		Task<bool> VerifyEmailAsync(VerifyEmailDto model);
 		Task<LoginResponseDto> LoginAsync(LoginDto model);
+		Task<string> UpdateProfilePictureAsync(string userId, UpdateProfilePictureDto profilePictureDto);
 		Task<RegisterResponseDto> ForgetPasswordAsync(ForgetPasswordDto model);
-		Task<ApplicationUser> VerifyForgetPasswordAsync(string email , string otp);
+		Task<ApplicationUser> VerifyForgetPasswordAsync(string email, string otp);
 		Task ResetPasswordAsync(ResetPasswordDto model);
 	}
 }

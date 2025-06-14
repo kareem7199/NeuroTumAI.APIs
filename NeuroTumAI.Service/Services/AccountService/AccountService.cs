@@ -383,5 +383,18 @@ namespace NeuroTumAI.Service.Services.AccountService
 				return _mapper.Map<UserDto>(doctor);
 			}
 		}
+
+		public async Task<string> UpdateProfilePictureAsync(string userId, UpdateProfilePictureDto profilePictureDto)
+		{
+			var user = await _userManager.FindByIdAsync(userId);
+
+			using var stream = profilePictureDto.ProfilePicture.OpenReadStream();
+			var fileUrl = await _blobStorageService.UploadFileAsync(stream, profilePictureDto.ProfilePicture.FileName, "profilepictures");
+			user!.ProfilePicture = fileUrl;
+
+			await _userManager.UpdateAsync(user);
+
+			return fileUrl;
+		}
 	}
 }

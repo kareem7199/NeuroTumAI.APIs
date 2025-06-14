@@ -1,5 +1,4 @@
-﻿using System.Xml.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
 using NeuroTumAI.Core;
 using NeuroTumAI.Core.Dtos.Pagination;
