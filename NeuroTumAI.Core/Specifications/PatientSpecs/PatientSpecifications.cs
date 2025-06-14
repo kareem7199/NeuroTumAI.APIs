@@ -16,5 +16,12 @@ namespace NeuroTumAI.Core.Specifications.PatientSpecs
 			Includes.Add(P => P.ApplicationUser);
 			Includes.Add(P => P.ApplicationUser.DeviceTokens);
 		}
+
+		public PatientSpecifications(int patientId)
+			: base(P => patientId == P.Id)
+		{
+			Includes.Add(P => P.ApplicationUser);
+			Includes.Add(P => P.ApplicationUser.DeviceTokens);
+		}
 	}
 }

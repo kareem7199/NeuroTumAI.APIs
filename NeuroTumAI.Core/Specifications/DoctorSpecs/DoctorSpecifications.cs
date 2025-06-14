@@ -15,7 +15,7 @@ namespace NeuroTumAI.Core.Specifications.DoctorSpecs
 
 		}
 
-        public DoctorSpecifications(IEnumerable<int> doctorIds)
+		public DoctorSpecifications(IEnumerable<int> doctorIds)
 			: base(D => doctorIds.Contains(D.Id))
 		{
 			Includes.Add(D => D.ApplicationUser);
@@ -28,11 +28,12 @@ namespace NeuroTumAI.Core.Specifications.DoctorSpecs
 			Includes.Add(D => D.ApplicationUser);
 		}
 
-		public DoctorSpecifications(int doctorId)
+		public DoctorSpecifications(int doctorId, bool includeDeviceTokens = false)
 			: base(D => D.Id == doctorId)
 		{
 			Includes.Add(D => D.ApplicationUser);
 			Includes.Add(D => D.Reviews);
+			if (includeDeviceTokens) Includes.Add(D => D.ApplicationUser.DeviceTokens);
 		}
 	}
 }

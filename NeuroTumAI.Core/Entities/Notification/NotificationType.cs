@@ -26,6 +26,9 @@ namespace NeuroTumAI.Core.Entities.Notification
 		ScanPhysician,
 
 		[Display(Name = "SessionStarted")]
-		SessionStart
+		SessionStart,
+
+		[Display(Name = "Message")]
+		Message
 	}
 }

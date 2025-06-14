@@ -81,6 +81,15 @@ namespace NeuroTumAI.Service.Services.AppointmentService
 
 			await _unitOfWork.CompleteAsync();
 
+			var newAppointmentNotification = new NewAppointmentNotificationDto()
+			{
+				Date = newAppointment.Date,
+				Time = newAppointment.StartTime,
+				DoctorId = clinic.DoctorId
+			};
+
+			await _notificationService.SendNewAppointmentNotificationAsync(newAppointmentNotification);
+
 			return newAppointment;
 		}
 
