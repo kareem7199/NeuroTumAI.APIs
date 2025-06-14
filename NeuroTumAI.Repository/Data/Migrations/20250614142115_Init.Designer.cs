@@ -13,7 +13,7 @@ using NeuroTumAI.Repository.Data;
 namespace NeuroTumAI.Repository.Data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20250614002037_Init")]
+    [Migration("20250614142115_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -631,6 +631,30 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.ToTable("Posts");
                 });
 
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.Post_Aggregate.SavedPost", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("SavedPost");
+                });
+
             modelBuilder.Entity("NeuroTumAI.Core.Identity.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -1057,6 +1081,25 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.Navigation("ApplicationUser");
                 });
 
+            modelBuilder.Entity("NeuroTumAI.Core.Entities.Post_Aggregate.SavedPost", b =>
+                {
+                    b.HasOne("NeuroTumAI.Core.Identity.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NeuroTumAI.Core.Entities.Post_Aggregate.Post", "Post")
+                        .WithMany("Saves")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Post");
+                });
+
             modelBuilder.Entity("NeuroTumAI.Core.Identity.Doctor", b =>
                 {
                     b.HasOne("NeuroTumAI.Core.Identity.ApplicationUser", "ApplicationUser")
@@ -1110,6 +1153,8 @@ namespace NeuroTumAI.Repository.Data.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Likes");
+
+                    b.Navigation("Saves");
                 });
 
             modelBuilder.Entity("NeuroTumAI.Core.Identity.ApplicationUser", b =>

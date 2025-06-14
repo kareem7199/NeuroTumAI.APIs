@@ -487,6 +487,31 @@ namespace NeuroTumAI.Repository.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SavedPost",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    PostId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SavedPost", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SavedPost_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SavedPost_Posts_PostId",
+                        column: x => x.PostId,
+                        principalTable: "Posts",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Appointment",
                 columns: table => new
                 {
@@ -761,6 +786,16 @@ namespace NeuroTumAI.Repository.Data.Migrations
                 column: "PatientId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SavedPost_ApplicationUserId",
+                table: "SavedPost",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SavedPost_PostId",
+                table: "SavedPost",
+                column: "PostId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Slot_ClinicId",
                 table: "Slot",
                 column: "ClinicId");
@@ -815,6 +850,9 @@ namespace NeuroTumAI.Repository.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Reviews");
+
+            migrationBuilder.DropTable(
+                name: "SavedPost");
 
             migrationBuilder.DropTable(
                 name: "Slot");

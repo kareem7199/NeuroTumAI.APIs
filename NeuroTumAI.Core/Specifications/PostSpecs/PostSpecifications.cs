@@ -9,6 +9,7 @@ namespace NeuroTumAI.Core.Specifications.PostSpecs
         {
             Includes.Add(P => P.Comments);
             Includes.Add(P => P.Likes);
+            Includes.Add(P => P.Saves);
 		}
 	}
 }

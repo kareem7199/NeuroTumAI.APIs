@@ -31,6 +31,16 @@ namespace NeuroTumAI.APIs.Controllers.Post
 			return Ok(new { Message = post.Id });
 		}
 
+		[HttpPost("toggleSave/{postId}")]
+		public async Task<ActionResult> ToggleSavePost(int postId)
+		{
+			var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+			var response = await _postService.ToggleSaveAsync(userId!, postId);
+
+			return Ok(response);
+		}
+
 		[HttpPost("toggleLike/{postId}")]
 		public async Task<ActionResult<ToggleLikeResponseDto>> Togglike(int postId)
 		{

@@ -9,7 +9,6 @@ namespace NeuroTumAI.Core.Entities.Post_Aggregate
 {
 	public class Like : BaseEntity
 	{
-		public int Id { get; set; }
 		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public string ApplicationUserId { get; set; }

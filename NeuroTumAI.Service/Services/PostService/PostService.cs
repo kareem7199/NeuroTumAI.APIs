@@ -10,6 +10,7 @@ using NeuroTumAI.Core.Services.Contract;
 using NeuroTumAI.Core.Specifications.PostSpecs;
 using NeuroTumAI.Core.Specifications.PostSpecs.CommentSpecs;
 using NeuroTumAI.Core.Specifications.PostSpecs.LikeSpecs;
+using NeuroTumAI.Core.Specifications.PostSpecs.SavedPostSpecs;
 using NeuroTumAI.Service.Hubs;
 
 namespace NeuroTumAI.Service.Services.PostService
@@ -104,9 +105,11 @@ namespace NeuroTumAI.Service.Services.PostService
 
 			var commentRepo = _unitOfWork.Repository<Comment>();
 			var likeRepo = _unitOfWork.Repository<Like>();
+			var savedPostRepo = _unitOfWork.Repository<SavedPost>();
 
 			commentRepo.RemoveRange(post.Comments);
 			likeRepo.RemoveRange(post.Likes);
+			savedPostRepo.RemoveRange(post.Saves);
 
 			postRepo.Delete(post);
 
@@ -135,11 +138,15 @@ namespace NeuroTumAI.Service.Services.PostService
 			var likeSpecs = new LikeByUserAndPostSpecification(userId, postIds);
 			var likes = await _unitOfWork.Repository<Like>().GetAllWithSpecAsync(likeSpecs);
 
+			var savedPostSpecs = new SavedPostSpecifications(userId, postIds);
+			var savedPosts = await _unitOfWork.Repository<SavedPost>().GetAllWithSpecAsync(savedPostSpecs);
+
 			var postsDto = _mapper.Map<IReadOnlyList<PostToReturnDto>>(posts);
 
 			foreach (var post in postsDto)
 			{
 				post.IsLiked = likes.Any(L => L.PostId == post.Id);
+				post.IsSaved = savedPosts.Any(L => L.PostId == post.Id);
 			}
 
 			return postsDto;
@@ -189,6 +196,43 @@ namespace NeuroTumAI.Service.Services.PostService
 			return new ToggleLikeResponseDto()
 			{
 				IsLiked = existingLike is null,
+				PostId = postId
+			};
+		}
+
+		public async Task<ToggleSaveResponseDto> ToggleSaveAsync(string userId, int postId)
+		{
+			var postRepo = _unitOfWork.Repository<Post>();
+			var postSpec = new PostSpecifications(postId);
+			var post = await postRepo.GetWithSpecAsync(postSpec);
+
+			if (post is null)
+				throw new NotFoundException(_localizationService.GetMessage<ResponsesResources>("PostNotFound"));
+
+			var savedPostRepo = _unitOfWork.Repository<SavedPost>();
+
+			var savedPostSpec = new SavedPostSpecifications(userId, postId);
+			var isSaved = await savedPostRepo.GetWithSpecAsync(savedPostSpec);
+
+			if (isSaved is not null)
+			{
+				savedPostRepo.Delete(isSaved);
+			}
+			else
+			{
+				var newSavedPost = new SavedPost()
+				{
+					ApplicationUserId = userId,
+					PostId = postId
+				};
+				savedPostRepo.Add(newSavedPost);
+			}
+
+			await _unitOfWork.CompleteAsync();
+
+			return new ToggleSaveResponseDto()
+			{
+				IsSaved = isSaved is null,
 				PostId = postId
 			};
 		}
