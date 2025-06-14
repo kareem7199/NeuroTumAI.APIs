@@ -8,6 +8,7 @@ using NeuroTumAI.Core.Dtos.ContactUs;
 using NeuroTumAI.Core.Dtos.Doctor;
 using NeuroTumAI.Core.Dtos.MriScan;
 using NeuroTumAI.Core.Dtos.Notification;
+using NeuroTumAI.Core.Dtos.Post;
 using NeuroTumAI.Core.Dtos.Review;
 using NeuroTumAI.Core.Entities;
 using NeuroTumAI.Core.Entities.Admin;
@@ -17,6 +18,7 @@ using NeuroTumAI.Core.Entities.Clinic_Aggregate;
 using NeuroTumAI.Core.Entities.Contact_Us;
 using NeuroTumAI.Core.Entities.MriScan;
 using NeuroTumAI.Core.Entities.Notification;
+using NeuroTumAI.Core.Entities.Post_Aggregate;
 using NeuroTumAI.Core.Identity;
 using NeuroTumAI.Service.Dtos.Account;
 
@@ -148,6 +150,12 @@ namespace NeuroTumAI.Service.Mappings
 				.ForMember(D => D.DoctorId, O => O.MapFrom(S => S.Doctor.ApplicationUser.Id))
 				.ForMember(D => D.DoctorName, O => O.MapFrom(S => S.Doctor.ApplicationUser.FullName))
 				.ForMember(D => D.DoctorProfilePicture, O => O.MapFrom(S => S.Doctor.ApplicationUser.ProfilePicture));
+
+			CreateMap<Post, PostToReturnDto>()
+				.ForMember(D => D.UserProfilePicture, O => O.MapFrom(S => S.ApplicationUser.ProfilePicture))
+				.ForMember(D => D.UserName, O => O.MapFrom(S => S.ApplicationUser.FullName))
+				.ForMember(D => D.LikesCount, O => O.MapFrom(S => S.Likes.Count()))
+				.ForMember(D => D.CommentsCount, O => O.MapFrom(S => S.Comments.Count()));
 
 		}
 	}

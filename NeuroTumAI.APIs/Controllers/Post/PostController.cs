@@ -1,12 +1,10 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NeuroTumAI.APIs.Controllers.Base;
-using NeuroTumAI.Core.Dtos.Account;
+using NeuroTumAI.Core.Dtos.Pagination;
 using NeuroTumAI.Core.Dtos.Post;
 using NeuroTumAI.Core.Services.Contract;
-using NeuroTumAI.Service.Dtos.Account;
 
 namespace NeuroTumAI.APIs.Controllers.Post
 {
@@ -48,6 +46,21 @@ namespace NeuroTumAI.APIs.Controllers.Post
 			var comment = await _postService.AddCommentAsync(userId, commentDto, postId);
 
 			return Ok(new { Message = comment.Id });
+		}
+
+		[HttpGet]
+		public async Task<ActionResult<CursorPaginationDto<PostToReturnDto>>> GetPosts([FromQuery] int cursor)
+		{
+			var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+			var posts = await _postService.GetPostsAsync(userId, cursor);
+
+			var lastPost = posts.LastOrDefault();
+			var nextCursor = lastPost?.Id ?? 0;
+
+			var cursorPaginationDto = new CursorPaginationDto<PostToReturnDto>(nextCursor, posts);
+
+			return Ok(cursorPaginationDto);
 		}
 	}
 }

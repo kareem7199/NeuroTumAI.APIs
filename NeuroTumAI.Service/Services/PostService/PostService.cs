@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.SignalR;
 using NeuroTumAI.Core;
 using NeuroTumAI.Core.Dtos.Post;
 using NeuroTumAI.Core.Entities.Post_Aggregate;
@@ -16,12 +17,14 @@ namespace NeuroTumAI.Service.Services.PostService
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IHubContext<PostHub> _hubContext;
 		private readonly ILocalizationService _localizationService;
+		private readonly IMapper _mapper;
 
-		public PostService(IUnitOfWork unitOfWork, IHubContext<PostHub> hubContext, ILocalizationService localizationService)
+		public PostService(IUnitOfWork unitOfWork, IHubContext<PostHub> hubContext, ILocalizationService localizationService, IMapper mapper)
 		{
 			_unitOfWork = unitOfWork;
 			_hubContext = hubContext;
 			_localizationService = localizationService;
+			_mapper = mapper;
 		}
 
 		public async Task<Comment> AddCommentAsync(string userId, AddCommentDto model, int postId)
@@ -73,6 +76,26 @@ namespace NeuroTumAI.Service.Services.PostService
 			await _unitOfWork.CompleteAsync();
 
 			return newPost;
+		}
+
+		public async Task<IReadOnlyList<PostToReturnDto>> GetPostsAsync(string userId, int cursor)
+		{
+			var postSpecs = new PostCursorPaginationSpecifications(cursor);
+			var posts = await _unitOfWork.Repository<Post>().GetAllWithSpecAsync(postSpecs);
+
+			var postIds = posts.Select(P => P.Id).ToList();
+
+			var likeSpecs = new LikeByUserAndPostSpecification(userId , postIds);
+			var likes = await _unitOfWork.Repository<Like>().GetAllWithSpecAsync(likeSpecs);
+
+			var postsDto = _mapper.Map<IReadOnlyList<PostToReturnDto>>(posts);
+
+			foreach (var post in postsDto)
+			{
+				post.IsLiked = likes.Any(L => L.PostId == post.Id);
+			}
+
+			return postsDto;
 		}
 
 		public async Task<ToggleLikeResponseDto> ToggleLikeAsync(string userId, int postId)
