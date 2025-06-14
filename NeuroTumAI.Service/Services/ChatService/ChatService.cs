@@ -27,14 +27,16 @@ namespace NeuroTumAI.Service.Services.ChatService
 		private readonly IHubContext<ChatHub> _chatHubContext;
 		private readonly IMapper _mapper;
 		private readonly RoleManager<IdentityRole> _roleManager;
+		private readonly INotificationService _notificationService;
 
-		public ChatService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, IHubContext<ChatHub> chatHubContext, IMapper mapper, RoleManager<IdentityRole> roleManager)
+		public ChatService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, IHubContext<ChatHub> chatHubContext, IMapper mapper, RoleManager<IdentityRole> roleManager, INotificationService notificationService)
 		{
 			_unitOfWork = unitOfWork;
 			_userManager = userManager;
 			_chatHubContext = chatHubContext;
 			_mapper = mapper;
 			_roleManager = roleManager;
+			_notificationService = notificationService;
 		}
 
 		private async Task DeliverMessageAsync(string receiverId, MessageToReturnDto message)
@@ -83,6 +85,10 @@ namespace NeuroTumAI.Service.Services.ChatService
 			await _unitOfWork.CompleteAsync();
 
 			await DeliverMessageAsync(sendMessageDto.ReceiverId, _mapper.Map<MessageToReturnDto>(newMessage));
+
+			var senderName = conversation.FirstUserId == userId ? conversation.FirstUser.FullName : conversation.SecondUser.FullName;
+
+			await _notificationService.SendMessageNotificationAsync(sendMessageDto.ReceiverId, sendMessageDto.Content, senderName);
 
 			return newMessage;
 		}

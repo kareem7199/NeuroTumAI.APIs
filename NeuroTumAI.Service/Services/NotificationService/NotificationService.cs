@@ -7,6 +7,7 @@ using NeuroTumAI.Core.Services.Contract;
 using NeuroTumAI.Core.Specifications.DoctorSpecs;
 using NeuroTumAI.Core.Specifications.NotificationSpecs;
 using NeuroTumAI.Core.Specifications.PatientSpecs;
+using NeuroTumAI.Core.Specifications.UserDeviceTokenSpecs;
 
 namespace NeuroTumAI.Service.Services.NotificationService
 {
@@ -212,7 +213,7 @@ namespace NeuroTumAI.Service.Services.NotificationService
 							titleEN,
 							bodyEN,
 							token.FcmToken,
-							NotificationType.AppointmentCancellation
+							NotificationType.ScanPhysician
 						);
 					}
 				}
@@ -220,6 +221,110 @@ namespace NeuroTumAI.Service.Services.NotificationService
 
 
 			await _unitOfWork.CompleteAsync();
+		}
+
+		public async Task SendNewAppointmentNotificationAsync(NewAppointmentNotificationDto notification)
+		{
+			var doctorRepo = _unitOfWork.Repository<Doctor>();
+			var doctorSpecs = new DoctorSpecifications(notification.DoctorId, true);
+
+			var doctor = await doctorRepo.GetWithSpecAsync(doctorSpecs);
+			var tokens = doctor.ApplicationUser.DeviceTokens;
+
+			string titleEN = "A New Appointment Has Been Scheduled";
+			string bodyEN = $"A new appointment has been scheduled on {notification.Date:MMMM dd, yyyy} at {notification.Time:hh\\:mm} with your patient.";
+
+			string titleAR = "تم تحديد موعد جديد";
+			string bodyAR = $"تم تحديد موعد جديد في {notification.Date:dd MMMM yyyy} الساعة {notification.Time:hh\\:mm} مع المريض.";
+
+
+			var newNotification = new Notification
+			{
+				TitleEN = titleEN,
+				TitleAR = titleAR,
+				BodyEN = bodyEN,
+				BodyAR = bodyAR,
+				Type = NotificationType.Appointment,
+				ApplicationUserId = doctor.ApplicationUserId
+			};
+
+			var notificationRepo = _unitOfWork.Repository<Notification>();
+			notificationRepo.Add(newNotification);
+
+			if (tokens.Any())
+			{
+				foreach (var token in tokens)
+				{
+					_fireBaseNotificationService.SendNotificationAsync(
+						titleEN,
+						bodyEN,
+						token.FcmToken,
+						NotificationType.Appointment
+					);
+				}
+			}
+
+
+			await _unitOfWork.CompleteAsync();
+		}
+
+		public async Task SendReadyMriScanNotificationAsync(int patientId)
+		{
+			var patientRepo = _unitOfWork.Repository<Patient>();
+			var patientSpecs = new PatientSpecifications(patientId);
+
+			var patient = await patientRepo.GetWithSpecAsync(patientSpecs);
+			var tokens = patient!.ApplicationUser.DeviceTokens;
+
+			string titleEN = "MRI Scan Ready";
+			string bodyEN = "Your MRI scan is now ready for review.";
+
+			string titleAR = "نتيجة الأشعة جاهزة";
+			string bodyAR = "نتيجة الأشعة الخاصة بك جاهزة الآن للمراجعة.";
+
+			var newNotification = new Notification()
+			{
+				TitleEN = titleEN,
+				TitleAR = titleAR,
+				BodyEN = bodyEN,
+				BodyAR = bodyAR,
+				Type = NotificationType.ScanPatient,
+				ApplicationUserId = patient.ApplicationUserId
+			};
+
+			var notificationRepo = _unitOfWork.Repository<Notification>();
+			notificationRepo.Add(newNotification);
+
+			if (tokens.Any())
+			{
+				foreach (var token in tokens)
+				{
+					_fireBaseNotificationService.SendNotificationAsync(titleEN, bodyEN, token.FcmToken, NotificationType.ScanPatient);
+				}
+			}
+
+			await _unitOfWork.CompleteAsync();
+		}
+
+		public async Task SendMessageNotificationAsync(string userId , string message, string userName)
+		{
+			var userDeviceTokenSpecs = new UserDeviceTokenByUserIdSpecifications(userId);
+			var deviceTokenRepo = _unitOfWork.Repository<UserDeviceToken>();
+
+			var tokens = await deviceTokenRepo.GetAllWithSpecAsync(userDeviceTokenSpecs);
+
+			if (tokens.Any())
+			{
+				foreach (var token in tokens)
+				{
+					_fireBaseNotificationService.SendNotificationAsync(
+						userName,
+						message,
+						token.FcmToken,
+						NotificationType.Message
+					);
+				}
+			}
 		}
 	}
 }

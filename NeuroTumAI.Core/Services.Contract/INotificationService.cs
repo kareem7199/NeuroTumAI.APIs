@@ -16,6 +16,8 @@ namespace NeuroTumAI.Core.Services.Contract
 		Task SendMriScanAssignmentNotificationToDoctorAsync(List<int> notifications);
 		Task<IReadOnlyList<Notification>> GetNotificationsAsync(string userId, NotificationSpecParams specParams);
 		Task<int> GetNotificationsCountAsync(string userId);
-
+		Task SendNewAppointmentNotificationAsync(NewAppointmentNotificationDto notification);
+		Task SendReadyMriScanNotificationAsync(int patientId);
+		Task SendMessageNotificationAsync(string userId, string message, string userName);
 	}
 }

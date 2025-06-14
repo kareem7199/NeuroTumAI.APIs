@@ -49,6 +49,8 @@ namespace NeuroTumAI.Service.Services.MriScanService
 			doctorAssignmentsRepository.RemoveRange(mriScan.DoctorAssignments);
 
 			await _unitOfWork.CompleteAsync();
+
+			await _notificationService.SendReadyMriScanNotificationAsync(mriScan.PatientId);
 		}
 
 		public async Task<IReadOnlyList<DoctorMriAssignment>> GetAssignedScansAsync(string userId, PaginationParamsDto dto)
@@ -130,6 +132,8 @@ namespace NeuroTumAI.Service.Services.MriScanService
 			mriScanRepo.Update(mriScan);
 
 			await _unitOfWork.CompleteAsync();
+
+			await _notificationService.SendReadyMriScanNotificationAsync(mriScan.PatientId);
 		}
 
 		public async Task<MriScan> UploadAndProcessMriScanAsync(PredictRequestDto model, string userId)

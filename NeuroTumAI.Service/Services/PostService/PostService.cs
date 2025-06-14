@@ -1,5 +1,4 @@
-﻿using System.Xml.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
 using NeuroTumAI.Core;
 using NeuroTumAI.Core.Dtos.Pagination;
@@ -93,6 +92,20 @@ namespace NeuroTumAI.Service.Services.PostService
 			commentRepo.Delete(comment);
 
 			await _unitOfWork.CompleteAsync();
+
+			var postRepo = _unitOfWork.Repository<Post>();
+			var postSpec = new PostSpecifications(comment.PostId);
+			var post = await postRepo.GetWithSpecAsync(postSpec);
+
+			var likesCount = post!.Likes.Count();
+			var commentsCount = post!.Comments.Count();
+
+			await _hubContext.Clients.All.SendAsync("ReceivePostUpdate", new
+			{
+				comment.PostId,
+				likesCount,
+				commentsCount
+			});
 		}
 
 		public async Task DeletePostAsync(string userId, int postId)
