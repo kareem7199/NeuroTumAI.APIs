@@ -24,6 +24,40 @@ namespace NeuroTumAI.Service.Services.PostService
 			_localizationService = localizationService;
 		}
 
+		public async Task<Comment> AddCommentAsync(string userId, AddCommentDto model, int postId)
+		{
+			var postRepo = _unitOfWork.Repository<Post>();
+			var postSpec = new PostSpecifications(postId);
+			var post = await postRepo.GetWithSpecAsync(postSpec);
+
+			if (post is null)
+				throw new NotFoundException(_localizationService.GetMessage<ResponsesResources>("PostNotFound"));
+
+			var likesCount = post.Likes.Count();
+			var commentsCount = post.Comments.Count() + 1;
+
+			var commentRepo = _unitOfWork.Repository<Comment>();
+			var newComment = new Comment()
+			{
+				PostId = postId,
+				ApplicationUserId = userId,
+				Text = model.Text
+			};
+
+			commentRepo.Add(newComment);
+			
+			await _unitOfWork.CompleteAsync();
+
+			await _hubContext.Clients.All.SendAsync("ReceivePostUpdate", new
+			{
+				PostId = postId,
+				likesCount,
+				commentsCount
+			});
+
+			return newComment;
+		}
+
 		public async Task<Post> AddPostAsync(AddPostDto model, string applicationUserId)
 		{
 			var newPost = new Post()

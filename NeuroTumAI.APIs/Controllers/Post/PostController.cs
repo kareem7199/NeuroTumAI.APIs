@@ -25,9 +25,9 @@ namespace NeuroTumAI.APIs.Controllers.Post
 		{
 			var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-			await _postService.AddPostAsync(model, userId!);
+			var post = await _postService.AddPostAsync(model, userId!);
 
-			return Ok();
+			return Ok(new { Message = post.Id });
 		}
 
 		[HttpPost("toggleLike/{postId}")]
@@ -38,6 +38,16 @@ namespace NeuroTumAI.APIs.Controllers.Post
 			var result = await _postService.ToggleLikeAsync(userId, postId);
 
 			return Ok(result);
+		}
+
+		[HttpPost("comment/{postId}")]
+		public async Task<ActionResult> AddComment(int postId, AddCommentDto commentDto)
+		{
+			var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+			var comment = await _postService.AddCommentAsync(userId, commentDto, postId);
+
+			return Ok(new { Message = comment.Id });
 		}
 	}
 }

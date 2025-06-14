@@ -11,6 +11,7 @@ namespace NeuroTumAI.Core.Services.Contract
 	public interface IPostService
 	{
 		Task<Post> AddPostAsync(AddPostDto model, string applicationUserId);
-		Task<ToggleLikeResponseDto> ToggleLikeAsync(string userId , int postId);
+		Task<Comment> AddCommentAsync(string userId, AddCommentDto model, int postId);
+		Task<ToggleLikeResponseDto> ToggleLikeAsync(string userId, int postId);
 	}
 }
