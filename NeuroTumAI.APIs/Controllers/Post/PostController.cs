@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NeuroTumAI.APIs.Controllers.Base;
@@ -12,10 +13,12 @@ namespace NeuroTumAI.APIs.Controllers.Post
 	public class PostController : BaseApiController
 	{
 		private readonly IPostService _postService;
+		private readonly IMapper _mapper;
 
-		public PostController(IPostService postService)
+		public PostController(IPostService postService, IMapper mapper)
 		{
 			_postService = postService;
+			_mapper = mapper;
 		}
 
 		[HttpPost]
@@ -59,6 +62,19 @@ namespace NeuroTumAI.APIs.Controllers.Post
 			var nextCursor = lastPost?.Id ?? 0;
 
 			var cursorPaginationDto = new CursorPaginationDto<PostToReturnDto>(nextCursor, posts);
+
+			return Ok(cursorPaginationDto);
+		}
+
+		[HttpGet("comments/{postId}")]
+		public async Task<ActionResult<CursorPaginationDto<CommentToReturnDto>>> GetPostComments(int postId, [FromQuery] int cursor)
+		{
+			var comments = await _postService.GetPostCommentsAsync(postId, cursor);
+
+			var lastComment = comments.LastOrDefault();
+			var nextCursor = lastComment?.Id ?? 0;
+
+			var cursorPaginationDto = new CursorPaginationDto<CommentToReturnDto>(nextCursor, _mapper.Map<IReadOnlyList<CommentToReturnDto>>(comments));
 
 			return Ok(cursorPaginationDto);
 		}

@@ -7,6 +7,7 @@ using NeuroTumAI.Core.Exceptions;
 using NeuroTumAI.Core.Resources.Responses;
 using NeuroTumAI.Core.Services.Contract;
 using NeuroTumAI.Core.Specifications.PostSpecs;
+using NeuroTumAI.Core.Specifications.PostSpecs.CommentSpecs;
 using NeuroTumAI.Core.Specifications.PostSpecs.LikeSpecs;
 using NeuroTumAI.Service.Hubs;
 
@@ -76,6 +77,18 @@ namespace NeuroTumAI.Service.Services.PostService
 			await _unitOfWork.CompleteAsync();
 
 			return newPost;
+		}
+
+		public async Task<IReadOnlyList<Comment>> GetPostCommentsAsync(int postId, int cursor)
+		{
+			var post = await _unitOfWork.Repository<Post>().GetAsync(postId);
+			if(post is null)
+				throw new NotFoundException(_localizationService.GetMessage<ResponsesResources>("PostNotFound"));
+
+			var commentSpecs = new CommentCursorPaginationSpecifications(cursor, postId);
+			var comments = await _unitOfWork.Repository<Comment>().GetAllWithSpecAsync(commentSpecs);
+
+			return comments;
 		}
 
 		public async Task<IReadOnlyList<PostToReturnDto>> GetPostsAsync(string userId, int cursor)
