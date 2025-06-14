@@ -132,6 +132,9 @@
   <data name="ClinicNotFound" xml:space="preserve">
     <value>Clinic is not found.</value>
   </data>
+  <data name="CommentNotFound" xml:space="preserve">
+    <value>The comment you are looking for does not exist.</value>
+  </data>
   <data name="EmailNotConfirmed" xml:space="preserve">
     <value>Your email is not confirmed. Please verify it before logging in.</value>
   </data>

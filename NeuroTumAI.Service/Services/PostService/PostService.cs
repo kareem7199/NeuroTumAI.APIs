@@ -80,6 +80,19 @@ namespace NeuroTumAI.Service.Services.PostService
 			return newPost;
 		}
 
+		public async Task DeleteCommentAsync(string userId, int commentId)
+		{
+			var commentRepo = _unitOfWork.Repository<Comment>();
+			var comment = await commentRepo.GetAsync(commentId);
+
+			if (comment is null || comment.ApplicationUserId != userId)
+				throw new NotFoundException(_localizationService.GetMessage<ResponsesResources>("CommentNotFound"));
+
+			commentRepo.Delete(comment);
+
+			await _unitOfWork.CompleteAsync();
+		}
+
 		public async Task DeletePostAsync(string userId, int postId)
 		{
 			var postRepo = _unitOfWork.Repository<Post>();

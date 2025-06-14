@@ -91,5 +91,18 @@ namespace NeuroTumAI.APIs.Controllers.Post
 				Message = postId
 			});
 		}
+
+		[HttpDelete("comment/{commentId}")]
+		public async Task<ActionResult> DeleteComment(int commentId)
+		{
+			var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+			await _postService.DeleteCommentAsync(userId, commentId);
+
+			return Ok(new
+			{
+				Message = commentId
+			});
+		}
 	}
 }
