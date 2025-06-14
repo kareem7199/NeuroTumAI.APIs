@@ -12,8 +12,9 @@ namespace NeuroTumAI.Core.Services.Contract
 	{
 		Task<Post> AddPostAsync(AddPostDto model, string applicationUserId);
 		Task<Comment> AddCommentAsync(string userId, AddCommentDto model, int postId);
-		Task<IReadOnlyList<PostToReturnDto>> GetPostsAsync(string userId , int cursor);
+		Task<IReadOnlyList<PostToReturnDto>> GetPostsAsync(string userId, int cursor);
 		Task<IReadOnlyList<Comment>> GetPostCommentsAsync(int postId, int cursor);
 		Task<ToggleLikeResponseDto> ToggleLikeAsync(string userId, int postId);
+		Task DeletePostAsync(string userId, int postId);
 	}
 }

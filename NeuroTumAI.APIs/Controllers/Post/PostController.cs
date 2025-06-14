@@ -78,5 +78,18 @@ namespace NeuroTumAI.APIs.Controllers.Post
 
 			return Ok(cursorPaginationDto);
 		}
+
+		[HttpDelete("{postId}")]
+		public async Task<ActionResult> DeletePost(int postId)
+		{
+			var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+			await _postService.DeletePostAsync(userId, postId);
+
+			return Ok(new
+			{
+				Message = postId
+			});
+		}
 	}
 }

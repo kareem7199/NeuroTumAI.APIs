@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Xml.Linq;
+using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
 using NeuroTumAI.Core;
 using NeuroTumAI.Core.Dtos.Post;
@@ -49,7 +50,7 @@ namespace NeuroTumAI.Service.Services.PostService
 			};
 
 			commentRepo.Add(newComment);
-			
+
 			await _unitOfWork.CompleteAsync();
 
 			await _hubContext.Clients.All.SendAsync("ReceivePostUpdate", new
@@ -79,10 +80,30 @@ namespace NeuroTumAI.Service.Services.PostService
 			return newPost;
 		}
 
+		public async Task DeletePostAsync(string userId, int postId)
+		{
+			var postRepo = _unitOfWork.Repository<Post>();
+			var postSpecs = new PostSpecifications(postId);
+			var post = await postRepo.GetWithSpecAsync(postSpecs);
+
+			if (post is null || post.ApplicationUserId != userId)
+				throw new NotFoundException(_localizationService.GetMessage<ResponsesResources>("PostNotFound"));
+
+			var commentRepo = _unitOfWork.Repository<Comment>();
+			var likeRepo = _unitOfWork.Repository<Like>();
+
+			commentRepo.RemoveRange(post.Comments);
+			likeRepo.RemoveRange(post.Likes);
+
+			postRepo.Delete(post);
+
+			await _unitOfWork.CompleteAsync();
+		}
+
 		public async Task<IReadOnlyList<Comment>> GetPostCommentsAsync(int postId, int cursor)
 		{
 			var post = await _unitOfWork.Repository<Post>().GetAsync(postId);
-			if(post is null)
+			if (post is null)
 				throw new NotFoundException(_localizationService.GetMessage<ResponsesResources>("PostNotFound"));
 
 			var commentSpecs = new CommentCursorPaginationSpecifications(cursor, postId);
@@ -98,7 +119,7 @@ namespace NeuroTumAI.Service.Services.PostService
 
 			var postIds = posts.Select(P => P.Id).ToList();
 
-			var likeSpecs = new LikeByUserAndPostSpecification(userId , postIds);
+			var likeSpecs = new LikeByUserAndPostSpecification(userId, postIds);
 			var likes = await _unitOfWork.Repository<Like>().GetAllWithSpecAsync(likeSpecs);
 
 			var postsDto = _mapper.Map<IReadOnlyList<PostToReturnDto>>(posts);
