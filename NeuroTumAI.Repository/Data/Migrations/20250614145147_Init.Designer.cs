@@ -13,7 +13,7 @@ using NeuroTumAI.Repository.Data;
 namespace NeuroTumAI.Repository.Data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20250614142115_Init")]
+    [Migration("20250614145147_Init")]
     partial class Init
     {
         /// <inheritdoc />

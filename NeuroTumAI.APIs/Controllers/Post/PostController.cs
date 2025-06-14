@@ -76,6 +76,16 @@ namespace NeuroTumAI.APIs.Controllers.Post
 			return Ok(cursorPaginationDto);
 		}
 
+		[HttpGet("saved")]
+		public async Task<ActionResult<CursorPaginationDto<PostToReturnDto>>> GetSavedPosts([FromQuery] int cursor)
+		{
+			var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+			var posts = await _postService.GetSavedPostsAsync(userId, cursor);
+
+			return Ok(posts);
+		}
+
 		[HttpGet("comments/{postId}")]
 		public async Task<ActionResult<CursorPaginationDto<CommentToReturnDto>>> GetPostComments(int postId, [FromQuery] int cursor)
 		{

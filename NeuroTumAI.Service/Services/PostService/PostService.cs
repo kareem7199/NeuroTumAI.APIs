@@ -2,6 +2,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
 using NeuroTumAI.Core;
+using NeuroTumAI.Core.Dtos.Pagination;
 using NeuroTumAI.Core.Dtos.Post;
 using NeuroTumAI.Core.Entities.Post_Aggregate;
 using NeuroTumAI.Core.Exceptions;
@@ -133,6 +134,11 @@ namespace NeuroTumAI.Service.Services.PostService
 			var postSpecs = new PostCursorPaginationSpecifications(cursor);
 			var posts = await _unitOfWork.Repository<Post>().GetAllWithSpecAsync(postSpecs);
 
+			return await FormatPosts(userId, posts);
+		}
+
+		public async Task<IReadOnlyList<PostToReturnDto>> FormatPosts(string userId, IReadOnlyList<Post> posts)
+		{
 			var postIds = posts.Select(P => P.Id).ToList();
 
 			var likeSpecs = new LikeByUserAndPostSpecification(userId, postIds);
@@ -235,6 +241,25 @@ namespace NeuroTumAI.Service.Services.PostService
 				IsSaved = isSaved is null,
 				PostId = postId
 			};
+		}
+
+		public async Task<CursorPaginationDto<PostToReturnDto>> GetSavedPostsAsync(string userId, int cursor)
+		{
+			var savedPostSpecs = new SavedPostCursorPaginationSpecifications(userId, cursor);
+			var savedPosts = await _unitOfWork.Repository<SavedPost>().GetAllWithSpecAsync(savedPostSpecs);
+			var posts = new List<Post>();
+
+			foreach (var savedPost in savedPosts) {
+				posts.Add(savedPost.Post);
+			}
+
+			var formattedPosts = await FormatPosts(userId, posts);
+
+
+			var lastPost = savedPosts.LastOrDefault();
+			var nextCursor = lastPost?.Id ?? 0;
+
+			return new CursorPaginationDto<PostToReturnDto>(nextCursor, formattedPosts);
 		}
 	}
 }
