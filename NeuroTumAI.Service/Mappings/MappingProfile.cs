@@ -122,6 +122,7 @@ namespace NeuroTumAI.Service.Mappings
 			CreateMap<Appointment, AppointmentWithDoctorDto>()
 				.ForMember(D => D.DoctorProfilePicture, O => O.MapFrom(S => S.Doctor.ApplicationUser.ProfilePicture))
 				.ForMember(D => D.DoctorName, O => O.MapFrom(S => S.Doctor.ApplicationUser.FullName))
+				.ForMember(D => D.DoctorId, O => O.MapFrom(S => S.Doctor.Id))
 				.ForMember(D => D.Address, O => O.MapFrom(S => S.Clinic.Address));
 
 			CreateMap<Notification, NotificationToReturnDto>()
