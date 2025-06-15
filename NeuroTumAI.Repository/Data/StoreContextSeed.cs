@@ -10,6 +10,21 @@ namespace NeuroTumAI.Repository.Data
 {
 	public static class StoreContextSeed
 	{
+
+		public class CairoAddress
+		{
+			public string Address { get; set; }
+			public double Lat { get; set; }
+			public double Lng { get; set; }
+
+			public NetTopologySuite.Geometries.Point ToPoint()
+			{
+				return new NetTopologySuite.Geometries.Point(Lng, Lat) { SRID = 4326 };
+			}
+		}
+
+		private static string[] patientImages = { "https://kareem.blob.core.windows.net/profilepictures/patient1.jpeg" , "https://kareem.blob.core.windows.net/profilepictures/patient2.jpeg", "https://kareem.blob.core.windows.net/profilepictures/patient3.jpeg" , "https://kareem.blob.core.windows.net/profilepictures/patient4.jpeg" , "https://kareem.blob.core.windows.net/profilepictures/patient5.jpeg" };
+		private static string[] doctorImages = { "https://kareem.blob.core.windows.net/profilepictures/images.jpeg", "https://kareem.blob.core.windows.net/profilepictures/images (1).jpeg" , "https://kareem.blob.core.windows.net/profilepictures/download.jpeg" , "https://kareem.blob.core.windows.net/profilepictures/download (2).jpeg" , "https://kareem.blob.core.windows.net/profilepictures/download (1).jpeg" };
 		private static string[] roles = { "Patient", "Doctor" };
 		private static string[] reviews = { "Pretty sure he got his degree from YouTube tutorials.", "At least he didn’t kill me... small wins, I guess.", "Not bad, not great. Like microwave food – gets the job done, barely.", "Pretty decent! He knew what he was doing… most of the time.", "Best doctor ever." };
 		private static string[] times =
@@ -25,6 +40,68 @@ namespace NeuroTumAI.Repository.Data
 			"17:00:00",
 			"18:00:00"
 		};
+
+		private static readonly string[] names = {
+	"Fawzy", "Ahmed", "Youssef", "Kareem", "Mohsen", "Omar", "Mostafa", "Ali", "Ibrahim", "Mahmoud",
+	"Hassan", "Hussein", "Tarek", "Samir", "Sami", "Ayman", "Walid", "Ehab", "Nader", "Ramy",
+	"Amr", "Sherif", "Nashaat", "Ashraf", "Adel", "Bassem", "Basel", "Yasser", "Gamal", "Fathy",
+	"Farid", "Magdy", "Salah", "Reda", "Ziad", "Ihab", "Marwan", "Hesham", "Wael", "Anas",
+	"Alaa", "Tamer", "Shady", "Essam", "Mohamed", "Khaled", "Saad", "Lotfy", "Refaat", "Nabil",
+	"Sherbiny", "Arafa", "Galal", "Younes", "Hany", "Osama", "Mounir", "Nagy", "Emad", "Tawfik",
+	"Fady", "Yehia", "Sameh", "Mamdouh", "Hatem", "Gaber", "Saber", "Mokhtar", "Zaki", "Maged",
+	"Sayyed", "Hossam", "Hamdy", "Ezzat", "Fekry", "Shokry", "Hegazy", "Ragab", "Shaker", "Abdelrahman",
+	"ElSayed", "Tolba", "Azmy", "Abdelaziz", "Hassanain", "Izzat", "Shaaban", "Barakat", "Fouad", "Soliman",
+	"Younan", "Saif", "Feras", "Murad", "Yassin", "Ismail", "Bakr", "Saeed", "Yahya", "Tawheed"
+};
+
+		private static readonly CairoAddress[] CairoAddresses =
+{
+	new CairoAddress { Address = "شارع التحرير، الدقي", Lat = 30.037, Lng = 31.211 },
+	new CairoAddress { Address = "شارع 9، المعادي", Lat = 29.960, Lng = 31.261 },
+	new CairoAddress { Address = "شارع عباس العقاد، مدينة نصر", Lat = 30.068, Lng = 31.328 },
+	new CairoAddress { Address = "شارع الثورة، مصر الجديدة", Lat = 30.086, Lng = 31.346 },
+	new CairoAddress { Address = "شارع فيصل، الجيزة", Lat = 30.019, Lng = 31.178 },
+	new CairoAddress { Address = "شارع مصطفى النحاس، مدينة نصر", Lat = 30.064, Lng = 31.345 },
+	new CairoAddress { Address = "شارع قصر العيني، وسط البلد", Lat = 30.041, Lng = 31.235 },
+	new CairoAddress { Address = "شارع الأزهر، الحسين", Lat = 30.045, Lng = 31.262 },
+	new CairoAddress { Address = "شارع النزهة، مصر الجديدة", Lat = 30.104, Lng = 31.344 },
+	new CairoAddress { Address = "شارع الهرم، الجيزة", Lat = 29.993, Lng = 31.165 },
+	new CairoAddress { Address = "شارع اللبيني، فيصل", Lat = 29.988, Lng = 31.161 },
+	new CairoAddress { Address = "شارع التسعين الجنوبي، التجمع", Lat = 30.002, Lng = 31.440 },
+	new CairoAddress { Address = "شارع الكوربة، مصر الجديدة", Lat = 30.091, Lng = 31.330 },
+	new CairoAddress { Address = "شارع النيل، العجوزة", Lat = 30.059, Lng = 31.216 },
+	new CairoAddress { Address = "شارع محمد فريد، وسط البلد", Lat = 30.045, Lng = 31.242 },
+	new CairoAddress { Address = "شارع المعز، الحسين", Lat = 30.049, Lng = 31.262 },
+	new CairoAddress { Address = "شارع التحرير، باب اللوق", Lat = 30.044, Lng = 31.239 },
+	new CairoAddress { Address = "شارع دمشق، مصر الجديدة", Lat = 30.086, Lng = 31.336 },
+	new CairoAddress { Address = "شارع أحمد فخري، مدينة نصر", Lat = 30.068, Lng = 31.337 },
+	new CairoAddress { Address = "شارع الطيران، مدينة نصر", Lat = 30.070, Lng = 31.313 },
+	new CairoAddress { Address = "شارع حسن المأمون، مدينة نصر", Lat = 30.066, Lng = 31.356 },
+	new CairoAddress { Address = "شارع البحر الأعظم، الجيزة", Lat = 30.003, Lng = 31.215 },
+	new CairoAddress { Address = "شارع حسن محمد، فيصل", Lat = 30.012, Lng = 31.178 },
+	new CairoAddress { Address = "شارع العروبة، مصر الجديدة", Lat = 30.093, Lng = 31.349 },
+	new CairoAddress { Address = "شارع نادي الصيد، الدقي", Lat = 30.038, Lng = 31.212 },
+	new CairoAddress { Address = "شارع الحجاز، مصر الجديدة", Lat = 30.099, Lng = 31.337 },
+	new CairoAddress { Address = "شارع أحمد عرابي، المهندسين", Lat = 30.060, Lng = 31.210 },
+	new CairoAddress { Address = "شارع جامعة الدول العربية، المهندسين", Lat = 30.059, Lng = 31.202 },
+	new CairoAddress { Address = "شارع شهاب، المهندسين", Lat = 30.057, Lng = 31.202 },
+	new CairoAddress { Address = "شارع مكرم عبيد، مدينة نصر", Lat = 30.065, Lng = 31.343 }
+};
+
+		private static readonly Random _random = new();
+
+		public static CairoAddress GetRandomCairoAddress()
+		{
+			return CairoAddresses[_random.Next(CairoAddresses.Length)];
+		}
+
+		private static string GenerateFullName()
+		{
+			string firstName = names[_random.Next(names.Length)];
+			string lastName = names[_random.Next(names.Length)];
+			return $"{firstName} {lastName}";
+		}
+
 		public async static Task SeedAsync(StoreContext _dbContext, RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
 		{
 			if (_dbContext.UserRoles.Any()) return;
@@ -53,7 +130,8 @@ namespace NeuroTumAI.Repository.Data
 			{
 				var newAccount = new ApplicationUser()
 				{
-					FullName = $"Patient{i + 1}",
+					ProfilePicture = patientImages[_random.Next(patientImages.Length)],
+					FullName = GenerateFullName(),
 					Email = $"patient{i + 1}@gmail.com",
 					UserName = $"Patient{i + 1}",
 					Gender = Gender.Male,
@@ -75,8 +153,8 @@ namespace NeuroTumAI.Repository.Data
 			{
 				var newAccount = new ApplicationUser()
 				{
-					ProfilePicture = "https://kareem.blob.core.windows.net/profilepictures/471182393_2003306546854517_2794750337341868811_n.jpg",
-					FullName = $"Doctor{i + 1}",
+					ProfilePicture = doctorImages[_random.Next(doctorImages.Length)],
+					FullName = GenerateFullName(),
 					Email = $"doctor{i + 1}@gmail.com",
 					UserName = $"Doctor{i + 1}",
 					Gender = Gender.Male,
@@ -92,11 +170,14 @@ namespace NeuroTumAI.Repository.Data
 					LicenseDocumentFront = "https://kareem.blob.core.windows.net/doctor-licenses/FxtVyt2XgAA1zis.jpeg",
 					IsApproved = i < 50
 				};
-				var location = new NetTopologySuite.Geometries.Point(31.2357, 30.0444) { SRID = 4326 };
+
+				var cairoAddress = GetRandomCairoAddress();
+
+				var location = cairoAddress.ToPoint();
 
 				var newClinic = new Clinic()
 				{
-					Address = "123 Health Street, Cairo, Egypt",
+					Address = cairoAddress.Address,
 					Location = location,
 					PhoneNumber = "+20 100 123 4567",
 					LicenseDocument = "https://kareem.blob.core.windows.net/clinic-licenses/133792076_3601250089930660_5112076721351997915_n.jpg",
@@ -138,7 +219,7 @@ namespace NeuroTumAI.Repository.Data
 		{
 			for (int patientId = 1; patientId <= 10; patientId++)
 			{
-				for (int doctorId = 1; doctorId <= 5; doctorId++)
+				for (int doctorId = 1; doctorId <= 50; doctorId++)
 				{
 					var newAppointment = new Appointment()
 					{
@@ -186,7 +267,7 @@ namespace NeuroTumAI.Repository.Data
 				var message = new ContactUsMessage
 				{
 					PatientId = i,
-					Message = "Hello World *_*"
+					Message = "Hello World"
 				};
 
 				await _dbContext.AddAsync(message);
